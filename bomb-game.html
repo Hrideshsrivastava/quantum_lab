@@ -456,6 +456,113 @@ body.game-page {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 212, 255, 0.5);
 }
+
+/* Intro Modal Styling */
+.intro-modal {
+    max-width: 700px !important;
+    max-height: 85vh;
+}
+
+.intro-content {
+    text-align: left;
+}
+
+.intro-content h3 {
+    color: var(--neon-cyan);
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.intro-content h3:first-child {
+    margin-top: 0;
+}
+
+.rule-item {
+    background: var(--bg-secondary);
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+    border-left: 3px solid var(--neon-blue);
+}
+
+.rule-item strong {
+    color: var(--neon-cyan);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.rule-item p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.game-steps {
+    background: var(--bg-secondary);
+    padding: 1rem 1rem 1rem 2rem;
+    border-radius: 6px;
+    margin: 0.5rem 0;
+}
+
+.game-steps li {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.game-steps li:last-child {
+    margin-bottom: 0;
+}
+
+.game-steps ul {
+    margin-top: 0.25rem;
+    margin-left: 1rem;
+    list-style-type: circle;
+}
+
+.scoring-list {
+    background: var(--bg-secondary);
+    padding: 1rem 1rem 1rem 2rem;
+    border-radius: 6px;
+    margin: 0.5rem 0;
+    list-style: none;
+}
+
+.scoring-list li {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.scoring-list li:last-child {
+    margin-bottom: 0;
+}
+
+.quantum-note {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(176, 38, 255, 0.1));
+    border: 2px solid var(--neon-purple);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.quantum-note h4 {
+    color: var(--neon-purple);
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.quantum-note p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.quantum-note em {
+    color: var(--neon-cyan);
+    font-style: italic;
+    font-weight: 600;
+}
 </style>
 </head>
 <body class="game-page">
@@ -528,6 +635,58 @@ body.game-page {
                 <h2>Round Complete!</h2>
                 <div id="resultsBody"></div>
                 <button class="cta-button" onclick="bombGame.nextLevel()">Continue</button>
+            </div>
+        </div>
+
+        <!-- Intro Modal -->
+        <div id="introModal" class="modal active">
+            <div class="modal-content intro-modal">
+                <h2>💣 Bomb Detection Challenge</h2>
+                <div class="intro-content">
+                    <h3>🎯 Your Mission</h3>
+                    <p>Detect which channels contain live bombs using quantum interaction-free measurement—without triggering any explosions!</p>
+                    
+                    <h3>🔬 How It Works</h3>
+                    <div class="rule-item">
+                        <strong>No Bomb Present:</strong>
+                        <p>Photons exhibit perfect quantum interference → All photons go to detector D1</p>
+                    </div>
+                    
+                    <div class="rule-item">
+                        <strong>Bomb Present:</strong>
+                        <p>• 30% chance: Photon takes bomb path → 💥 EXPLOSION<br>
+                        • 70% chance: Photon takes other path → Detected at D1 or D2 randomly</p>
+                    </div>
+                    
+                    <h3>🎮 Gameplay</h3>
+                    <ol class="game-steps">
+                        <li><strong>Select a channel</strong> from the grid</li>
+                        <li><strong>Send photons</strong> one at a time to probe it</li>
+                        <li><strong>Watch the distribution</strong> on the graph:
+                            <ul>
+                                <li>Mostly D1 = No bomb likely</li>
+                                <li>Mix of D1 & D2 = Bomb present!</li>
+                            </ul>
+                        </li>
+                        <li><strong>Make your decision:</strong> Bomb or No Bomb</li>
+                        <li><strong>Repeat</strong> for all channels before time runs out</li>
+                    </ol>
+                    
+                    <h3>📊 Scoring</h3>
+                    <ul class="scoring-list">
+                        <li>✅ Correct bomb detection (no explosion): <strong class="safe-text">+20 points</strong></li>
+                        <li>✅ Correct "no bomb" identification: <strong class="safe-text">+10 points</strong></li>
+                        <li>❌ Explosion: <strong class="explosion-text">-10 points</strong></li>
+                        <li>❌ Wrong decision: <strong class="explosion-text">-5 points</strong></li>
+                    </ul>
+                    
+                    <div class="quantum-note">
+                        <h4>⚛️ The Quantum Magic</h4>
+                        <p>When you see photons at BOTH detectors instead of just D1, you've detected a bomb without any photon touching it. This is <em>interaction-free measurement</em>—the mere possibility of interaction reveals information!</p>
+                    </div>
+                </div>
+                
+                <button class="cta-button" onclick="bombGame.closeIntro()">Start Challenge</button>
             </div>
         </div>
     </div>
