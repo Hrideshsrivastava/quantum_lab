@@ -146,11 +146,47 @@
         /* Intro Modal Styling */
         .qkd-intro {
             max-width: 700px !important;
-            max-height: 85vh;
+            max-height: 90vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
 
         .intro-content {
             text-align: left;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 0.5rem;
+        }
+        
+        /* Scrollbar styling for webkit browsers */
+        .intro-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .intro-content::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 4px;
+        }
+        
+        .intro-content::-webkit-scrollbar-thumb {
+            background: var(--neon-cyan);
+            border-radius: 4px;
+        }
+        
+        .intro-content::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-blue);
+        }
+        
+        .qkd-intro h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .qkd-intro .cta-button {
+            margin-top: 1rem;
+            flex-shrink: 0;
         }
 
         .intro-content h3 {
