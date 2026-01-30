@@ -34,6 +34,16 @@ const qkdLab = {
     eveGuess: null,
     
     init() {
+        // Show intro modal instead of starting immediately
+        document.getElementById('introModal').classList.add('active');
+    },
+    
+    closeIntro() {
+        document.getElementById('introModal').classList.remove('active');
+        this.setupTransmission();
+    },
+    
+    setupTransmission() {
         // Generate Alice's random 10-bit key
         this.aliceBits = [];
         for (let i = 0; i < this.NUM_BITS; i++) {
@@ -382,7 +392,7 @@ const qkdLab = {
     
     restart() {
         document.getElementById('resultsModal').classList.remove('active');
-        this.init();
+        this.setupTransmission();
     }
 };
 
