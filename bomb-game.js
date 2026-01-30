@@ -31,6 +31,12 @@ const bombGame = {
     ],
     
     init() {
+        // Don't start level automatically - wait for intro to close
+        document.getElementById('introModal').classList.add('active');
+    },
+    
+    closeIntro() {
+        document.getElementById('introModal').classList.remove('active');
         this.startLevel(1);
     },
     
