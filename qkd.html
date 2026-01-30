@@ -142,6 +142,100 @@
             padding: 0.9rem;
             font-size: 1rem;
         }
+
+        /* Intro Modal Styling */
+        .qkd-intro {
+            max-width: 700px !important;
+            max-height: 85vh;
+        }
+
+        .intro-content {
+            text-align: left;
+        }
+
+        .intro-content h3 {
+            color: var(--neon-cyan);
+            margin-top: 1.25rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .intro-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .rule-item {
+            background: var(--bg-secondary);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--neon-blue);
+        }
+
+        .rule-item strong {
+            color: var(--neon-cyan);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .rule-item p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .game-steps {
+            background: var(--bg-secondary);
+            padding: 1rem 1rem 1rem 2rem;
+            border-radius: 6px;
+            margin: 0.5rem 0;
+        }
+
+        .game-steps li {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .game-steps li:last-child {
+            margin-bottom: 0;
+        }
+
+        .game-steps ul {
+            margin-top: 0.25rem;
+            margin-left: 1rem;
+            list-style-type: circle;
+        }
+
+        .quantum-note {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(176, 38, 255, 0.1));
+            border: 2px solid var(--neon-purple);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .quantum-note h4 {
+            color: var(--neon-purple);
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .quantum-note p {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .quantum-note p:last-child {
+            margin-bottom: 0;
+        }
+
+        .quantum-note em {
+            color: var(--neon-cyan);
+            font-style: italic;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="qkd-page">
@@ -283,6 +377,53 @@
                     <h2>Analysis Results</h2>
                     <div id="resultsBody"></div>
                     <button class="cta-button" onclick="qkdLab.restart()">New Transmission</button>
+                </div>
+            </div>
+
+            <!-- Intro Modal -->
+            <div id="introModal" class="modal active">
+                <div class="modal-content qkd-intro">
+                    <h2>🔐 Quantum Key Distribution Lab</h2>
+                    <div class="intro-content">
+                        <h3>🎯 Your Mission</h3>
+                        <p>Detect whether an eavesdropper (Eve) intercepted Alice's quantum transmission to Bob by analyzing statistical disturbances in the photon data.</p>
+                        
+                        <h3>📡 The Scenario</h3>
+                        <div class="rule-item">
+                            <strong>Alice's Transmission:</strong>
+                            <p>Alice sends 10 bits to Bob, each encoded with 10 photons (100 photons total). She uses quantum interference to encode her data.</p>
+                        </div>
+                        
+                        <div class="rule-item">
+                            <strong>Eve's Eavesdropping (if present):</strong>
+                            <p>Eve randomly measures 1-3 photons from each bit. Her measurements destroy quantum interference and create detectable disturbances.</p>
+                        </div>
+                        
+                        <h3>🔬 How to Analyze</h3>
+                        <ol class="game-steps">
+                            <li><strong>Watch the transmission</strong> - Alice sends all 100 photons</li>
+                            <li><strong>Examine Alice's pattern</strong> - See what she intended to send</li>
+                            <li><strong>Inspect Bob's received bits</strong> - Click each bit to see photon distribution</li>
+                            <li><strong>Look for disturbances:</strong>
+                                <ul>
+                                    <li><strong>Bit 0 (Alice):</strong> Should show strong D1 dominance if clean</li>
+                                    <li><strong>Bit 1 (Alice):</strong> Expected to have ~50% loss</li>
+                                    <li><strong>Key clue:</strong> D1/D2 randomness in bit-0 = Eve present!</li>
+                                </ul>
+                            </li>
+                            <li><strong>Check statistics</strong> - Look at disturbance rate</li>
+                            <li><strong>Make your call:</strong> Eve Present or Eve Absent</li>
+                        </ol>
+                        
+                        <div class="quantum-note">
+                            <h4>⚛️ Critical Insight</h4>
+                            <p><strong>Photon loss ≠ Eavesdropping!</strong></p>
+                            <p>Alice intentionally causes loss for bit-1 encoding. <em>Statistical disturbance across the photon distribution</em> is what reveals Eve—not just loss.</p>
+                            <p>When Eve measures photons, she destroys quantum interference, creating detectable asymmetries that cannot be hidden.</p>
+                        </div>
+                    </div>
+                    
+                    <button class="cta-button" onclick="qkdLab.closeIntro()">Begin Analysis</button>
                 </div>
             </div>
         </main>
