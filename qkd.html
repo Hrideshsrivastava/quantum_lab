@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QKD Lab - Eavesdropping Detection</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* QKD Results Modal - Compact Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content.qkd-results {
+            background: var(--bg-card);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 12px;
+            padding: 1.5rem;
+            max-width: 550px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+        }
+        
+        .modal-content.qkd-results h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .qkd-result-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .result-header {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .result-decision,
+        .result-truth {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .result-decision .label,
+        .result-truth .label {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+        
+        .verdict {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .verdict.correct {
+            background: rgba(57, 255, 20, 0.15);
+            color: var(--neon-green);
+            border: 2px solid var(--neon-green);
+        }
+        
+        .verdict.incorrect {
+            background: rgba(255, 8, 68, 0.15);
+            color: var(--neon-red);
+            border: 2px solid var(--neon-red);
+        }
+        
+        .result-explanation {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .result-explanation p {
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .result-explanation p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .eve-note {
+            font-style: italic;
+            color: var(--neon-purple);
+            font-size: 0.9rem;
+        }
+        
+        .key-insight {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(176, 38, 255, 0.1));
+            border: 2px solid var(--neon-cyan);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .key-insight h4 {
+            color: var(--neon-cyan);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .key-insight p {
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .final-note {
+            font-style: italic;
+            color: var(--neon-yellow);
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .cta-button {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.9rem;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body class="qkd-page">
+    <div class="container">
+        <header class="compact-header">
+            <h1>Quantum Key Distribution Lab</h1>
+            <p class="subtitle">Detect eavesdropping through statistical disturbance</p>
+        </header>
+
+        <main class="qkd-main">
+            <!-- Transmission Phase (shown during animation) -->
+            <div id="transmissionPhase" class="transmission-phase">
+                <h2>Transmission in Progress...</h2>
+                <div class="transmission-status">
+                    <div class="burst-indicator">
+                        <span>Bit <strong id="currentBit">1</strong> / 10</span>
+                        <div class="burst-animation" id="burstAnimation"></div>
+                    </div>
+                    <canvas id="transmissionCanvas" width="800" height="200"></canvas>
+                    <div class="transmission-stats">
+                        <div class="stat">
+                            <span>Photons Sent:</span>
+                            <strong id="photonsSent">0</strong>
+                        </div>
+                        <div class="stat">
+                            <span>D1:</span>
+                            <strong id="txD1">0</strong>
+                        </div>
+                        <div class="stat">
+                            <span>D2:</span>
+                            <strong id="txD2">0</strong>
+                        </div>
+                        <div class="stat">
+                            <span>Lost:</span>
+                            <strong id="txLost">0</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Phase (shown after transmission) -->
+            <div id="analysisPhase" class="analysis-phase" style="display: none;">
+                <div class="qkd-grid">
+                    <!-- Left: Alice's Pattern (Reference) -->
+                    <div class="alice-panel">
+                        <h3>Alice's Transmission Pattern</h3>
+                        <p class="panel-description">Alice sent 10 bits, each encoded with 10 photons</p>
+                        <div class="bit-grid" id="aliceBits"></div>
+                        <div class="pattern-legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: rgba(0, 212, 255, 0.2);"></div>
+                                <span>Bit 0 (Perfect interference expected)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: rgba(176, 38, 255, 0.2);"></div>
+                                <span>Bit 1 (Loss expected)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Middle: Bob's Received Bits -->
+                    <div class="bob-panel">
+                        <h3>Your Received Data (Click to Inspect)</h3>
+                        <p class="panel-description">Click each bit to see its photon distribution</p>
+                        <div class="bit-grid" id="bobBits"></div>
+                        
+                        <!-- Bit Inspector -->
+                        <div class="bit-inspector" id="bitInspector">
+                            <h4>Bit <span id="inspectedBitNum">—</span> Details</h4>
+                            <div class="photon-distribution">
+                                <div class="photon-row">
+                                    <span>Photons:</span>
+                                    <div class="photon-display" id="photonDisplay"></div>
+                                </div>
+                                <div class="distribution-stats">
+                                    <div class="dist-stat">
+                                        <span>D1:</span>
+                                        <strong id="bitD1">0</strong>
+                                    </div>
+                                    <div class="dist-stat">
+                                        <span>D2:</span>
+                                        <strong id="bitD2">0</strong>
+                                    </div>
+                                    <div class="dist-stat">
+                                        <span>Lost:</span>
+                                        <strong id="bitLost">0</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Analysis & Decision -->
+                    <div class="analysis-panel">
+                        <h3>Statistical Analysis</h3>
+                        <div class="analysis-stats">
+                            <div class="analysis-stat">
+                                <span>Total Photons Lost:</span>
+                                <strong id="totalLoss">0</strong>
+                                <span class="percentage" id="lossPercent">(0%)</span>
+                            </div>
+                            <div class="analysis-stat warning">
+                                <span>Disturbed Bits:</span>
+                                <strong id="disturbedBits">0</strong>
+                            </div>
+                            <div class="analysis-stat warning">
+                                <span>Disturbance Rate:</span>
+                                <strong id="disturbanceRate">0%</strong>
+                            </div>
+                        </div>
+
+                        <div class="key-insight">
+                            <h4>⚠️ Key Insight</h4>
+                            <p>Loss ≠ Eavesdropping</p>
+                            <p>Disturbance across photons reveals Eve</p>
+                        </div>
+
+                        <div class="eve-decision">
+                            <h4>Was there an eavesdropper?</h4>
+                            <div class="eve-buttons">
+                                <button class="eve-btn eve-present" id="eveYes" onclick="qkdLab.selectEve(true)">
+                                    Eve Present
+                                </button>
+                                <button class="eve-btn eve-absent" id="eveNo" onclick="qkdLab.selectEve(false)">
+                                    Eve Absent
+                                </button>
+                            </div>
+                            <button class="submit-btn" onclick="qkdLab.submitDecision()">
+                                Submit Decision
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Modal -->
+            <div id="resultsModal" class="modal">
+                <div class="modal-content qkd-results">
+                    <h2>Analysis Results</h2>
+                    <div id="resultsBody"></div>
+                    <button class="cta-button" onclick="qkdLab.restart()">New Transmission</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="qkd.js"></script>
+</body>
+</html>

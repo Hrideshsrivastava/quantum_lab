@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interferometer Lab - Interactive Experiment</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="lab-page">
+    <div class="container">
+        <header>
+            <h1>Interferometer Lab</h1>
+            <p class="subtitle">Discover interference through interaction</p>
+            <button class="nav-button" onclick="location.href='index.html'">← Back to Concepts</button>
+        </header>
+
+        <main>
+            <div class="lab-layout">
+                <!-- Left: Simulation Canvas -->
+                <div class="simulation-area">
+                    <canvas id="labCanvas" width="600" height="500"></canvas>
+                    
+                    <div class="controls">
+                        <div class="control-group">
+                            <h3>Emit Photons</h3>
+                            <div class="button-row">
+                                <button onclick="experiment.emitPhotons(1)">1 Photon</button>
+                                <button onclick="experiment.emitPhotons(10)">10 Photons</button>
+                                <button onclick="experiment.emitPhotons(100)">100 Photons</button>
+                                <button onclick="experiment.emitPhotons(1000)">1000 Photons</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>Path Detectors</h3>
+                            <div class="toggle-row">
+                                <label class="toggle">
+                                    <input type="checkbox" id="upperDetector" onchange="experiment.toggleUpperDetector(this.checked)">
+                                    <span>Upper Path Detector</span>
+                                </label>
+                                <label class="toggle">
+                                    <input type="checkbox" id="lowerDetector" onchange="experiment.toggleLowerDetector(this.checked)">
+                                    <span>Lower Path Detector</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <button class="reset-button" onclick="experiment.reset()">Reset Experiment</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Statistics and Results -->
+                <div class="results-area">
+                    <div class="stats-panel">
+                        <h3>Statistics</h3>
+                        <div class="stat-item">
+                            <span>Total Photons:</span>
+                            <strong id="totalPhotons">0</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span>D1 Detections:</span>
+                            <strong id="d1Count">0</strong>
+                            <span class="percentage" id="d1Percent">(0%)</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>D2 Detections:</span>
+                            <strong id="d2Count">0</strong>
+                            <span class="percentage" id="d2Percent">(0%)</span>
+                        </div>
+                        <div class="stat-item path-stat" id="pathStat" style="display: none;">
+                            <span>Path Detected:</span>
+                            <strong id="pathCount">0</strong>
+                            <span class="percentage" id="pathPercent">(0%)</span>
+                        </div>
+                    </div>
+
+                    <div class="graph-panel">
+                        <h3>All Detectors Distribution</h3>
+                        <canvas id="graphCanvas" width="350" height="300"></canvas>
+                    </div>
+
+                    <div class="explanation-panel">
+                        <h3>What's Happening?</h3>
+                        <div id="explanationText">
+                            <p>Run an experiment to see results and explanations.</p>
+                        </div>
+                    </div>
+
+                    <div class="next-section">
+                        <button class="cta-button" onclick="location.href='bomb-game.html'">
+                            Proceed to Bomb Detection →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="interferometer.js"></script>
+</body>
+</html>
