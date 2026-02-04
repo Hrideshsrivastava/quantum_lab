@@ -2,6 +2,17 @@
 // BOMB DETECTION CHALLENGE
 // Simplified: Bomb or No Bomb ONLY
 // ============================================
+const SoundManager = {
+  click: new Audio("sounds/click.mp3"),
+  explosion: new Audio("sounds/explosion.mp3"),
+  success: new Audio("sounds/success.mp3"),
+
+  play(sound) {
+    if (!this[sound]) return;
+    this[sound].currentTime = 0; // allow rapid replay
+    this[sound].play().catch(() => {});
+  }
+};
 
 const NEON_CYAN = '#00fff9';
 const NEON_BLUE = '#00d4ff';
@@ -143,6 +154,12 @@ const bombGame = {
                 ch.stats.explosions++;
                 ch.exploded = true;
                 ch.locked = true;
+                // 💣 EXPLOSION EFFECTS
+    SoundManager.play("explosion");
+
+    document.body.classList.add("shake");
+    setTimeout(() => document.body.classList.remove("shake"), 400);
+
                 this.renderChannelGrid();
                 this.updateChannelDisplay();
                 break;
@@ -235,6 +252,8 @@ const bombGame = {
                     bombsDetectedSafely++;
                     correctDecisions++;
                     this.score += 20; // +20 for safe bomb detection
+                    // 🟢 SAFE DETECTION SOUND
+    SoundManager.play("success");
                 } else if (ch.decision === false) {
                     // Wrong: said no bomb when there was
                     wrongDecisions++;
@@ -430,3 +449,9 @@ const bombGame = {
 
 // Initialize on load
 bombGame.init();
+// Play click sound on ALL button clicks
+document.addEventListener("click", (e) => {
+  if (e.target.tagName === "BUTTON") {
+    SoundManager.play("click");
+  }
+});
