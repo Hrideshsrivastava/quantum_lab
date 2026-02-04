@@ -1434,3 +1434,225 @@ footer {
 
 
 /*==========================================================================*/
+/* ===== LANDING PAGE ===== */
+
+/* MODE SELECTION PAGE */
+.mode-page {
+  background: radial-gradient(circle at top, #0a0f2c, #020617);
+  color: #e5e7eb;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.mode-container {
+  text-align: center;
+  max-width: 900px;
+}
+
+.mode-container h1 {
+  font-size: 2.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #94a3b8;
+  margin-bottom: 3rem;
+}
+
+.mode-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.mode-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.mode-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+
+.mode-card h2 {
+  margin-bottom: 1rem;
+}
+
+.mode-card p {
+  font-size: 0.95rem;
+  color: #cbd5f5;
+  margin-bottom: 1.8rem;
+}
+
+.mode-card button {
+  padding: 0.7rem 1.4rem;
+  border: none;
+  border-radius: 30px;
+  background: #6366f1;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.mode-card button:hover {
+  background: #4f46e5;
+}
+
+.mode-card.engineering {
+  border: 1px solid rgba(99,102,241,0.4);
+}
+
+
+
+
+/* ===== ENGINEERING MODE PAGE ===== */
+
+.engineering-page {
+  background: radial-gradient(circle at top, #070b14, #020617);
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #e5e7eb;
+  overflow-x: hidden;
+}
+
+.eng-bg-glow {
+  position: absolute;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(176,38,255,0.25), transparent 70%);
+  top: -200px;
+  right: -200px;
+  filter: blur(140px);
+}
+
+.engineering-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: auto;
+  padding: 4rem 1.5rem;
+}
+
+/* Header */
+.engineering-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.engineering-header h1 {
+  font-size: 3rem;
+  background: linear-gradient(135deg, #b026ff, #00d4ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.engineering-header p {
+  color: #94a3b8;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+/* Application Cards */
+.application-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+}
+
+.application-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 2.5rem;
+  backdrop-filter: blur(16px);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+}
+
+.application-card.active:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+}
+
+.application-card.disabled {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+/* Tags */
+.app-tag {
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  background: #6366f1;
+  color: white;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.app-tag.coming {
+  background: #475569;
+}
+
+/* Content */
+.application-card h2 {
+  margin-top: 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.4rem;
+}
+
+.application-card p {
+  color: #cbd5f5;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.app-features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+}
+
+.app-features li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Buttons */
+.application-card button {
+  padding: 0.8rem 1.8rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.application-card button:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(99,102,241,0.6);
+}
+
+.application-card button:disabled {
+  background: #334155;
+  cursor: not-allowed;
+}
+
+/* Footer */
+.engineering-footer {
+  text-align: center;
+  margin-top: 4rem;
+  color: #64748b;
+  font-size: 0.85rem;
+}

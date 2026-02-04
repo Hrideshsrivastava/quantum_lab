@@ -1,97 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Interferometry - Interactive Learning</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <title>Quantum Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="concept-page">
-    <div class="container">
-        <header>
-            <h1>The Mach–Zehnder Interferometer</h1>
-            <p class="subtitle">A Decision System Powered by Quantum Interference</p>
-        </header>
 
-        <main>
-            <section class="intro">
-                <h2>What is this system?</h2>
-                <p>The Mach–Zehnder interferometer is not just an optical device—it's a <strong>decision-making system</strong> that reveals one of nature's strangest features: <em>information changes outcomes</em>.</p>
-                
-                <p>In this system, single photons (particles of light) don't behave like tiny bullets following one path. Instead, they behave like probability waves that can take <strong>both paths simultaneously</strong>.</p>
-            </section>
+<body class="mode-page">
+  <div class="mode-container">
+    
+    <h1>Quantum Interferometry Lab</h1>
+    <p class="subtitle">
+      Learn the physics • Engineer the system
+    </p>
 
-            <section class="canvas-section">
-                <h2>The System</h2>
-                <canvas id="systemCanvas" width="800" height="400"></canvas>
-            </section>
+    <div class="mode-cards">
 
-            <section class="core-concepts">
-                <h2>Four Key Ideas</h2>
-                
-                <div class="concept-card">
-                    <div class="concept-number">1</div>
-                    <div class="concept-content">
-                        <h3>A photon is a probability wave</h3>
-                        <p>When you send a single photon into the system, it doesn't choose one path. It exists as a wave of possibilities across both paths.</p>
-                    </div>
-                </div>
+      <!-- Learning Mode -->
+      <div class="mode-card">
+        <h2>🎓 Learning Mode</h2>
+        <p>
+          Explore quantum interference visually.  
+          No equations — pure intuition.
+        </p>
+        <button onclick="location.href='concept.html'">
+          Start Learning →
+        </button>
+      </div>
 
-                <div class="concept-card">
-                    <div class="concept-number">2</div>
-                    <div class="concept-content">
-                        <h3>Paths can interfere</h3>
-                        <p>When the two paths recombine, the waves can cancel each other out (destructive interference) or reinforce each other (constructive interference). This creates patterns where photons <em>always</em> arrive at one detector and <em>never</em> at the other.</p>
-                    </div>
-                </div>
+      <!-- Engineering Mode -->
+      <div class="mode-card engineering">
+        <h2>🛠 Engineering Mode</h2>
+        <p>
+          Modify parameters, add detectors,  
+          and design your own experiment.
+        </p>
+        <button onclick="location.href='engineering.html'">
+          Enter Engineering →
+        </button>
+      </div>
 
-                <div class="concept-card">
-                    <div class="concept-number">3</div>
-                    <div class="concept-content">
-                        <h3>Information destroys interference</h3>
-                        <p>If you place a detector on either path to find out "which way did the photon go?", you've gained information. The moment path information exists—even if you don't look at it—the interference pattern vanishes.</p>
-                    </div>
-                </div>
-
-                <div class="concept-card">
-                    <div class="concept-number">4</div>
-                    <div class="concept-content">
-                        <h3>Statistics reveal the rules</h3>
-                        <p>A single photon gives you one random outcome. But run 100 or 1000 photons, and clear patterns emerge. The statistics tell you whether interference is present or destroyed.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="thought-experiment">
-                <h2>A Thought Experiment</h2>
-                <div class="thought-box">
-                    <p>Imagine you're playing a game where a photon is sent through the system. There are two final detectors: D1 and D2.</p>
-                    
-                    <p><strong>Scenario A:</strong> No path detectors. You run 100 photons.<br>
-                    → Result: D1 gets ~100 photons, D2 gets ~0 photons.</p>
-                    
-                    <p><strong>Scenario B:</strong> You add a detector on the upper path. You run 100 photons.<br>
-                    → Result: D1 gets ~50 photons, D2 gets ~50 photons.</p>
-                    
-                    <p class="highlight">The mere <em>possibility</em> of knowing which path was taken changed the entire outcome distribution.</p>
-                </div>
-            </section>
-
-            <section class="next-steps">
-                <h2>Ready to Experiment?</h2>
-                <p>In the next section, you'll interact directly with the interferometer. You'll control whether path detectors are present and observe how the statistics change.</p>
-                
-                <button class="cta-button" onclick="location.href='interferometer.html'">
-                    Go to Interferometer Lab →
-                </button>
-            </section>
-        </main>
-
-        <footer>
-            <p>Interactive Quantum Learning System</p>
-        </footer>
     </div>
 
-    <script src="concept.js"></script>
+  </div>
 </body>
 </html>
