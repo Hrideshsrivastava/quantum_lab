@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structural Intelligence Dashboard - Advanced MZI Bridge Monitoring</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            grid-template-rows: 40vh 35vh 25vh;
+            gap: 12px;
+            padding: 12px;
+            height: 100vh;
+        }
+
+        .panel {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar {
+            grid-row: 1 / 4;
+            overflow-y: auto;
+        }
+
+        .canvas-panel {
+            grid-column: 2;
+            grid-row: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-panel {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        .interferometer-panel {
+            grid-column: 2;
+            grid-row: 3;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .fft-panel {
+            grid-column: 3;
+            grid-row: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .health-panel {
+            grid-column: 3;
+            grid-row: 2 / 4;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h2 {
+            color: #60a5fa;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            color: #38bdf8;
+            font-size: 14px;
+            margin-bottom: 8px;
+            margin-top: 16px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 6px 0;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+        }
+
+        button.danger:hover {
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+        }
+
+        button.toggle {
+            background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
+        }
+
+        button.toggle.active {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+        }
+
+        button.warning {
+            background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
+        }
+
+        button.warning:hover {
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .slider-container {
+            margin: 16px 0;
+        }
+
+        .slider-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            border: none;
+        }
+
+        .value-display {
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            color: #60a5fa;
+            margin-top: 4px;
+        }
+
+        .warning {
+            background: rgba(251, 191, 36, 0.1);
+            border-left: 3px solid #fbbf24;
+            padding: 10px;
+            margin: 12px 0;
+            font-size: 11px;
+            color: #fcd34d;
+            border-radius: 4px;
+        }
+
+        .alert-danger {
+            background: rgba(220, 38, 38, 0.2);
+            border-left: 3px solid #dc2626;
+            padding: 10px;
+            margin: 12px 0;
+            font-size: 11px;
+            color: #fca5a5;
+            border-radius: 4px;
+            animation: pulse-alert 2s infinite;
+        }
+
+        @keyframes pulse-alert {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        canvas {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 6px;
+            border: 1px solid #475569;
+        }
+
+        #bridgeCanvas {
+            flex: 1;
+            width: 100%;
+        }
+
+        #fftCanvas {
+            flex: 1;
+            width: 100%;
+        }
+
+        .readout-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .readout {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .readout-label {
+            font-size: 9px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .readout-value {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            color: #60a5fa;
+            font-weight: 700;
+        }
+
+        .readout-unit {
+            font-size: 11px;
+            color: #64748b;
+            margin-left: 2px;
+        }
+
+        .fringe-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fringe-container h2 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+        }
+
+        #fringeCanvas {
+            flex: 1;
+            width: 100%;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.active {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .status-indicator.inactive {
+            background: #64748b;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+            padding: 10px;
+            margin: 12px 0;
+            font-size: 11px;
+            color: #93c5fd;
+            border-radius: 4px;
+        }
+
+        .speed-indicator {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            padding: 8px 12px;
+            margin: 8px 0;
+            font-size: 12px;
+            color: #6ee7b7;
+            border-radius: 4px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .health-indicator {
+            background: rgba(30, 41, 59, 0.5);
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            text-align: center;
+        }
+
+        .health-indicator.warning {
+            border-color: #f59e0b;
+        }
+
+        .health-indicator.critical {
+            border-color: #dc2626;
+            animation: pulse-alert 2s infinite;
+        }
+
+        .health-value {
+            font-family: 'Courier New', monospace;
+            font-size: 48px;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .health-indicator.warning .health-value {
+            color: #f59e0b;
+        }
+
+        .health-indicator.critical .health-value {
+            color: #dc2626;
+        }
+
+        .health-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        .fatigue-bar {
+            width: 100%;
+            height: 24px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 8px 0;
+            border: 1px solid #475569;
+        }
+
+        .fatigue-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #dc2626 100%);
+            transition: width 0.3s ease;
+            border-radius: 12px;
+        }
+
+        .frequency-marker {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: #fbbf24;
+            border-radius: 1px;
+            pointer-events: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        .damage-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(220, 38, 38, 0.2);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1000;
+        }
+
+        .damage-overlay.active {
+            opacity: 1;
+            animation: damage-flash 2s ease-out;
+        }
+
+        @keyframes damage-flash {
+            0%, 100% { opacity: 0; }
+            10%, 30% { opacity: 1; }
+            20%, 40% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="damage-overlay" id="damageOverlay"></div>
+    
+    <div class="dashboard">
+        <!-- Sidebar Controls -->
+        <div class="panel sidebar">
+            <h2>⚙️ Control Center</h2>
+            
+            <div class="control-group">
+                <h3>Manual Load Injection</h3>
+                <button onclick="spawnVehicle(20)">🚗 Car (20 kN)</button>
+                <button onclick="spawnVehicle(100)">🚚 Truck (100 kN)</button>
+                <button class="danger" onclick="spawnVehicle(450)">⚠️ Overload (450 kN)</button>
+            </div>
+
+            <div class="control-group">
+                <h3>Traffic Simulation</h3>
+                <button id="trafficOff" class="toggle active" onclick="setTrafficMode('off')">
+                    <span class="status-indicator active"></span>
+                    OFF
+                </button>
+                <button id="trafficLight" class="toggle" onclick="setTrafficMode('light')">
+                    <span class="status-indicator inactive"></span>
+                    Light Traffic
+                </button>
+                <button id="trafficModerate" class="toggle" onclick="setTrafficMode('moderate')">
+                    <span class="status-indicator inactive"></span>
+                    Moderate Traffic
+                </button>
+                <button id="trafficHeavy" class="toggle" onclick="setTrafficMode('heavy')">
+                    <span class="status-indicator inactive"></span>
+                    Heavy Traffic
+                </button>
+            </div>
+
+            <div class="control-group">
+                <h3>⚠️ Damage Simulation</h3>
+                <button class="warning" onclick="induceDamage(0.2)">
+                    🔨 Minor Crack (-20% k)
+                </button>
+                <button class="warning" onclick="induceDamage(0.4)">
+                    ⚡ Moderate Damage (-40% k)
+                </button>
+                <button class="danger" onclick="induceDamage(0.7)">
+                    💥 Severe Failure (-70% k)
+                </button>
+                <button class="toggle" onclick="resetDamage()">
+                    🔧 Repair Bridge
+                </button>
+                <div class="info-box">
+                    💡 Damage reduces stiffness (k), lowering the natural frequency. Watch the FFT peak shift left!
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Simulation Control</h3>
+                <button onclick="togglePause()" id="pauseBtn" class="toggle" style="background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);">
+                    ▶️ PAUSE Simulation
+                </button>
+                <div class="speed-indicator" id="speedIndicator">▶ Running at 1x speed</div>
+            </div>
+
+            <div class="control-group">
+                <h3>Simulation Speed</h3>
+                <button onclick="setTimeSpeed(1)" id="speed1x" class="toggle active">1x Real-time</button>
+                <button onclick="setTimeSpeed(5)" id="speed5x" class="toggle">5x Speed</button>
+                <button onclick="setTimeSpeed(10)" id="speed10x" class="toggle">10x Speed</button>
+                <button onclick="setTimeSpeed(20)" id="speed20x" class="toggle">20x Speed</button>
+            </div>
+
+            <div class="control-group">
+                <h3>Environmental Controls</h3>
+                <div class="slider-container">
+                    <label>Time of Day</label>
+                    <input type="range" id="timeSlider" min="0" max="24" step="0.1" value="12" oninput="updateTime(this.value)">
+                    <div class="value-display" id="timeDisplay">12:00 (25.0°C)</div>
+                </div>
+                <div class="warning">
+                    ⚠️ <strong>Warning:</strong> Temperature changes alter fiber refractive index, causing thermal drift in raw MZI readings.
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>MZI Compensation</h3>
+                <button id="compToggle" class="toggle" onclick="toggleCompensation()">
+                    <span class="status-indicator inactive"></span>
+                    Reference Arm: OFF
+                </button>
+                <div class="info-box">
+                    The reference arm subtracts thermal phase shifts, isolating mechanical strain from temperature effects.
+                </div>
+            </div>
+        </div>
+
+        <!-- Bridge Digital Twin -->
+        <div class="panel canvas-panel">
+            <h2>🌉 Digital Twin - Bridge Structure</h2>
+            <canvas id="bridgeCanvas"></canvas>
+        </div>
+
+        <!-- Strain Chart -->
+        <div class="panel chart-panel">
+            <h2>📊 Microstrain Data Stream (μɛ)</h2>
+            <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 8px; height: calc(100% - 40px);">
+                <div style="position: relative;">
+                    <div style="position: absolute; top: 4px; left: 8px; font-size: 11px; color: #ef4444; font-weight: 600; z-index: 10;">
+                        RAW SENSOR (with thermal drift)
+                    </div>
+                    <canvas id="rawStrainChart"></canvas>
+                </div>
+                <div style="position: relative;">
+                    <div style="position: absolute; top: 4px; left: 8px; font-size: 11px; color: #10b981; font-weight: 600; z-index: 10;">
+                        COMPENSATED (thermal drift removed)
+                    </div>
+                    <canvas id="compensatedStrainChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interferometer Visualization -->
+        <div class="panel interferometer-panel">
+            <div class="fringe-container">
+                <h2>🔬 Interference Fringe</h2>
+                <canvas id="fringeCanvas"></canvas>
+            </div>
+            <div>
+                <h2>📈 MZI Readouts</h2>
+                <div class="readout-grid">
+                    <div class="readout">
+                        <div class="readout-label">Phase Shift</div>
+                        <div class="readout-value" id="phaseReadout">0.00<span class="readout-unit">π rad</span></div>
+                    </div>
+                    <div class="readout">
+                        <div class="readout-label">Intensity</div>
+                        <div class="readout-value" id="intensityReadout">50.0<span class="readout-unit">mW</span></div>
+                    </div>
+                    <div class="readout">
+                        <div class="readout-label">Raw Strain</div>
+                        <div class="readout-value" id="rawStrainReadout">0.0<span class="readout-unit">μɛ</span></div>
+                    </div>
+                    <div class="readout">
+                        <div class="readout-label">Compensated</div>
+                        <div class="readout-value" id="compStrainReadout">0.0<span class="readout-unit">μɛ</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FFT Spectrum Analyzer -->
+        <div class="panel fft-panel">
+            <h2>📡 FFT Spectrum Analyzer</h2>
+            <canvas id="fftCanvas"></canvas>
+            <div style="margin-top: 12px;">
+                <div class="readout">
+                    <div class="readout-label">Natural Frequency</div>
+                    <div class="readout-value" id="naturalFreqReadout">0.00<span class="readout-unit">Hz</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Structural Health Panel -->
+        <div class="panel health-panel">
+            <h2>🏥 Structural Health Monitor</h2>
+            
+            <div class="health-indicator" id="healthIndicator">
+                <div class="health-value" id="healthValue">100%</div>
+                <div class="health-label">Structural Integrity</div>
+            </div>
+
+            <div style="margin: 16px 0;">
+                <div class="readout-label" style="margin-bottom: 8px;">FATIGUE DAMAGE (Rainflow)</div>
+                <div class="fatigue-bar">
+                    <div class="fatigue-fill" id="fatigueFill" style="width: 0%;"></div>
+                </div>
+                <div style="text-align: center; margin-top: 4px;">
+                    <span style="font-family: 'Courier New', monospace; font-size: 14px; color: #60a5fa;" id="cyclesReadout">0 cycles</span>
+                </div>
+            </div>
+
+            <div class="readout-grid" style="margin-top: 16px;">
+                <div class="readout">
+                    <div class="readout-label">Stiffness</div>
+                    <div class="readout-value" id="stiffnessReadout">100<span class="readout-unit">%</span></div>
+                </div>
+                <div class="readout">
+                    <div class="readout-label">Damping</div>
+                    <div class="readout-value" id="dampingReadout">100<span class="readout-unit">%</span></div>
+                </div>
+                <div class="readout">
+                    <div class="readout-label">Deflection</div>
+                    <div class="readout-value" id="deflectionReadout">0.0<span class="readout-unit">mm</span></div>
+                </div>
+                <div class="readout">
+                    <div class="readout-label">Active Loads</div>
+                    <div class="readout-value" id="vehicleCount">0</div>
+                </div>
+            </div>
+
+            <div id="damageAlert" style="display: none;" class="alert-danger">
+                ⚠️ <strong>ALERT:</strong> Structural damage detected! Natural frequency shifted. Immediate inspection recommended.
+            </div>
+
+            <div class="info-box" style="margin-top: 16px;">
+                🧠 <strong>Structural Intelligence:</strong> This system monitors vibration frequency to detect hidden damage. A frequency drop indicates stiffness loss from cracks or deterioration.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // GLOBAL STATE MANAGEMENT
+        // ==========================================
+        const State = {
+            // Bridge Physics
+            bridgeLength: 50, // meters
+            bridgeMass: 100000, // kg (total distributed mass)
+            baseSpringConstant: 5e6, // N/m (original structural stiffness)
+            springConstant: 5e6, // N/m (current stiffness - affected by damage)
+            baseDampingCoeff: 1e5, // Ns/m (original damping)
+            dampingCoeff: 1e5, // Ns/m (current damping)
+            deflection: 0, // current deflection in meters
+            velocity: 0, // vertical velocity in m/s
+            acceleration: 0, // vertical acceleration in m/s²
+            
+            // Structural Health
+            damageLevel: 0, // 0 to 1 (0 = healthy, 1 = completely failed)
+            structuralIntegrity: 100, // percentage
+            
+            // Fatigue Tracking
+            fatigueAccumulated: 0, // accumulated fatigue damage
+            stressCycles: 0, // number of stress cycles
+            lastDeflection: 0, // for cycle counting
+            deflectionPeaks: [], // track peaks for rainflow counting
+            
+            // Vehicle Tracking
+            vehicles: [], // Array of {position, force, velocity}
+            
+            // Traffic Simulation
+            trafficMode: 'off', // 'off', 'light', 'moderate', 'heavy'
+            trafficTimer: 0,
+            trafficInterval: 0,
+            
+            // Environmental
+            timeOfDay: 12, // hours (0-24)
+            temperature: 25, // Celsius
+            
+            // Simulation Speed
+            timeSpeed: 1, // multiplier for simulation speed
+            isPaused: false, // pause state
+            
+            // MZI Optics
+            fiberLength: 10, // meters
+            wavelength: 1550e-9, // meters (1550nm - telecom standard)
+            refractiveIndex: 1.4682, // silica fiber at 25°C
+            thermalCoeff: 8.6e-6, // dn/dT for silica (per °C)
+            photoElasticCoeff: 0.22, // strain-optic coefficient
+            baseTemp: 25, // reference temperature
+            compensationEnabled: false,
+            
+            // Phase and Strain
+            mechanicalPhase: 0, // radians (from strain)
+            thermalPhase: 0, // radians (from temperature)
+            totalPhase: 0, // radians (sum)
+            rawStrain: 0, // microstrain
+            compensatedStrain: 0, // microstrain
+            
+            // Simulation
+            time: 0,
+            dt: 1/60, // 60 FPS
+            
+            // Data History
+            strainHistory: [],
+            compensatedHistory: [],
+            deflectionHistory: [], // for FFT analysis
+            timeHistory: [],
+            maxHistoryPoints: 300,
+            
+            // Chart scaling
+            currentCompRange: 500, // Track current compensated chart range for smooth transitions
+            
+            // FFT Analysis
+            fftData: [],
+            naturalFrequency: 0,
+            baseNaturalFrequency: 0
+        };
+
+        // ==========================================
+        // PHYSICS ENGINE
+        // ==========================================
+        
+        /**
+         * Calculate natural frequency based on current stiffness
+         * f_n = (1/2π) * sqrt(k/m)
+         */
+        function calculateNaturalFrequency() {
+            return (1 / (2 * Math.PI)) * Math.sqrt(State.springConstant / State.bridgeMass);
+        }
+        
+        /**
+         * Calculate total force on bridge from vehicles using influence lines
+         * Influence line for mid-span deflection: sin(π*x/L)
+         */
+        function calculateBridgeForce() {
+            let totalForce = 0;
+            const L = State.bridgeLength;
+            
+            State.vehicles.forEach(vehicle => {
+                const x = vehicle.position;
+                // Sinusoidal influence line - peaks at center
+                const influenceFactor = Math.sin(Math.PI * x / L);
+                totalForce += vehicle.force * influenceFactor;
+            });
+            
+            return totalForce;
+        }
+        
+        /**
+         * Damped Harmonic Oscillator: F = ma + cv + ky
+         * Rearranged: a = (F - cv - ky) / m
+         * 
+         * Uses sub-stepping for numerical stability at high time speeds
+         */
+        function updateBridgePhysics() {
+            const m = State.bridgeMass;
+            const c = State.dampingCoeff;
+            const k = State.springConstant;
+            
+            // Use multiple small steps for stability (especially important at high timeSpeed)
+            const numSubSteps = Math.ceil(State.timeSpeed);
+            const subDt = State.dt; // Always use base dt for each substep
+            
+            for (let step = 0; step < numSubSteps; step++) {
+                const externalForce = calculateBridgeForce();
+                const dampingForce = -c * State.velocity;
+                const springForce = -k * State.deflection;
+                
+                // Newton's second law
+                State.acceleration = (externalForce + dampingForce + springForce) / m;
+                
+                // Euler integration with fixed small time step
+                State.velocity += State.acceleration * subDt;
+                State.deflection += State.velocity * subDt;
+                
+                // Apply additional damping when no vehicles are on bridge (natural decay)
+                if (State.vehicles.length === 0) {
+                    // Exponential decay when unloaded - makes oscillations settle faster
+                    State.velocity *= Math.exp(-0.5 * subDt);
+                    State.deflection *= Math.exp(-0.3 * subDt);
+                }
+                
+                // Apply small threshold to eliminate micro-oscillations
+                if (Math.abs(State.deflection) < 1e-6) State.deflection = 0;
+                if (Math.abs(State.velocity) < 1e-6) State.velocity = 0;
+            }
+            
+            // Clamp deflection to prevent off-screen rendering
+            const maxDeflection = 0.5; // 50cm max
+            State.deflection = Math.max(-maxDeflection, Math.min(maxDeflection, State.deflection));
+        }
+        
+        /**
+         * Update vehicle positions and remove off-bridge vehicles
+         */
+        function updateVehicles() {
+            const vehicleSpeed = 15; // m/s (54 km/h)
+            const effectiveDt = State.dt * State.timeSpeed;
+            
+            State.vehicles = State.vehicles.filter(vehicle => {
+                vehicle.position += vehicle.velocity * effectiveDt;
+                return vehicle.position <= State.bridgeLength;
+            });
+        }
+        
+        /**
+         * Calculate strain from bridge deflection
+         * For a simply supported beam: ε = E*I*y / (M*c)
+         * Simplified: strain proportional to curvature ~ deflection
+         */
+        function calculateStrain() {
+            // Approximate: microstrain = K * deflection_in_meters
+            // For a 50m bridge with fiber at bottom, K ~ 10000 μɛ/m
+            const strainSensitivity = 10000; // μɛ/m
+            return State.deflection * strainSensitivity;
+        }
+        
+        /**
+         * Simplified Rainflow Cycle Counting
+         * Detects stress reversals and accumulates fatigue damage
+         */
+        function updateFatigueDamage() {
+            // Detect peaks (local maxima/minima)
+            const currentDeflection = State.deflection;
+            const strain = calculateStrain();
+            
+            // Store deflection history for peak detection
+            if (State.deflectionPeaks.length < 3) {
+                State.deflectionPeaks.push(currentDeflection);
+                State.lastDeflection = currentDeflection;
+                return;
+            }
+            
+            // Simple peak detection: check if middle point is a local max or min
+            const prev = State.deflectionPeaks[State.deflectionPeaks.length - 2];
+            const curr = State.deflectionPeaks[State.deflectionPeaks.length - 1];
+            const next = currentDeflection;
+            
+            const isPeak = (curr > prev && curr > next) || (curr < prev && curr < next);
+            
+            if (isPeak && Math.abs(curr) > 0.001) { // threshold to ignore noise
+                // Calculate stress range (proportional to deflection range)
+                const stressRange = Math.abs(curr) * 1000; // convert to mm
+                
+                // Palmgren-Miner rule: damage = (stress_range / endurance_limit)^m
+                // For steel, m ≈ 3 (S-N curve exponent)
+                const enduranceLimit = 100; // mm (arbitrary reference)
+                const damage = Math.pow(stressRange / enduranceLimit, 3);
+                
+                State.fatigueAccumulated += damage * 0.01; // scale factor
+                State.stressCycles++;
+                
+                // Keep only recent peaks
+                State.deflectionPeaks.shift();
+            }
+            
+            State.deflectionPeaks.push(currentDeflection);
+            State.lastDeflection = currentDeflection;
+            
+            // Clamp fatigue to 0-100%
+            State.fatigueAccumulated = Math.min(100, State.fatigueAccumulated);
+        }
+        
+        // ==========================================
+        // DAMAGE SIMULATION
+        // ==========================================
+        
+        /**
+         * Induce structural damage (reduce stiffness)
+         * @param {number} severity - 0 to 1 (0 = no damage, 1 = complete failure)
+         */
+        function induceDamage(severity) {
+            // Accumulate damage (doesn't reset previous damage)
+            const newDamage = Math.min(0.95, State.damageLevel + severity);
+            State.damageLevel = newDamage;
+            
+            // Update structural parameters
+            State.springConstant = State.baseSpringConstant * (1 - State.damageLevel);
+            State.dampingCoeff = State.baseDampingCoeff * (1 - State.damageLevel * 0.5); // damping also reduces
+            State.structuralIntegrity = Math.round((1 - State.damageLevel) * 100);
+            
+            // Visual feedback
+            const overlay = document.getElementById('damageOverlay');
+            overlay.classList.add('active');
+            setTimeout(() => overlay.classList.remove('active'), 2000);
+            
+            // Show alert
+            if (State.damageLevel > 0.3) {
+                document.getElementById('damageAlert').style.display = 'block';
+            }
+            
+            // Update frequency
+            State.naturalFrequency = calculateNaturalFrequency();
+        }
+        
+        /**
+         * Reset bridge to pristine condition
+         */
+        function resetDamage() {
+            State.damageLevel = 0;
+            State.springConstant = State.baseSpringConstant;
+            State.dampingCoeff = State.baseDampingCoeff;
+            State.structuralIntegrity = 100;
+            State.fatigueAccumulated = 0;
+            State.stressCycles = 0;
+            State.deflectionPeaks = [];
+            
+            document.getElementById('damageAlert').style.display = 'none';
+            
+            State.naturalFrequency = calculateNaturalFrequency();
+        }
+        
+        // ==========================================
+        // FFT ANALYSIS
+        // ==========================================
+        
+        /**
+         * Compute FFT of deflection signal
+         * Uses simplified DFT for educational purposes
+         */
+        function computeFFT() {
+            if (State.deflectionHistory.length < 128) return;
+            
+            const N = Math.min(256, State.deflectionHistory.length);
+            const signal = State.deflectionHistory.slice(-N);
+            
+            // Remove DC component (mean)
+            const mean = signal.reduce((a, b) => a + b, 0) / N;
+            const centered = signal.map(x => x - mean);
+            
+            // Apply Hanning window
+            const windowed = centered.map((x, i) => 
+                x * (0.5 - 0.5 * Math.cos(2 * Math.PI * i / N))
+            );
+            
+            // Compute magnitude spectrum (simplified DFT)
+            const spectrum = [];
+            const maxFreq = 10; // Hz (0-10 Hz range for structural vibrations)
+            const freqResolution = maxFreq / 100;
+            
+            for (let k = 0; k < 100; k++) {
+                const freq = k * freqResolution;
+                let real = 0, imag = 0;
+                
+                for (let n = 0; n < N; n++) {
+                    const angle = -2 * Math.PI * freq * n * State.dt;
+                    real += windowed[n] * Math.cos(angle);
+                    imag += windowed[n] * Math.sin(angle);
+                }
+                
+                const magnitude = Math.sqrt(real * real + imag * imag) / N;
+                spectrum.push({ freq, magnitude });
+            }
+            
+            State.fftData = spectrum;
+            
+            // Find peak frequency (natural frequency)
+            let maxMag = 0;
+            let peakFreq = 0;
+            
+            spectrum.forEach(({ freq, magnitude }) => {
+                if (magnitude > maxMag && freq > 0.1) { // ignore DC
+                    maxMag = magnitude;
+                    peakFreq = freq;
+                }
+            });
+            
+            State.naturalFrequency = peakFreq;
+        }
+        
+        // ==========================================
+        // OPTICAL PHYSICS (MZI)
+        // ==========================================
+        
+        /**
+         * Calculate refractive index as function of temperature
+         * n(T) = n₀ + (dn/dT) * ΔT
+         */
+        function calculateRefractiveIndex(temp) {
+            return State.refractiveIndex + State.thermalCoeff * (temp - State.baseTemp);
+        }
+        
+        /**
+         * Calculate phase shift from mechanical strain
+         * Δφ_mech = (2π/λ) * L * n * p * ε
+         * where p is photoelastic coefficient
+         */
+        function calculateMechanicalPhase(strain) {
+            const L = State.fiberLength;
+            const n = calculateRefractiveIndex(State.temperature);
+            const lambda = State.wavelength;
+            const p = State.photoElasticCoeff;
+            
+            // Convert microstrain to strain
+            const epsilon = strain * 1e-6;
+            
+            return (2 * Math.PI / lambda) * L * n * p * epsilon;
+        }
+        
+        /**
+         * Calculate phase shift from thermal effects
+         * Δφ_thermal = (2π/λ) * L * Δn
+         * This is the "drift" that corrupts measurements
+         */
+        function calculateThermalPhase(temp) {
+            const L = State.fiberLength;
+            const lambda = State.wavelength;
+            const deltaN = State.thermalCoeff * (temp - State.baseTemp);
+            
+            return (2 * Math.PI / lambda) * L * deltaN;
+        }
+        
+        /**
+         * Calculate MZI intensity from phase
+         * I = I₀ * cos²(Δφ/2)
+         * Normalized to 0-100 mW range
+         */
+        function calculateIntensity(phase) {
+            const maxIntensity = 100; // mW
+            return maxIntensity * Math.pow(Math.cos(phase / 2), 2);
+        }
+        
+        /**
+         * Update all optical parameters
+         */
+        function updateOptics() {
+            // Calculate mechanical strain from bridge deflection
+            const mechanicalStrain = calculateStrain();
+            
+            // Calculate phase components
+            State.mechanicalPhase = calculateMechanicalPhase(mechanicalStrain);
+            State.thermalPhase = calculateThermalPhase(State.temperature);
+            
+            // Total phase (raw sensor reading)
+            State.totalPhase = State.mechanicalPhase + State.thermalPhase;
+            
+            // Thermal drift creates artificial strain readings
+            const thermalDriftStrain = (State.thermalPhase / (2 * Math.PI)) * 50;
+            
+            // Raw strain (includes thermal drift)
+            State.rawStrain = mechanicalStrain + thermalDriftStrain;
+            
+            // Compensated strain (reference arm subtracts thermal component)
+            State.compensatedStrain = mechanicalStrain;
+        }
+        
+        // ==========================================
+        // ENVIRONMENTAL CONTROLS
+        // ==========================================
+        
+        /**
+         * Calculate temperature based on time of day
+         * Sinusoidal variation: cool at night, hot at noon
+         */
+        function calculateTemperature(hour) {
+            const minTemp = 15; // °C (night)
+            const maxTemp = 35; // °C (noon)
+            const avgTemp = (minTemp + maxTemp) / 2;
+            const amplitude = (maxTemp - minTemp) / 2;
+            
+            // Peak at 14:00 (2 PM)
+            const phase = (hour - 14) * Math.PI / 12;
+            return avgTemp + amplitude * Math.cos(phase);
+        }
+        
+        function updateTime(hour) {
+            State.timeOfDay = parseFloat(hour);
+            State.temperature = calculateTemperature(State.timeOfDay);
+            
+            const hours = Math.floor(State.timeOfDay);
+            const minutes = Math.floor((State.timeOfDay - hours) * 60);
+            const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            
+            document.getElementById('timeDisplay').textContent = 
+                `${timeStr} (${State.temperature.toFixed(1)}°C)`;
+        }
+        
+        function toggleCompensation() {
+            State.compensationEnabled = !State.compensationEnabled;
+            const btn = document.getElementById('compToggle');
+            const indicator = btn.querySelector('.status-indicator');
+            
+            if (State.compensationEnabled) {
+                btn.classList.add('active');
+                indicator.classList.remove('inactive');
+                indicator.classList.add('active');
+                btn.innerHTML = '<span class="status-indicator active"></span>Reference Arm: ON';
+            } else {
+                btn.classList.remove('active');
+                indicator.classList.remove('active');
+                indicator.classList.add('inactive');
+                btn.innerHTML = '<span class="status-indicator inactive"></span>Reference Arm: OFF';
+            }
+            
+            updateCompensationChartState();
+        }
+        
+        // ==========================================
+        // VEHICLE SPAWNING
+        // ==========================================
+        
+        function spawnVehicle(forceKN) {
+            const force = forceKN * 1000; // Convert kN to N
+            State.vehicles.push({
+                position: 0,
+                force: force,
+                velocity: 15 // m/s
+            });
+        }
+        
+        /**
+         * Traffic simulation - automatically spawn vehicles
+         */
+        function updateTrafficSimulation() {
+            if (State.trafficMode === 'off') return;
+            
+            State.trafficTimer += State.dt * State.timeSpeed;
+            
+            // Check if it's time to spawn a new vehicle
+            if (State.trafficTimer >= State.trafficInterval) {
+                State.trafficTimer = 0;
+                
+                // Random vehicle type based on realistic distribution
+                const rand = Math.random();
+                let forceKN;
+                
+                if (rand < 0.6) {
+                    forceKN = 20; // 60% cars
+                } else if (rand < 0.95) {
+                    forceKN = 100; // 35% trucks
+                } else {
+                    forceKN = 450; // 5% overloaded vehicles
+                }
+                
+                spawnVehicle(forceKN);
+                
+                setTrafficInterval();
+            }
+        }
+        
+        /**
+         * Set traffic interval based on current mode
+         */
+        function setTrafficInterval() {
+            switch(State.trafficMode) {
+                case 'light':
+                    State.trafficInterval = 4 + Math.random() * 4; // 4-8 seconds
+                    break;
+                case 'moderate':
+                    State.trafficInterval = 2 + Math.random() * 2; // 2-4 seconds
+                    break;
+                case 'heavy':
+                    State.trafficInterval = 0.5 + Math.random() * 1; // 0.5-1.5 seconds
+                    break;
+                default:
+                    State.trafficInterval = 0;
+            }
+        }
+        
+        /**
+         * Set traffic mode
+         */
+        function setTrafficMode(mode) {
+            State.trafficMode = mode;
+            State.trafficTimer = 0;
+            setTrafficInterval();
+            
+            ['trafficOff', 'trafficLight', 'trafficModerate', 'trafficHeavy'].forEach(id => {
+                const btn = document.getElementById(id);
+                const indicator = btn.querySelector('.status-indicator');
+                
+                if (id === 'traffic' + mode.charAt(0).toUpperCase() + mode.slice(1) || 
+                    (mode === 'off' && id === 'trafficOff')) {
+                    btn.classList.add('active');
+                    indicator.classList.remove('inactive');
+                    indicator.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                    indicator.classList.remove('active');
+                    indicator.classList.add('inactive');
+                }
+            });
+        }
+        
+        /**
+         * Set simulation time speed
+         */
+        function setTimeSpeed(speed) {
+            State.timeSpeed = speed;
+            
+            ['speed1x', 'speed5x', 'speed10x', 'speed20x'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    if (id === 'speed' + speed + 'x') {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                }
+            });
+            
+            updateSpeedIndicator();
+        }
+        
+        /**
+         * Toggle pause state
+         */
+        function togglePause() {
+            State.isPaused = !State.isPaused;
+            const btn = document.getElementById('pauseBtn');
+            
+            if (State.isPaused) {
+                btn.classList.add('active');
+                btn.style.background = 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)';
+                btn.innerHTML = '⏸️ RESUME Simulation';
+            } else {
+                btn.classList.remove('active');
+                btn.style.background = 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)';
+                btn.innerHTML = '▶️ PAUSE Simulation';
+            }
+            
+            updateSpeedIndicator();
+        }
+        
+        /**
+         * Update speed indicator display
+         */
+        function updateSpeedIndicator() {
+            const indicator = document.getElementById('speedIndicator');
+            if (indicator) {
+                if (State.isPaused) {
+                    indicator.textContent = '⏸️ PAUSED';
+                    indicator.style.background = 'rgba(239, 68, 68, 0.1)';
+                    indicator.style.borderColor = '#ef4444';
+                    indicator.style.color = '#fca5a5';
+                } else {
+                    indicator.textContent = `▶ Running at ${State.timeSpeed}x speed`;
+                    indicator.style.background = 'rgba(16, 185, 129, 0.1)';
+                    indicator.style.borderColor = '#10b981';
+                    indicator.style.color = '#6ee7b7';
+                }
+            }
+        }
+        
+        // ==========================================
+        // VISUALIZATION - BRIDGE CANVAS
+        // ==========================================
+        
+        const bridgeCanvas = document.getElementById('bridgeCanvas');
+        const bridgeCtx = bridgeCanvas.getContext('2d');
+        
+        function resizeBridgeCanvas() {
+            bridgeCanvas.width = bridgeCanvas.offsetWidth;
+            bridgeCanvas.height = bridgeCanvas.offsetHeight;
+        }
+        
+        function drawBridge() {
+            const ctx = bridgeCtx;
+            const w = bridgeCanvas.width;
+            const h = bridgeCanvas.height;
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            // Bridge dimensions
+            const margin = 60;
+            const bridgeY = h / 2;
+            const bridgeWidth = w - 2 * margin;
+            
+            // Calculate deflection in pixels (exaggerated for visibility)
+            const deflectionPx = State.deflection * 200; // 200px per meter
+            
+            // Draw supports
+            ctx.fillStyle = '#64748b';
+            ctx.fillRect(margin - 10, bridgeY - 5, 20, h - bridgeY + 5);
+            ctx.fillRect(w - margin - 10, bridgeY - 5, 20, h - bridgeY + 5);
+            
+            // Bridge color changes with damage
+            const damageRed = Math.floor(59 + (220 - 59) * State.damageLevel);
+            const damageGreen = Math.floor(130 - 130 * State.damageLevel);
+            const damageBlue = Math.floor(246 - 246 * State.damageLevel);
+            const bridgeColor = `rgb(${damageRed}, ${damageGreen}, ${damageBlue})`;
+            
+            // Draw bridge as quadratic bezier curve
+            ctx.strokeStyle = bridgeColor;
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            ctx.moveTo(margin, bridgeY);
+            
+            // Control point at center with deflection
+            const controlX = margin + bridgeWidth / 2;
+            const controlY = bridgeY + deflectionPx;
+            
+            ctx.quadraticCurveTo(controlX, controlY, margin + bridgeWidth, bridgeY);
+            ctx.stroke();
+            
+            // Draw cracks if damaged
+            if (State.damageLevel > 0.2) {
+                ctx.strokeStyle = '#dc2626';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([10, 5]);
+                
+                const numCracks = Math.floor(State.damageLevel * 5);
+                for (let i = 0; i < numCracks; i++) {
+                    const crackX = margin + (bridgeWidth / (numCracks + 1)) * (i + 1);
+                    const crackY = bridgeY + 2 * deflectionPx * (i + 1) / (numCracks + 1) * (1 - (i + 1) / (numCracks + 1));
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(crackX - 10, crackY - 15);
+                    ctx.lineTo(crackX + 10, crackY + 15);
+                    ctx.stroke();
+                }
+                ctx.setLineDash([]);
+            }
+            
+            // Draw fiber optic sensor (red line along bridge)
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(margin, bridgeY + 15);
+            ctx.quadraticCurveTo(controlX, controlY + 15, margin + bridgeWidth, bridgeY + 15);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Draw vehicles
+            State.vehicles.forEach(vehicle => {
+                const t = vehicle.position / State.bridgeLength;
+                
+                // Calculate position on curve
+                const x = margin + t * bridgeWidth;
+                const curveY = bridgeY + 2 * deflectionPx * t * (1 - t); // Quadratic interpolation
+                
+                // Draw vehicle (simple rectangle)
+                const vehicleSize = vehicle.force > 200000 ? 30 : (vehicle.force > 50000 ? 20 : 15);
+                ctx.fillStyle = vehicle.force > 200000 ? '#dc2626' : (vehicle.force > 50000 ? '#f59e0b' : '#10b981');
+                ctx.fillRect(x - vehicleSize/2, curveY - vehicleSize - 20, vehicleSize, vehicleSize);
+                
+                // Draw wheels
+                ctx.fillStyle = '#1e293b';
+                ctx.beginPath();
+                ctx.arc(x - vehicleSize/3, curveY - 18, 4, 0, Math.PI * 2);
+                ctx.arc(x + vehicleSize/3, curveY - 18, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Draw dimension labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '12px "Courier New"';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${State.bridgeLength}m`, w / 2, h - 10);
+            
+            // Draw deflection indicator
+            if (Math.abs(deflectionPx) > 5) {
+                ctx.strokeStyle = '#fbbf24';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 2]);
+                ctx.beginPath();
+                ctx.moveTo(controlX, bridgeY);
+                ctx.lineTo(controlX, controlY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                ctx.fillStyle = '#fbbf24';
+                ctx.fillText(`δ = ${(State.deflection * 1000).toFixed(1)}mm`, controlX + 40, (bridgeY + controlY) / 2);
+            }
+        }
+        
+        // ==========================================
+        // VISUALIZATION - FRINGE PATTERN
+        // ==========================================
+        
+        const fringeCanvas = document.getElementById('fringeCanvas');
+        const fringeCtx = fringeCanvas.getContext('2d');
+        
+        function resizeFringeCanvas() {
+            fringeCanvas.width = fringeCanvas.offsetWidth;
+            fringeCanvas.height = fringeCanvas.offsetHeight;
+        }
+        
+        let fringeOffset = 0;
+        
+        function drawFringes() {
+            const ctx = fringeCtx;
+            const w = fringeCanvas.width;
+            const h = fringeCanvas.height;
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            // Fringe spacing proportional to phase shift rate
+            const phaseRate = Math.abs(State.totalPhase % (2 * Math.PI));
+            const fringeSpacing = Math.max(20, 50 - phaseRate * 5);
+            
+            // Animate fringes
+            fringeOffset += phaseRate * 0.5;
+            if (fringeOffset > fringeSpacing) fringeOffset = 0;
+            
+            // Draw vertical fringes
+            for (let x = -fringeSpacing + fringeOffset; x < w + fringeSpacing; x += fringeSpacing) {
+                const gradient = ctx.createLinearGradient(x, 0, x + fringeSpacing, 0);
+                gradient.addColorStop(0, '#0f172a');
+                gradient.addColorStop(0.5, '#e2e8f0');
+                gradient.addColorStop(1, '#0f172a');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, 0, fringeSpacing, h);
+            }
+            
+            // Overlay intensity modulation
+            const intensity = calculateIntensity(State.totalPhase);
+            ctx.fillStyle = `rgba(59, 130, 246, ${intensity / 200})`;
+            ctx.fillRect(0, 0, w, h);
+        }
+        
+        // ==========================================
+        // VISUALIZATION - FFT SPECTRUM
+        // ==========================================
+        
+        const fftCanvas = document.getElementById('fftCanvas');
+        const fftCtx = fftCanvas.getContext('2d');
+        
+        function resizeFFTCanvas() {
+            fftCanvas.width = fftCanvas.offsetWidth;
+            fftCanvas.height = fftCanvas.offsetHeight;
+        }
+        
+        function drawFFT() {
+            const ctx = fftCtx;
+            const w = fftCanvas.width;
+            const h = fftCanvas.height;
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            if (State.fftData.length === 0) {
+                ctx.fillStyle = '#64748b';
+                ctx.font = '12px "Courier New"';
+                ctx.textAlign = 'center';
+                ctx.fillText('Collecting data for FFT...', w / 2, h / 2);
+                return;
+            }
+            
+            // Draw axes
+            const margin = 40;
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(margin, h - margin);
+            ctx.lineTo(w - 10, h - margin);
+            ctx.moveTo(margin, h - margin);
+            ctx.lineTo(margin, 10);
+            ctx.stroke();
+            
+            // Draw frequency labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px "Courier New"';
+            ctx.textAlign = 'center';
+            
+            for (let i = 0; i <= 10; i += 2) {
+                const x = margin + ((w - margin - 10) / 10) * i;
+                ctx.fillText(`${i}`, x, h - margin + 15);
+            }
+            
+            // Y-axis label
+            ctx.save();
+            ctx.translate(15, h / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText('Magnitude', 0, 0);
+            ctx.restore();
+            
+            // X-axis label
+            ctx.fillText('Frequency (Hz)', w / 2, h - 10);
+            
+            // Find max magnitude for scaling
+            const maxMagnitude = Math.max(...State.fftData.map(d => d.magnitude), 0.001);
+            
+            // Draw spectrum
+            ctx.strokeStyle = '#3b82f6';
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            State.fftData.forEach((point, i) => {
+                const x = margin + ((w - margin - 10) / 10) * point.freq;
+                const y = h - margin - ((h - margin - 20) * point.magnitude / maxMagnitude);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, h - margin);
+                    ctx.lineTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.lineTo(w - 10, h - margin);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Draw natural frequency marker
+            if (State.naturalFrequency > 0) {
+                const markerX = margin + ((w - margin - 10) / 10) * State.naturalFrequency;
+                
+                ctx.strokeStyle = '#fbbf24';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(markerX, h - margin);
+                ctx.lineTo(markerX, 20);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Label
+                ctx.fillStyle = '#fbbf24';
+                ctx.font = '11px "Courier New"';
+                ctx.textAlign = 'left';
+                ctx.fillText(`f_n = ${State.naturalFrequency.toFixed(2)} Hz`, markerX + 5, 30);
+            }
+            
+            // Show baseline frequency if damaged
+            if (State.damageLevel > 0.1 && State.baseNaturalFrequency > 0) {
+                const baseMarkerX = margin + ((w - margin - 10) / 10) * State.baseNaturalFrequency;
+                
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 2]);
+                ctx.beginPath();
+                ctx.moveTo(baseMarkerX, h - margin);
+                ctx.lineTo(baseMarkerX, 20);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                ctx.fillStyle = '#64748b';
+                ctx.font = '10px "Courier New"';
+                ctx.textAlign = 'left';
+                ctx.fillText(`baseline`, baseMarkerX + 3, 45);
+            }
+        }
+        
+        // ==========================================
+        // CHART.JS SETUP
+        // ==========================================
+        
+        const rawStrainChartCanvas = document.getElementById('rawStrainChart');
+        const rawStrainChart = new Chart(rawStrainChartCanvas, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Raw Strain',
+                    data: [],
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Time (s)',
+                            color: '#94a3b8',
+                            font: { size: 10 }
+                        },
+                        ticks: { color: '#64748b', font: { size: 9 } },
+                        grid: { color: 'rgba(71, 85, 105, 0.3)' }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'μɛ (with drift)',
+                            color: '#94a3b8',
+                            font: { size: 10 }
+                        },
+                        ticks: { 
+                            color: '#64748b', 
+                            font: { size: 9 },
+                            callback: function(value) {
+                                return Math.round(value);
+                            }
+                        },
+                        grid: { color: 'rgba(71, 85, 105, 0.3)' },
+                        min: -2000,
+                        max: 2000
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        titleColor: '#ef4444',
+                        bodyColor: '#e2e8f0',
+                        borderColor: '#ef4444',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false,
+                        callbacks: {
+                            title: function(context) {
+                                return 'Time: ' + context[0].label + 's';
+                            },
+                            label: function(context) {
+                                return 'Raw Strain: ' + context.parsed.y.toFixed(1) + ' μɛ';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        const compensatedStrainChartCanvas = document.getElementById('compensatedStrainChart');
+        const compensatedStrainChart = new Chart(compensatedStrainChartCanvas, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Compensated Strain',
+                    data: [],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Time (s)',
+                            color: '#94a3b8',
+                            font: { size: 10 }
+                        },
+                        ticks: { color: '#64748b', font: { size: 9 } },
+                        grid: { color: 'rgba(71, 85, 105, 0.3)' }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'μɛ (clean)',
+                            color: '#94a3b8',
+                            font: { size: 10 }
+                        },
+                        ticks: { 
+                            color: '#64748b', 
+                            font: { size: 9 },
+                            callback: function(value) {
+                                return Math.round(value);
+                            }
+                        },
+                        grid: { color: 'rgba(71, 85, 105, 0.3)' },
+                        min: -500,
+                        max: 500
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        titleColor: '#10b981',
+                        bodyColor: '#e2e8f0',
+                        borderColor: '#10b981',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false,
+                        callbacks: {
+                            title: function(context) {
+                                return 'Time: ' + context[0].label + 's';
+                            },
+                            label: function(context) {
+                                return 'Compensated: ' + context.parsed.y.toFixed(1) + ' μɛ';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        function updateCompensationChartState() {
+            const container = compensatedStrainChartCanvas.parentElement;
+            let overlay = container.querySelector('.compensation-overlay');
+            
+            if (!State.compensationEnabled) {
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.className = 'compensation-overlay';
+                    overlay.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: rgba(15, 23, 42, 0.9);
+                        padding: 16px 24px;
+                        border-radius: 8px;
+                        border: 2px solid #64748b;
+                        color: #94a3b8;
+                        font-size: 13px;
+                        font-weight: 600;
+                        text-align: center;
+                        pointer-events: none;
+                        z-index: 5;
+                    `;
+                    overlay.innerHTML = '🔒 Enable Reference Arm to see compensated data';
+                    container.appendChild(overlay);
+                }
+            } else {
+                if (overlay) {
+                    overlay.remove();
+                }
+            }
+        }
+        
+        let chartUpdateCounter = 0;
+        function updateChart() {
+            chartUpdateCounter++;
+            if (chartUpdateCounter % 3 !== 0) return;
+            
+            if (!State.isPaused) {
+                State.strainHistory.push(State.rawStrain);
+                State.compensatedHistory.push(State.compensatedStrain);
+                State.deflectionHistory.push(State.deflection);
+                State.timeHistory.push(State.time);
+                
+                if (State.strainHistory.length > State.maxHistoryPoints) {
+                    State.strainHistory.shift();
+                    State.compensatedHistory.shift();
+                    State.deflectionHistory.shift();
+                    State.timeHistory.shift();
+                }
+            }
+            
+            const timeLabels = State.timeHistory.map(t => t.toFixed(1));
+            const thermalDriftStrain = (State.thermalPhase / (2 * Math.PI)) * 50;
+            
+            // Auto-scale raw sensor chart
+            let rawYCenter = thermalDriftStrain;
+            let rawYRange = 2000;
+            
+            if (State.strainHistory.length > 0) {
+                const maxStrain = Math.max(...State.strainHistory);
+                const minStrain = Math.min(...State.strainHistory);
+                
+                const currentMax = rawYCenter + rawYRange;
+                const currentMin = rawYCenter - rawYRange;
+                
+                if (maxStrain > currentMax || minStrain < currentMin) {
+                    const dataRange = maxStrain - minStrain;
+                    rawYRange = Math.max(rawYRange, dataRange * 0.6);
+                    rawYCenter = (maxStrain + minStrain) / 2;
+                }
+            }
+            
+            rawStrainChart.options.scales.y.min = rawYCenter - rawYRange;
+            rawStrainChart.options.scales.y.max = rawYCenter + rawYRange;
+            rawStrainChart.options.scales.y.ticks.stepSize = Math.ceil(rawYRange / 5);
+            
+            rawStrainChart.data.labels = timeLabels;
+            rawStrainChart.data.datasets[0].data = State.strainHistory;
+            rawStrainChart.update('none');
+            
+            // Auto-scale compensated chart
+            compensatedStrainChart.data.labels = timeLabels;
+            if (State.compensationEnabled) {
+                compensatedStrainChart.data.datasets[0].data = State.compensatedHistory;
+                compensatedStrainChart.data.datasets[0].borderColor = '#10b981';
+                compensatedStrainChart.data.datasets[0].backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                
+                const defaultRange = 500;
+                let targetRange = defaultRange;
+                
+                if (State.compensatedHistory.length > 0) {
+                    const maxComp = Math.max(...State.compensatedHistory);
+                    const minComp = Math.min(...State.compensatedHistory);
+                    const dataRange = Math.max(Math.abs(maxComp), Math.abs(minComp));
+                    
+                    if (dataRange > defaultRange * 0.9) {
+                        targetRange = dataRange * 1.2;
+                    } else if (dataRange < defaultRange * 0.7) {
+                        targetRange = Math.max(defaultRange, dataRange * 1.3);
+                    } else {
+                        targetRange = defaultRange;
+                    }
+                }
+                
+                const smoothingFactor = 0.1;
+                State.currentCompRange = State.currentCompRange * (1 - smoothingFactor) + targetRange * smoothingFactor;
+                
+                const roundedRange = Math.ceil(State.currentCompRange / 100) * 100;
+                
+                compensatedStrainChart.options.scales.y.min = -roundedRange;
+                compensatedStrainChart.options.scales.y.max = roundedRange;
+                compensatedStrainChart.options.scales.y.ticks.stepSize = Math.ceil(roundedRange / 5);
+                
+            } else {
+                compensatedStrainChart.data.datasets[0].data = State.timeHistory.map(() => null);
+                compensatedStrainChart.options.scales.y.min = -500;
+                compensatedStrainChart.options.scales.y.max = 500;
+                compensatedStrainChart.options.scales.y.ticks.stepSize = 100;
+                State.currentCompRange = 500;
+            }
+            compensatedStrainChart.update('none');
+        }
+        
+        // ==========================================
+        // READOUT UPDATES
+        // ==========================================
+        
+        function updateReadouts() {
+            document.getElementById('deflectionReadout').innerHTML = 
+                `${(State.deflection * 1000).toFixed(1)}<span class="readout-unit">mm</span>`;
+            
+            document.getElementById('vehicleCount').textContent = State.vehicles.length;
+            
+            document.getElementById('phaseReadout').innerHTML = 
+                `${(State.totalPhase / Math.PI).toFixed(2)}<span class="readout-unit">π rad</span>`;
+            
+            const intensity = calculateIntensity(State.totalPhase);
+            document.getElementById('intensityReadout').innerHTML = 
+                `${intensity.toFixed(1)}<span class="readout-unit">mW</span>`;
+            
+            document.getElementById('rawStrainReadout').innerHTML = 
+                `${State.rawStrain.toFixed(1)}<span class="readout-unit">μɛ</span>`;
+            
+            document.getElementById('compStrainReadout').innerHTML = 
+                `${State.compensatedStrain.toFixed(1)}<span class="readout-unit">μɛ</span>`;
+            
+            // Health panel
+            document.getElementById('healthValue').textContent = `${State.structuralIntegrity}%`;
+            document.getElementById('stiffnessReadout').innerHTML = 
+                `${State.structuralIntegrity}<span class="readout-unit">%</span>`;
+            document.getElementById('dampingReadout').innerHTML = 
+                `${Math.round((1 - State.damageLevel * 0.5) * 100)}<span class="readout-unit">%</span>`;
+            
+            const healthIndicator = document.getElementById('healthIndicator');
+            healthIndicator.className = 'health-indicator';
+            if (State.structuralIntegrity < 50) {
+                healthIndicator.classList.add('critical');
+            } else if (State.structuralIntegrity < 80) {
+                healthIndicator.classList.add('warning');
+            }
+            
+            // Fatigue
+            const fatiguePercent = Math.min(100, State.fatigueAccumulated);
+            document.getElementById('fatigueFill').style.width = `${fatiguePercent}%`;
+            document.getElementById('cyclesReadout').textContent = `${State.stressCycles} cycles`;
+            
+            // FFT
+            document.getElementById('naturalFreqReadout').innerHTML = 
+                `${State.naturalFrequency.toFixed(2)}<span class="readout-unit">Hz</span>`;
+        }
+        
+        // ==========================================
+        // MAIN SIMULATION LOOP
+        // ==========================================
+        
+        function simulate() {
+            if (!State.isPaused) {
+                updateTrafficSimulation();
+                updateVehicles();
+                updateBridgePhysics();
+                updateOptics();
+                updateFatigueDamage();
+                
+                State.time += State.dt * State.timeSpeed;
+                
+                // Compute FFT periodically
+                if (State.time % 0.5 < State.dt) { // Every 0.5 seconds
+                    computeFFT();
+                }
+            }
+            
+            drawBridge();
+            drawFringes();
+            drawFFT();
+            updateChart();
+            updateReadouts();
+            
+            requestAnimationFrame(simulate);
+        }
+        
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        
+        function init() {
+            resizeBridgeCanvas();
+            resizeFringeCanvas();
+            resizeFFTCanvas();
+            
+            window.addEventListener('resize', () => {
+                resizeBridgeCanvas();
+                resizeFringeCanvas();
+                resizeFFTCanvas();
+            });
+            
+            updateTime(State.timeOfDay);
+            updateCompensationChartState();
+            
+            // Calculate initial natural frequency
+            State.baseNaturalFrequency = calculateNaturalFrequency();
+            State.naturalFrequency = State.baseNaturalFrequency;
+            
+            requestAnimationFrame(simulate);
+        }
+        
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
