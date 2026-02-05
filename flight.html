@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHM Cockpit: Aerospace Structural Health Monitoring</title>
+    <style>
+        :root {
+            --bg-color: #0b0d10;
+            --panel-bg: #14181c;
+            --accent-cyan: #00f0ff;
+            --accent-dim: #005f66;
+            --alert-amber: #ffaa00;
+            --alert-red: #ff3333;
+            --text-main: #cceeff;
+            --grid-line: rgba(0, 240, 255, 0.1);
+            --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Ribbon (Excluded from calculation) */
+        header {
+            height: 40px;
+            background: #050505;
+            border-bottom: 1px solid var(--accent-dim);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            letter-spacing: 1px;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        /* MAIN COCKPIT CONTAINER (100w x 80h Grid) */
+        #cockpit {
+            flex-grow: 1;
+            width: 100%;
+            position: relative;
+            display: grid;
+            /* Grid Definition:
+               Row 1: 20 units (Visuals)
+               Row 2: 20 units (Graphs)
+               Row 3: 20 units (Instruments)
+               Row 4: 20 units (Controls)
+               Total: 80 units
+            */
+            grid-template-rows: 25% 25% 25% 25%; 
+            background: var(--bg-color);
+        }
+
+        /* SECTIONS */
+        .row {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            border-bottom: 1px solid var(--grid-line);
+        }
+
+        .panel {
+            position: relative;
+            border-right: 1px solid var(--grid-line);
+            overflow: hidden;
+        }
+
+        .label {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 10px;
+            color: var(--accent-cyan);
+            opacity: 0.7;
+            background: rgba(0,0,0,0.5);
+            padding: 2px 4px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ROW 1: VISUALS (Y=0-20) */
+        #view-wing { width: 50%; }
+        #view-window { width: 50%; border-right: none; }
+
+        /* ROW 2: GRAPHS (Y=20-40) */
+        #graph-fft { width: 40%; }
+        #graph-vn { width: 40%; }
+        #graph-mzi { width: 20%; border-right: none; }
+
+        /* ROW 3: INSTRUMENTS (Y=40-60) */
+        .instrument {
+            width: 20%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid var(--grid-line);
+            background: linear-gradient(180deg, rgba(0,240,255,0.02) 0%, rgba(0,0,0,0) 100%);
+        }
+        .instrument:last-child { border-right: none; }
+        .inst-val { font-size: 24px; color: var(--accent-cyan); font-weight: bold; margin: 5px 0; }
+        .inst-unit { font-size: 12px; opacity: 0.5; }
+        .inst-trend { width: 80%; height: 2px; background: #333; margin-top: 5px; position: relative; }
+        .inst-trend-bar { height: 100%; background: var(--accent-cyan); transition: width 0.1s; }
+
+        /* ROW 4: CONTROLS (Y=60-80) */
+        #controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 20px;
+            background: #0f1215;
+        }
+
+        .ctrl-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 120px;
+        }
+
+        .ctrl-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 120px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        button {
+            background: transparent;
+            border: 1px solid var(--accent-dim);
+            color: var(--accent-cyan);
+            padding: 6px 12px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover { background: var(--accent-dim); color: #fff; }
+        button.active { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); }
+        button.danger { border-color: var(--alert-red); color: var(--alert-red); }
+        button.danger.active { background: var(--alert-red); color: white; }
+
+        /* Utility classes for text colors */
+        .txt-norm { color: var(--accent-cyan); }
+        .txt-warn { color: var(--alert-amber); }
+        .txt-crit { color: var(--alert-red); }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <span>AEROSPACE SHM COCKPIT // UNIT-01</span>
+        <span>SYS: ONLINE</span>
+    </header>
+
+    <div id="cockpit">
+        
+        <div class="row">
+            <div id="view-wing" class="panel">
+                <div class="label">STRUCTURAL DEFORMATION</div>
+                <canvas id="cvs-wing"></canvas>
+            </div>
+            <div id="view-window" class="panel">
+                <div class="label">ATMOSPHERIC CAM</div>
+                <canvas id="cvs-window"></canvas>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="graph-fft" class="panel">
+    <div class="label">
+        VIBRATION FFT <span id="lbl-freq-live" style="color: var(--text-main); margin-left: 8px; font-weight: normal;">0.0 Hz</span>
+    </div>
+    <canvas id="cvs-fft"></canvas>
+</div>
+            <div id="graph-vn" class="panel">
+                <div class="label">FLIGHT ENVELOPE (V-n)</div>
+                <canvas id="cvs-vn"></canvas>
+            </div>
+            <div id="graph-mzi" class="panel">
+                <div class="label">MZI INTERFEROMETER</div>
+                <canvas id="cvs-mzi"></canvas>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="instrument">
+                <span class="inst-label">PHASE SHIFT</span>
+                <span class="inst-val" id="val-phase">0.00</span>
+                <span class="inst-unit">rad</span>
+            </div>
+            <div class="instrument">
+                <span class="inst-label">G-LOAD</span>
+                <span class="inst-val" id="val-g">1.0</span>
+                <span class="inst-unit">G</span>
+                <div class="inst-trend"><div class="inst-trend-bar" id="bar-g" style="width: 50%"></div></div>
+            </div>
+            <div class="instrument">
+                <span class="inst-label">SKIN TEMP</span>
+                <span class="inst-val" id="val-temp">-50</span>
+                <span class="inst-unit">°C</span>
+            </div>
+            <div class="instrument">
+                <span class="inst-label">VIB FREQ</span>
+                <span class="inst-val" id="val-freq">0</span>
+                <span class="inst-unit">Hz</span>
+            </div>
+            <div class="instrument">
+                <span class="inst-label">DAMPING</span>
+                <span class="inst-val" id="val-damp">0.05</span>
+                <span class="inst-unit">ζ</span>
+            </div>
+        </div>
+
+        <div class="row" id="controls">
+            
+            <div class="ctrl-group">
+    <div class="ctrl-row">
+        <span style="min-width: 85px; font-variant-numeric: tabular-nums;">
+            ALT <span id="lbl-alt-val" class="txt-norm">10000</span> ft
+        </span>
+        <input type="range" id="sl-alt" min="0" max="50000" step="100" value="10000">
+    </div>
+    <div class="ctrl-row">
+        <span style="min-width: 85px; font-variant-numeric: tabular-nums;">
+            THR <span id="lbl-thr-val" class="txt-norm">60</span> %
+        </span>
+        <input type="range" id="sl-thr" min="0" max="100" step="1" value="60">
+    </div>
+</div>
+
+            <div class="ctrl-group" style="flex-direction: row;">
+                <button onclick="app.setManeuver('cruise')" id="btn-cruise" class="active">CRUISE</button>
+                <button onclick="app.setManeuver('turn')" id="btn-turn">BANK</button>
+                <button onclick="app.setManeuver('climb')" id="btn-climb">CLIMB</button>
+                <button onclick="app.setManeuver('max')" id="btn-max">MAX G</button>
+            </div>
+
+            <div class="ctrl-group" style="flex-direction: row;">
+                <button onclick="app.toggleDamage('crack')" id="btn-crack" class="danger">SIM CRACK</button>
+                <button onclick="app.toggleDamage('ice')" id="btn-ice" class="danger">SIM ICE</button>
+            </div>
+
+            <button onclick="app.reset()" style="border-color: #fff; color: #fff;">SYS RESET</button>
+        </div>
+    </div>
+<script>
+        /**
+         * ENGINEERING CONSTANTS
+         */
+        const CONSTANTS = {
+            WING_SPAN: 80, // % of canvas width
+            MAX_G: 9.0,
+            MIN_G: -3.0,
+            STALL_SPEED: 120, // knots
+            VNE: 450, // Velocity Never Exceed
+            BASE_TEMP: 15, // Sea level temp C
+            LAPSE_RATE: 0.0065, // Temp drop per meter
+            GRAVITY: 9.81
+        };
+
+        /**
+         * STATE MANAGEMENT
+         */
+        const State = {
+            // Flight Physics
+            altitude: 10000, // ft
+            targetAltitude: 10000,
+            airspeed: 250, // knots
+            targetAirspeed: 250,
+            
+            // Velocity tracking
+            prevAirspeed: 250, 
+            verticalSpeed: 0, 
+            prevVerticalSpeed: 0, 
+            
+            gLoad: 1.0,
+            targetGLoad: 1.0,
+
+            // Structural Health
+            vibrationAmp: 0.5,
+            vibrationFreq: 45, // Hz
+            temperature: -5,
+            damping: 0.05,
+            
+            // MZI Optical Physics State
+            phaseShift: 0,          // Total optical phase (smoothed)
+            mziVisibility: 1.0,     // Fringe contrast (0.0 - 1.0)
+            mziNoise: 0.0,          // Optical noise floor
+            mziDistortion: 0.0,     // Spatial wavefront distortion
+            crackPhaseDrift: 0.0,   // Accumulator for drift
+            
+            // Damage Flags
+            hasCrack: false,
+            hasIce: false,
+            
+            // Visuals
+            cloudOpacity: 1.0,
+            warningActive: false,
+            throttleImpulse: 0.0,
+            
+            // Alarm Logic
+            alarmTimer: 0.0, 
+
+            // System
+            time: 0
+        };
+
+        /**
+         * RENDERER CLASS
+         * Handles Canvas Scaling and Drawing
+         */
+        class CanvasRenderer {
+            constructor(id) {
+                this.canvas = document.getElementById(id);
+                this.ctx = this.canvas.getContext('2d');
+                this.width = 0;
+                this.height = 0;
+                this.mziBuffer = null; 
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                const parent = this.canvas.parentElement;
+                this.width = parent.clientWidth;
+                this.height = parent.clientHeight;
+                
+                const dpr = window.devicePixelRatio || 1;
+                this.canvas.width = this.width * dpr;
+                this.canvas.height = this.height * dpr;
+                
+                this.ctx.setTransform(1, 0, 0, 1, 0, 0); 
+                this.ctx.scale(dpr, dpr);
+
+                if(this.mziBuffer) this.mziBuffer = null;
+            }
+
+            clear() {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+            }
+        }
+
+        /**
+         * APPLICATION ENGINE
+         */
+        const app = {
+            renderers: {},
+            clouds: [],
+            lastTime: 0,
+            fftData: new Array(40).fill(0),
+            
+            init() {
+                this.renderers.wing = new CanvasRenderer('cvs-wing');
+                this.renderers.window = new CanvasRenderer('cvs-window');
+                this.renderers.fft = new CanvasRenderer('cvs-fft');
+                this.renderers.vn = new CanvasRenderer('cvs-vn');
+                this.renderers.mzi = new CanvasRenderer('cvs-mzi');
+
+                for(let i=0; i<8; i++) {
+                    this.clouds.push({
+                        x: Math.random() * 100,
+                        y: Math.random() * 100,
+                        scale: 0.5 + Math.random() * 1.5,
+                        opacity: 0.2 + Math.random() * 0.4
+                    });
+                }
+
+                const alarmOverlay = document.createElement('div');
+                alarmOverlay.id = 'alarm-overlay';
+                alarmOverlay.style.cssText = `
+                    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                    pointer-events: none; z-index: 999;
+                    background: radial-gradient(circle, transparent 40%, rgba(255,0,0,0) 60%);
+                    box-shadow: inset 0 0 100px rgba(255,0,0,0);
+                    transition: opacity 0.1s;
+                    opacity: 0;
+                `;
+                document.getElementById('cockpit').appendChild(alarmOverlay);
+
+               document.getElementById('sl-alt').addEventListener('input', (e) => {
+    State.targetAltitude = parseFloat(e.target.value);
+    // Update Altitude Label
+    document.getElementById('lbl-alt-val').innerText = e.target.value;
+});
+                document.getElementById('sl-thr').addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value);
+    State.targetAirspeed = 100 + (val * 4); 
+    // Update Throttle Label
+    document.getElementById('lbl-thr-val').innerText = val; 
+});
+
+                this.lastTime = performance.now();
+                requestAnimationFrame((t) => this.loop(t));
+            },
+
+            setManeuver(type) {
+                document.querySelectorAll('#controls button').forEach(b => {
+                    if(!b.classList.contains('danger')) b.classList.remove('active');
+                });
+                document.getElementById(`btn-${type}`).classList.add('active');
+
+                switch(type) {
+                    case 'cruise': State.targetGLoad = 1.0; break;
+                    case 'turn': State.targetGLoad = 2.5; break;
+                    case 'climb': State.targetGLoad = 1.2; break;
+                    case 'max': State.targetGLoad = 6.0; break;
+                }
+            },
+
+            toggleDamage(type) {
+                if(type === 'crack') {
+                    State.hasCrack = !State.hasCrack;
+                    document.getElementById('btn-crack').classList.toggle('active');
+                }
+                if(type === 'ice') {
+                    State.hasIce = !State.hasIce;
+                    document.getElementById('btn-ice').classList.toggle('active');
+                }
+            },
+
+            reset() {
+                State.targetAltitude = 10000;
+                State.targetAirspeed = 250;
+                State.targetGLoad = 1.0;
+                State.hasCrack = false;
+                State.hasIce = false;
+                document.getElementById('sl-alt').value = 10000;
+                document.getElementById('sl-thr').value = 37.5; 
+                this.setManeuver('cruise');
+                document.getElementById('btn-crack').classList.remove('active');
+                document.getElementById('btn-ice').classList.remove('active');
+                State.alarmTimer = 0;
+                State.warningActive = false;
+                State.throttleImpulse = 0;
+                State.crackPhaseDrift = 0;
+                State.mziVisibility = 1.0;
+            },
+
+            updatePhysics(dt) {
+                State.time += dt;
+
+                const prevAlt = State.altitude;
+                
+                const lag = 2.0 * dt; 
+                State.altitude += (State.targetAltitude - State.altitude) * lag;
+                State.airspeed += (State.targetAirspeed - State.airspeed) * lag;
+                State.gLoad += (State.targetGLoad - State.gLoad) * (lag * 2);
+
+                State.verticalSpeed = ((State.altitude - prevAlt) / dt) * 60; 
+
+                // --- STABILIZED PHYSICS COUPLING (Part B) ---
+                const prevVS = State.prevVerticalSpeed || 0;
+                const vAccel = (State.verticalSpeed - prevVS) / dt; 
+                State.prevVerticalSpeed = State.verticalSpeed;
+                
+                // STABILITY FIX: Significantly reduced gain (0.00015 -> 0.00003)
+                // This prevents explosive G-load changes when moving slider quickly
+                let transientG = -vAccel * 0.00003; 
+                
+                // STABILITY FIX: Conservative clamping (+/- 0.2G)
+                transientG = Math.max(-0.2, Math.min(0.2, transientG)); 
+                
+                State.gLoad += transientG;
+                State.airspeed += (transientG * 8);
+
+                const prevAS = State.prevAirspeed;
+                const speedAccel = (State.airspeed - prevAS) / dt;
+                State.prevAirspeed = State.airspeed;
+                
+                // Throttle/Speed impulse (kept active for wing visuals)
+                let targetThrottleBend = speedAccel * 0.60;
+                targetThrottleBend = Math.max(-40, Math.min(40, targetThrottleBend));
+                State.throttleImpulse += (targetThrottleBend - State.throttleImpulse) * (5.0 * dt);
+
+                // --- STABILIZED MZI OPTICS (Part A) ---
+                
+                // 1. Static Strain: Reduced sensitivity (PI * 1.5 instead of 2.5) for readability
+                const targetStrainPhase = (State.gLoad - 1.0) * Math.PI * 1.5;
+
+                // 2. Thermal Drift: Reduced sensitivity (0.05 instead of 0.15) for slow educational drift
+                const targetTempPhase = (State.temperature + 50) * 0.05;
+
+                // 3. Vibration: Reduced amplitude coupling to prevent visual chaos
+                const targetVibPhase = Math.sin(State.time * State.vibrationFreq * 0.5) * (State.vibrationAmp * 0.5);
+
+                // 4. Crack Logic: Replaced noise with Visibility Loss (Contrast reduction)
+                if (State.hasCrack) {
+                    // Slow, persistent drift instead of random noise
+                    State.crackPhaseDrift += dt * 0.2; 
+                    // Reduced visibility simulates decoherence (Coherence length reduction)
+                    State.mziVisibility = 0.6; 
+                } else {
+                    State.crackPhaseDrift *= 0.95; // Decay drift when healed
+                    State.mziVisibility = 1.0;
+                }
+
+                if (Math.abs(State.gLoad - 1.0) > 3.0) {
+                    State.mziVisibility *= 0.9; // Slight contrast loss at high G
+                }
+
+                // Sum targets
+                const totalTargetPhase = targetStrainPhase + targetTempPhase + targetVibPhase + State.crackPhaseDrift;
+
+                // 5. SMOOTHING (Low Pass Filter)
+                // Critical for stability: Phase approaches target over time, smoothing out jitter
+                State.phaseShift += (totalTargetPhase - State.phaseShift) * (3.0 * dt);
+
+                // --- END MZI PHYSICS ---
+
+                State.cloudOpacity = Math.max(0, Math.min(1, (50000 - State.altitude) / 15000));
+                State.temperature = 15 - (State.altitude / 1000 * 2);
+                
+                let baseFreq = 45; 
+                let baseDamp = 0.05;
+
+                if(State.hasCrack) {
+                    baseFreq -= 15; 
+                    baseDamp = 0.01; 
+                }
+                if(State.hasIce) {
+                    baseFreq -= 5; 
+                    baseDamp = 0.15; 
+                }
+                
+                State.vibrationFreq = baseFreq + (Math.random() * 0.5); 
+                State.damping = baseDamp;
+
+                let isUnsafe = false;
+                const v = State.airspeed;
+                const g = State.gLoad;
+                const vs = CONSTANTS.STALL_SPEED;
+                
+                if (v > CONSTANTS.VNE) isUnsafe = true;
+                const maxSafeG = Math.min((v / vs) ** 2, 2.5);
+                if (g > maxSafeG) isUnsafe = true;
+                let minSafeG = -1.0;
+                if (v < vs) minSafeG = -1.0 * (v / vs);
+                if (g < minSafeG) isUnsafe = true;
+
+                if (isUnsafe) State.alarmTimer += dt;
+                else State.alarmTimer -= dt;
+                State.alarmTimer = Math.max(0, Math.min(0.5, State.alarmTimer));
+                State.warningActive = (State.alarmTimer > 0.2);
+
+                this.updateInstruments();
+            },
+
+            updateInstruments() {
+                const formatVal = (id, val, fix) => {
+                    const el = document.getElementById(id);
+                    const current = parseFloat(el.innerText) || 0;
+                    const smooth = current + (val - current) * 0.2; 
+                    el.innerText = smooth.toFixed(fix);
+                };
+                document.getElementById('lbl-freq-live').innerText = State.vibrationFreq.toFixed(1) + " Hz";
+                formatVal('val-phase', State.phaseShift, 2);
+                formatVal('val-g', State.gLoad, 1);
+                formatVal('val-temp', State.temperature, 0);
+                formatVal('val-freq', State.vibrationFreq, 1);
+                formatVal('val-damp', State.damping, 3);
+
+                const gEl = document.getElementById('val-g');
+                gEl.classList.remove('txt-norm', 'txt-warn', 'txt-crit');
+                
+                let gClass = 'txt-norm';
+                if (State.warningActive) gClass = 'txt-crit';
+                else if (Math.abs(State.gLoad) > 2.0) gClass = 'txt-warn';
+                
+                gEl.classList.add(gClass);
+                
+                const gPct = ((State.gLoad + 3) / 12) * 100;
+                document.getElementById('bar-g').style.width = `${Math.min(Math.max(gPct, 0), 100)}%`;
+            },
+
+            loop(now) {
+                const dt = (now - this.lastTime) / 1000;
+                this.lastTime = now;
+
+                this.updatePhysics(dt);
+
+                this.drawWindow(dt);
+                this.drawWing(dt);
+                this.drawFFT(dt);
+                this.drawVN();
+                this.drawMZI();
+                this.updateAlarm(dt);
+
+                requestAnimationFrame((t) => this.loop(t));
+            },
+
+            updateAlarm(dt) {
+                const el = document.getElementById('alarm-overlay');
+                if (State.warningActive) {
+                    const intensity = (Math.sin(State.time * 15) + 1) * 0.5; 
+                    el.style.background = `radial-gradient(circle at center, transparent 30%, rgba(255,0,0,${intensity * 0.6}) 90%)`;
+                    el.style.boxShadow = `inset 0 0 150px rgba(255, 0, 0, ${intensity})`;
+                    el.style.opacity = 1;
+                } else {
+                    el.style.opacity = 0;
+                }
+            },
+
+            drawWindow(dt) {
+                const r = this.renderers.window;
+                r.clear();
+                const ctx = r.ctx;
+                const w = r.width;
+                const h = r.height;
+
+                const normAlt = Math.min(Math.max(State.altitude / 50000, 0), 1);
+                const altFactor = Math.pow(normAlt, 0.7);
+                
+                const r1=135, g1=206, b1=235;
+                const r2=0, g2=10, b2=40;
+                
+                const R = r1 + (r2-r1)*altFactor;
+                const G = g1 + (g2-g1)*altFactor;
+                const B = b1 + (b2-b1)*altFactor;
+
+                const grad = ctx.createLinearGradient(0, 0, 0, h);
+                grad.addColorStop(0, `rgb(${R*0.5}, ${G*0.5}, ${B*0.5})`); 
+                grad.addColorStop(1, `rgb(${R}, ${G}, ${B})`);
+                ctx.fillStyle = grad;
+                ctx.fillRect(0,0,w,h);
+
+                const speedX = (State.airspeed / 10) * dt; 
+                const speedY = (State.verticalSpeed / 200) * dt;
+
+                const baseOpacity = 0.6 - (altFactor * 0.4);
+                const finalOpacity = baseOpacity * (State.cloudOpacity !== undefined ? State.cloudOpacity : 1);
+                
+                ctx.fillStyle = `rgba(255,255,255,${finalOpacity})`;
+
+                this.clouds.forEach(c => {
+                    c.x -= speedX * c.scale;
+                    c.y += speedY * c.scale; 
+
+                    if(c.x < -20) c.x = 120;
+                    if(c.y < -20) c.y = 120;
+                    if(c.y > 120) c.y = -20;
+
+                    const cx = (c.x / 100) * w;
+                    const cy = (c.y / 100) * h;
+                    
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, 20 * c.scale, 0, Math.PI*2);
+                    ctx.arc(cx + 15*c.scale, cy - 5*c.scale, 25 * c.scale, 0, Math.PI*2);
+                    ctx.arc(cx + 30*c.scale, cy, 15 * c.scale, 0, Math.PI*2);
+                    ctx.fill();
+                });
+            },
+
+            drawWing(dt) {
+                const r = this.renderers.wing;
+                r.clear();
+                const ctx = r.ctx;
+                const w = r.width;
+                const h = r.height;
+                const cx = w / 2;
+                const cy = h / 2;
+
+                const VISUAL_BEND_GAIN = h * 0.45; 
+                const VISUAL_FLUTTER_BASE = 4.0;   
+                const VISUAL_FLUTTER_CRACK = 15.0;  
+
+                const flutterAmp = State.hasCrack ? VISUAL_FLUTTER_CRACK : VISUAL_FLUTTER_BASE;
+                const vibration = Math.sin(State.time * 25) * flutterAmp; 
+
+                const staticBend = (State.gLoad - 1.0) * VISUAL_BEND_GAIN;
+                const bendY = staticBend + vibration + State.throttleImpulse;
+
+                const strain = Math.abs(State.gLoad - 1.0);
+                ctx.lineWidth = 3 + Math.min(strain * 1.5, 6);
+                ctx.strokeStyle = '#fff';
+                ctx.fillStyle = '#eee';
+
+                ctx.beginPath();
+                ctx.moveTo(cx - 10, cy - 40);
+                ctx.lineTo(cx + 10, cy - 40);
+                ctx.lineTo(cx + 10, cy + 50);
+                ctx.lineTo(cx - 10, cy + 50);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // Left Wing
+                ctx.beginPath();
+                ctx.moveTo(cx - 10, cy - 10); 
+                ctx.quadraticCurveTo(
+                    cx - w*0.25, cy - 10 + (bendY * 0.5), 
+                    cx - w*0.45, cy - 5 + bendY           
+                );
+                ctx.lineTo(cx - w*0.45, cy + 15 + bendY); 
+                ctx.quadraticCurveTo(
+                    cx - w*0.25, cy + 20 + (bendY * 0.5), 
+                    cx - 10, cy + 30                      
+                );
+                ctx.closePath();
+                ctx.stroke();
+                
+                if(State.gLoad > 2) {
+                    ctx.strokeStyle = '#ffaa00';
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.lineTo(cx, cy + (State.gLoad * 5));
+                    ctx.stroke();
+                }
+                
+                // Right Wing
+                ctx.strokeStyle = '#fff';
+                ctx.beginPath();
+                ctx.moveTo(cx + 10, cy - 10);
+                ctx.quadraticCurveTo(
+                    cx + w*0.25, cy - 10 + (bendY * 0.5), 
+                    cx + w*0.45, cy - 5 + bendY
+                );
+                ctx.lineTo(cx + w*0.45, cy + 15 + bendY);
+                ctx.quadraticCurveTo(
+                    cx + w*0.25, cy + 20 + (bendY * 0.5), 
+                    cx + 10, cy + 30
+                );
+                ctx.closePath();
+                ctx.stroke();
+            },
+
+            drawFFT(dt) {
+                const r = this.renderers.fft;
+                const ctx = r.ctx;
+                const w = r.width;
+                const h = r.height;
+
+                ctx.fillStyle = 'rgba(11, 13, 16, 0.2)';
+                ctx.fillRect(0,0,w,h);
+
+                const peakIndex = Math.floor(State.vibrationFreq / 2.5); 
+                
+                for(let i=0; i<40; i++) {
+                    let val = Math.random() * 5; 
+                    
+                    const dist = Math.abs(i - peakIndex);
+                    if(dist < 5) {
+                        val += (50 / (dist + 1)) * State.gLoad;
+                    }
+
+                    if(State.hasCrack && i > peakIndex) {
+                        const harm = Math.abs(i - (peakIndex * 2));
+                        if(harm < 3) val += 30 / (harm + 1);
+                    }
+
+                    this.fftData[i] += (val - this.fftData[i]) * 0.2;
+                }
+
+                const barW = w / 40;
+                ctx.fillStyle = State.hasCrack ? '#ff3333' : '#00f0ff';
+                
+                for(let i=0; i<40; i++) {
+                    const barH = (this.fftData[i] / 100) * h;
+                    ctx.fillRect(i * barW, h - barH, barW - 1, barH);
+                }
+            },
+
+            drawVN() {
+                const r = this.renderers.vn;
+                r.clear();
+                const ctx = r.ctx;
+                const w = r.width;
+                const h = r.height;
+
+                const maxV = 500;
+                const maxG = 8;
+                const minG = -4;
+                const rangeG = maxG - minG;
+
+                const getX = (v) => (v / maxV) * w;
+                const getY = (g) => h - ((g - minG) / rangeG) * h;
+
+                ctx.strokeStyle = '#005f66';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(getX(0), getY(0));
+                for(let v=10; v<=CONSTANTS.STALL_SPEED * 2; v+=10) {
+                     const gLim = Math.min((v/CONSTANTS.STALL_SPEED)**2, 2.5); 
+                     ctx.lineTo(getX(v), getY(gLim));
+                }
+                ctx.lineTo(getX(CONSTANTS.VNE), getY(2.5));
+                ctx.lineTo(getX(CONSTANTS.VNE), getY(-1));
+                ctx.lineTo(getX(CONSTANTS.STALL_SPEED), getY(-1));
+                ctx.closePath();
+                ctx.stroke();
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.beginPath();
+                ctx.moveTo(0, getY(0)); ctx.lineTo(w, getY(0)); 
+                ctx.moveTo(0, getY(1)); ctx.lineTo(w, getY(1)); 
+                ctx.stroke();
+
+                const px = getX(State.airspeed);
+                const py = getY(State.gLoad);
+
+                let color = '#00f0ff';
+                if(State.warningActive) color = '#ff3333';
+                else if(Math.abs(State.gLoad) > 2.0) color = '#ffaa00';
+
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(px, py, 4, 0, Math.PI*2);
+                ctx.fill();
+            },
+
+            drawMZI() {
+                const r = this.renderers.mzi;
+                const ctx = r.ctx;
+                const w = r.width;
+                const h = r.height;
+
+                if (!r.mziBuffer || r.mziBuffer.width !== w || r.mziBuffer.height !== h) {
+                    r.mziBuffer = ctx.createImageData(w, h);
+                }
+                
+                const imgData = r.mziBuffer;
+                const data = imgData.data;
+
+                const freq = 0.2; 
+                const shift = State.phaseShift * 10; 
+
+                const baseIntensity = 128;
+                const visibility = State.mziVisibility; 
+                const amplitude = 127 * visibility; 
+
+                // Removed noise/distortion logic for cleaner, smoother fringes
+                for(let y=0; y<h; y++) {
+                    for(let x=0; x<w; x++) {
+                        let intensity = baseIntensity + amplitude * Math.cos((x * freq) + shift);
+                        
+                        intensity = Math.max(0, Math.min(255, intensity));
+                        
+                        const idx = (y * w + x) * 4;
+                        data[idx] = 0;     
+                        data[idx+1] = intensity; 
+                        data[idx+2] = intensity; 
+                        data[idx+3] = 255; 
+                    }
+                }
+                ctx.putImageData(imgData, 0, 0);
+            }
+        };
+
+        window.onload = () => app.init();
+
+    </script>
+</body>
+</html>
