@@ -546,7 +546,7 @@
         <!-- Strain Chart -->
         <div class="panel chart-panel">
             <h2>📊 Microstrain Data Stream (μɛ)</h2>
-            <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 8px; height: calc(100% - 40px);">
+            <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 8px; height: calc(100% - 40px); overflow: auto;">
                 <div style="position: relative;">
                     <div style="position: absolute; top: 4px; left: 8px; font-size: 11px; color: #ef4444; font-weight: 600; z-index: 10;">
                         RAW SENSOR (with thermal drift)
@@ -604,7 +604,7 @@
         </div>
 
         <!-- Structural Health Panel -->
-        <div class="panel health-panel">
+        <div class="panel health-panel" style="overflow: auto;">
             <h2>🏥 Structural Health Monitor</h2>
             
             <div class="health-indicator" id="healthIndicator">

@@ -1,0 +1,467 @@
+/* ============================================
+   ADVANCED LAB LAYOUT - EXTENDS BASE STYLES
+   Compact efficient layout with reduced margins
+   ============================================ */
+
+/* Override container padding for more space */
+.lab-page .container {
+    padding: 1rem 0.5rem !important;
+    max-width: 100% !important;
+}
+
+.lab-layout-advanced {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+/* ============================================
+   TOP SECTION: Interferometer + Controls
+   ============================================ */
+
+.top-section {
+    display: grid;
+    grid-template-columns: 650px 1fr;
+    gap: 1.5rem;
+}
+
+/* Square Interferometer Container */
+.interferometer-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: fit-content;
+}
+
+#labCanvas {
+    display: block;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+}
+
+/* All Controls in 2x2 Grid */
+.controls-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: 1rem;
+}
+
+/* Control Panels */
+.control-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+}
+
+.control-section h3 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.95rem;
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Basic controls and path detectors share first row */
+.control-section:nth-child(1) {
+    /* Photon emission */
+}
+
+.control-section:nth-child(2) {
+    /* Path detectors */
+}
+
+/* Laser and Material in second row */
+.control-section:nth-child(3) {
+    /* Laser */
+}
+
+.control-section:nth-child(4) {
+    /* Material */
+}
+
+/* Environment and Reset in third row */
+.control-section:nth-child(5) {
+    /* Environment */
+}
+
+.control-section:nth-child(6) {
+    /* Reset button placeholder */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============================================
+   BOTTOM SECTION: Outputs in Rectangle
+   ============================================ */
+
+.outputs-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.output-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+}
+
+.output-panel h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.explanation-output {
+    grid-column: span 1;
+}
+
+/* ============================================
+   COMPACT WAVELENGTH CONTROLS
+   ============================================ */
+
+.wavelength-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.wavelength-readout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+}
+
+.wavelength-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'Courier New', monospace;
+}
+
+.wavelength-unit {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    align-self: flex-end;
+    margin-bottom: 0.3rem;
+}
+
+.color-preview-small {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    margin-left: 0.5rem;
+    box-shadow: 0 0 15px currentColor;
+    animation: colorPulse 2s ease-in-out infinite;
+}
+
+.wavelength-slider {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-secondary);
+    border-radius: 3px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.wavelength-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--neon-cyan);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--neon-cyan);
+}
+
+.wavelength-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--neon-cyan);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 8px var(--neon-cyan);
+}
+
+.spectrum-bar-compact {
+    height: 16px;
+    background: linear-gradient(to right, 
+        #8b00ff 0%,
+        #4b0082 10%,
+        #0000ff 20%,
+        #00ffff 35%,
+        #00ff00 50%,
+        #ffff00 65%,
+        #ff7f00 80%,
+        #ff0000 90%,
+        #8b0000 100%
+    );
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.preset-buttons-compact {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.preset-btn-small {
+    flex: 1;
+    padding: 0.4rem 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preset-btn-small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.preset-btn-small.violet {
+    border-color: #8b00ff;
+    color: #8b00ff;
+}
+
+.preset-btn-small.violet:hover {
+    background: rgba(139, 0, 255, 0.1);
+}
+
+.preset-btn-small.green {
+    border-color: #00ff00;
+    color: #00ff00;
+}
+
+.preset-btn-small.green:hover {
+    background: rgba(0, 255, 0, 0.1);
+}
+
+.preset-btn-small.red {
+    border-color: #ff0000;
+    color: #ff0000;
+}
+
+.preset-btn-small.red:hover {
+    background: rgba(255, 0, 0, 0.1);
+}
+
+/* ============================================
+   MATERIAL LAB COMPACT
+   ============================================ */
+
+.material-select {
+    width: 100%;
+    padding: 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 6px;
+    margin-top: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.material-select:focus {
+    outline: none;
+    border-color: var(--neon-purple);
+}
+
+.material-info-compact {
+    padding: 0.5rem;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--neon-purple);
+    text-align: center;
+}
+
+/* ============================================
+   NOISE CONTROLS COMPACT
+   ============================================ */
+
+.snr-display-compact {
+    padding: 0.5rem;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.snr-display-compact strong {
+    color: var(--neon-yellow);
+    font-size: 1rem;
+}
+
+/* ============================================
+   OSCILLOSCOPE COMPACT
+   ============================================ */
+
+.oscilloscope-display {
+    background: #000;
+    border-radius: 8px;
+    padding: 0.5rem;
+    border: 2px solid rgba(57, 255, 20, 0.3);
+    margin-bottom: 0.75rem;
+}
+
+#oscilloscope {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #001a00;
+    border-radius: 4px;
+}
+
+.scope-controls {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+
+.scope-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    padding: 0.4rem 0.6rem;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.scope-label input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.scope-explanation-compact {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 6px;
+}
+
+.scope-explanation-compact p {
+    margin: 0 0 0.4rem 0;
+    color: var(--text-secondary);
+}
+
+.scope-explanation-compact p:last-child {
+    margin-bottom: 0;
+}
+
+.scope-explanation-compact strong {
+    color: var(--neon-green);
+}
+
+.scope-reading-normal {
+    color: var(--neon-cyan);
+}
+
+.scope-reading-interference {
+    color: var(--neon-yellow);
+}
+
+.scope-reading-path {
+    color: var(--neon-red);
+}
+
+/* ============================================
+   INTERFERENCE PATTERN
+   ============================================ */
+
+#interferencePattern {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+}
+
+/* ============================================
+   RESPONSIVE LAYOUT
+   ============================================ */
+
+@media (max-width: 1400px) {
+    .top-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .interferometer-container {
+        justify-self: center;
+    }
+    
+    .controls-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .outputs-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .explanation-output {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 900px) {
+    .controls-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .outputs-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .explanation-output {
+        grid-column: span 1;
+    }
+    
+    .interferometer-container {
+        padding: 1rem;
+    }
+    
+    #labCanvas {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes colorPulse {
+    0%, 100% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+}
