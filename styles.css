@@ -1988,3 +1988,24 @@ body.landing {
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 0 42px rgba(176, 38, 255, 0.7);
 }
+
+/* ===============================
+   PERFECTLY CENTER PRINCIPLE BOX
+   =============================== */
+
+.principle-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;   /* horizontal center */
+  align-items: center;
+  margin: 2.5rem 0;
+}
+
+.principle-box {
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+}
+.principle-box {
+  transform: translateX(-4px);
+}
