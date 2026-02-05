@@ -1656,3 +1656,335 @@ footer {
   color: #64748b;
   font-size: 0.85rem;
 }
+
+
+/* ===============================
+   NO-SCROLL LANDING LAYOUT
+   =============================== */
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body.landing {
+  background: radial-gradient(circle at top, #0b1028, #020617);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #e5e7eb;
+  overflow: hidden;
+}
+
+/* Ambient glow */
+.ambient-glow {
+  position: fixed;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(0,212,255,0.25), transparent 70%);
+  top: -300px;
+  left: 50%;
+  transform: translateX(-50%);
+  filter: blur(160px);
+  animation: breathe 7s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%,100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Grid layout */
+.landing-grid {
+  position: relative;
+  z-index: 2;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 3rem 4rem;
+}
+
+/* Header */
+.landing-header {
+  text-align: center;
+}
+
+.landing-header h1 {
+  font-size: 3rem;
+  background: linear-gradient(135deg, #00fff9, #00d4ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.landing-header p {
+  margin-top: 0.6rem;
+  color: #94a3b8;
+}
+
+.landing-header span {
+  color: #a5b4fc;
+}
+
+/* Principle strip */
+.principle-strip {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  align-items: center;
+  gap: 2rem;
+}
+
+.path {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #cbd5f5;
+  font-size: 0.9rem;
+}
+
+.path .dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00fff9;
+  margin: 0.6rem 0;
+  animation: pulseDot 1.8s infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+
+.principle-text {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(12px);
+  text-align: center;
+}
+
+.principle-text strong {
+  color: #00fff9;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.principle-text p {
+  font-size: 0.95rem;
+  color: #c7d2fe;
+  margin: 0.4rem 0;
+}
+
+.principle-text .emphasis {
+  color: #b026ff;
+  font-style: italic;
+  margin-top: 0.6rem;
+}
+
+/* ===============================
+   LIGHT MODE BUTTON LAYOUT
+   =============================== */
+
+.mode-entrances {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+/* Lightweight mode containers */
+.mode-box {
+  text-align: center;
+  padding: 1.5rem 1rem;
+}
+
+.mode-box h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.mode-box p {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  margin-bottom: 1.5rem;
+}
+
+/* Minimal, elegant buttons */
+.mode-box button {
+  background: transparent;
+  border: 1.5px solid rgba(165, 180, 252, 0.4);
+  color: #a5b4fc;
+  padding: 0.6rem 1.6rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Hover effect */
+.mode-box button:hover {
+  border-color: #00fff9;
+  color: #00fff9;
+  box-shadow: 0 0 18px rgba(0, 255, 249, 0.35);
+  transform: translateY(-2px);
+}
+/* ===============================
+   EYE-CATCHING CTA BUTTONS
+   =============================== */
+
+.cta {
+  position: relative;
+  background: linear-gradient(135deg, #00fff9, #6366f1);
+  color: #020617;
+  border: none;
+  padding: 0.75rem 2.2rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow:
+    0 0 0 rgba(0,0,0,0),
+    0 0 25px rgba(0, 255, 249, 0.35);
+  transition: all 0.25s ease;
+  animation: glowPulseBtn 3s ease-in-out infinite;
+}
+
+/* Different personality for Engineering */
+.engineering-btn {
+  background: linear-gradient(135deg, #b026ff, #6366f1);
+  box-shadow: 0 0 25px rgba(176, 38, 255, 0.35);
+}
+
+/* Hover = energy spike */
+.cta:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow:
+    0 0 35px rgba(0, 255, 249, 0.6),
+    0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* Arrow animation */
+.cta span {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+.cta:hover span {
+  transform: translateX(6px);
+}
+
+/* Breathing glow animation */
+@keyframes glowPulseBtn {
+  0%, 100% {
+    box-shadow: 0 0 18px rgba(0, 255, 249, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 255, 249, 0.6);
+  }
+}
+
+/* Engineering pulse override */
+.engineering-btn {
+  animation: glowPulseEng 3s ease-in-out infinite;
+}
+
+@keyframes glowPulseEng {
+  0%, 100% {
+    box-shadow: 0 0 18px rgba(176, 38, 255, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(176, 38, 255, 0.6);
+  }
+}
+
+/* ===============================
+   MODE PANELS (BOXED SECTIONS)
+   =============================== */
+
+.mode-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  margin-top: 2.5rem;
+  align-items: center;
+}
+
+/* Main panel box */
+.mode-panel {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  border-radius: 22px;
+  padding: 2.6rem 2.4rem;
+  text-align: center;
+  backdrop-filter: blur(16px);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  position: relative;
+}
+
+/* Hover lift */
+.mode-panel:hover {
+  transform: translateY(-8px);
+}
+
+/* Titles */
+.mode-panel h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.6rem;
+}
+
+/* Description */
+.mode-desc {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+/* ===============================
+   PANEL BUTTONS
+   =============================== */
+
+.panel-btn {
+  padding: 0.75rem 2.2rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.25s ease;
+}
+
+/* Learning style */
+.learning-panel {
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+.learning-btn {
+  background: linear-gradient(135deg, #00fff9, #00d4ff);
+  color: #020617;
+  box-shadow: 0 0 28px rgba(0, 255, 249, 0.45);
+}
+
+.learning-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 0 42px rgba(0, 255, 249, 0.7);
+}
+
+/* Engineering style */
+.engineering-panel {
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+.engineering-btn {
+  background: linear-gradient(135deg, #b026ff, #6366f1);
+  color: white;
+  box-shadow: 0 0 28px rgba(176, 38, 255, 0.45);
+}
+
+.engineering-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 0 42px rgba(176, 38, 255, 0.7);
+}
