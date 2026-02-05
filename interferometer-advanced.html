@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Interferometer Lab - Interactive Experiment</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles-advanced.css">
+</head>
+<body class="lab-page">
+    <div class="container">
+        <header>
+            <h1>Advanced Interferometer Lab</h1>
+            <p class="subtitle">Explore quantum optics with professional lab instruments</p>
+            <button class="nav-button" onclick="location.href='index.html'">← Back to Concepts</button>
+        </header>
+
+        <main>
+            <div class="lab-layout-advanced">
+                <!-- Top Section: Split into Interferometer (Left) and Controls (Right) -->
+                <div class="top-section">
+                    <!-- Left: Square Interferometer -->
+                    <div class="interferometer-container">
+                        <canvas id="labCanvas" width="650" height="650"></canvas>
+                    </div>
+
+                    <!-- Right: All Controls in 2x2 Grid -->
+                    <div class="controls-container">
+                        <!-- Row 1, Col 1: Basic Controls -->
+                        <div class="control-section">
+                            <h3>Photon Emission</h3>
+                            <div class="button-row">
+                                <button onclick="experiment.emitPhotons(1)">1</button>
+                                <button onclick="experiment.emitPhotons(10)">10</button>
+                                <button onclick="experiment.emitPhotons(100)">100</button>
+                                <button onclick="experiment.emitPhotons(1000)">1000</button>
+                            </div>
+                            
+                            <label class="toggle" style="margin-top: 0.75rem;">
+                                <input type="checkbox" id="streamMode" onchange="experiment.toggleStreamMode(this.checked)">
+                                <span>🌊 Stream Mode</span>
+                            </label>
+                            <div id="streamControls" style="display: none; margin-top: 0.5rem;">
+                                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block;">
+                                    Rate: <span id="intensityValue">5</span> photons/sec
+                                    <input type="range" id="intensity" min="1" max="50" value="5" 
+                                           onchange="experiment.updateIntensity(this.value)" 
+                                           style="width: 100%; margin-top: 0.3rem;">
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Row 1, Col 2: Path Detectors -->
+                        <div class="control-section">
+                            <h3>Path Detectors</h3>
+                            <label class="toggle">
+                                <input type="checkbox" id="upperDetector" onchange="experiment.toggleUpperDetector(this.checked)">
+                                <span>Upper Path</span>
+                            </label>
+                            <label class="toggle" style="margin-top: 0.5rem;">
+                                <input type="checkbox" id="lowerDetector" onchange="experiment.toggleLowerDetector(this.checked)">
+                                <span>Lower Path</span>
+                            </label>
+                        </div>
+
+                        <!-- Row 2, Col 1: Tunable Laser Source -->
+                        <div class="control-section">
+                            <h3>🔬 Laser Source</h3>
+                            <div class="wavelength-compact">
+                                <div class="wavelength-readout">
+                                    <span class="wavelength-value" id="wavelengthValue">532</span>
+                                    <span class="wavelength-unit">nm</span>
+                                    <div class="color-preview-small" id="colorPreview"></div>
+                                </div>
+                                <input type="range" id="wavelength" min="380" max="750" value="532" 
+                                       oninput="experiment.updateWavelength(this.value)"
+                                       class="wavelength-slider">
+                                <div class="spectrum-bar-compact"></div>
+                                <div class="preset-buttons-compact">
+                                    <button onclick="experiment.setWavelength(405)" class="preset-btn-small violet">405</button>
+                                    <button onclick="experiment.setWavelength(532)" class="preset-btn-small green">532</button>
+                                    <button onclick="experiment.setWavelength(650)" class="preset-btn-small red">650</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2, Col 2: Material Lab -->
+                        <div class="control-section">
+                            <h3>🧪 Material Lab</h3>
+                            <label class="toggle">
+                                <input type="checkbox" id="materialEnabled" onchange="experiment.toggleMaterial(this.checked)">
+                                <span>Insert Material</span>
+                            </label>
+                            
+                            <div id="materialControls" style="display: none; margin-top: 0.5rem;">
+                                <select id="materialType" onchange="experiment.updateMaterial()" class="material-select">
+                                    <option value="glass">Glass (n=1.5)</option>
+                                    <option value="water">Water (n=1.33)</option>
+                                    <option value="diamond">Diamond (n=2.42)</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                                
+                                <label id="customRefractiveIndex" style="display: none; margin-top: 0.5rem; font-size: 0.85rem;">
+                                    n = <span id="nValue">1.5</span>
+                                    <input type="range" id="refractiveIndex" min="1.0" max="3.0" step="0.01" value="1.5"
+                                           oninput="experiment.updateRefractiveIndex(this.value)" style="width: 100%;">
+                                </label>
+                                
+                                <label style="font-size: 0.85rem; margin-top: 0.5rem; display: block;">
+                                    Thickness = <span id="thicknessValue">10</span>mm
+                                    <input type="range" id="thickness" min="1" max="50" value="10"
+                                           oninput="experiment.updateThickness(this.value)" style="width: 100%;">
+                                </label>
+                                
+                                <div class="material-info-compact">
+                                    Phase: <span id="phaseShift">0</span>°
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 3, Col 1: Environmental Noise -->
+                        <div class="control-section">
+                            <h3>📊 Environment</h3>
+                            <label class="toggle">
+                                <input type="checkbox" id="noiseEnabled" onchange="experiment.toggleNoise(this.checked)">
+                                <span>Vibrations/Noise</span>
+                            </label>
+                            
+                            <div id="noiseControls" style="display: none; margin-top: 0.5rem;">
+                                <label style="font-size: 0.85rem; display: block;">
+                                    Level = <span id="noiseValue">20</span>%
+                                    <input type="range" id="noiseLevel" min="0" max="100" value="20"
+                                           oninput="experiment.updateNoise(this.value)" style="width: 100%;">
+                                </label>
+                                
+                                <div class="snr-display-compact">
+                                    SNR: <strong id="snrValue">∞</strong> dB
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 3, Col 2: Reset Button -->
+                        <div class="control-section">
+                            
+                            <button class="reset-button" onclick="experiment.reset()">Reset Experiment</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Section: Full Width Outputs -->
+                <div class="outputs-section">
+                    <!-- Oscilloscope -->
+                    <div class="output-panel">
+                        <h3>📈 Live Oscilloscope</h3>
+                        <div class="oscilloscope-display">
+                            <canvas id="oscilloscope" width="380" height="200"></canvas>
+                        </div>
+                        <div class="scope-controls">
+                            <label class="scope-label">
+                                <input type="checkbox" id="scopeD1" checked onchange="experiment.updateScopeChannels()">
+                                <span style="color: var(--neon-blue);">● D1</span>
+                            </label>
+                            <label class="scope-label">
+                                <input type="checkbox" id="scopeD2" checked onchange="experiment.updateScopeChannels()">
+                                <span style="color: var(--neon-purple);">● D2</span>
+                            </label>
+                        </div>
+                        <div class="scope-explanation-compact" id="scopeExplanation">
+                            <p>Enable stream mode to see real-time detection rates.</p>
+                        </div>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="output-panel">
+                        <h3>Statistics</h3>
+                        <div class="stat-item">
+                            <span>Total:</span>
+                            <strong id="totalPhotons">0</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span>D1:</span>
+                            <strong id="d1Count">0</strong>
+                            <span class="percentage" id="d1Percent">(0%)</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>D2:</span>
+                            <strong id="d2Count">0</strong>
+                            <span class="percentage" id="d2Percent">(0%)</span>
+                        </div>
+                        <div class="stat-item path-stat" id="pathStat" style="display: none;">
+                            <span>Path:</span>
+                            <strong id="pathCount">0</strong>
+                            <span class="percentage" id="pathPercent">(0%)</span>
+                        </div>
+                    </div>
+
+                    <!-- Interference Pattern -->
+                    <div class="output-panel">
+                        <h3>Detection Pattern</h3>
+                        <canvas id="interferencePattern" width="280" height="220"></canvas>
+                    </div>
+
+                    <!-- Explanation -->
+                    <div class="output-panel explanation-output">
+                        <h3>What's Happening?</h3>
+                        <div id="explanationText">
+                            <p>Configure the experiment and run photons to see results.</p>
+                        </div>
+                    </div>
+                      <div class="next-section" style="align:Right;">
+                        <button class="cta-button" onclick="location.href='bomb-game.html'">
+                            Proceed to Bomb Detection →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="interferometer-advanced.js"></script>
+</body>
+</html>
