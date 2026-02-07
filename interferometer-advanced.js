@@ -457,11 +457,14 @@ const experiment = {
                 const progress = Math.min(elapsed / duration, 1);
                 
                 this.redraw();
-                this.drawPhotonPath(result, progress);
                 
+                // Only draw the photon if progress is less than 1
                 if (progress < 1) {
+                    this.drawPhotonPath(result, progress);
                     requestAnimationFrame(animate);
                 } else {
+                    // Animation is done: redraw system empty and resolve
+                    this.redraw(); 
                     resolve();
                 }
             };

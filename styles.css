@@ -2051,4 +2051,149 @@ body.landing {
 
 
 
+/*=======================================================================================================================*/
 
+
+
+
+
+
+
+
+/* ============================================
+   GLOBAL STYLES & VARIABLES
+   ============================================ */
+
+:root {
+    /* Core Colors */
+    --bg-primary: #0a0e17;
+    --bg-secondary: #141b2d;
+    --bg-card: #1a2332;
+    --bg-hover: #222d42;
+    
+    /* Neon Accents */
+    --neon-blue: #00d4ff;
+    --neon-cyan: #00fff9;
+    --neon-purple: #b026ff;
+    --neon-green: #39ff14;
+    --neon-red: #ff0844;
+    --neon-yellow: #ffed4e;
+    
+    /* Text Colors */
+    --text-primary: #e8edf4;
+    --text-secondary: #a0aec0;
+    --text-dim: #718096;
+    
+    /* UI Elements */
+    --border-color: rgba(0, 212, 255, 0.2);
+    --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    /* Font size scales with screen width */
+    font-size: clamp(14px, 1vw, 18px);
+}
+
+.container {
+    width: 95%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 2vw;
+}
+
+/* ============================================
+   TYPOGRAPHY (Dynamic Scaling)
+   ============================================ */
+
+h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+}
+
+h2 { font-size: clamp(1.4rem, 3vw, 2rem); margin: 2rem 0 1rem; }
+h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); color: var(--neon-cyan); }
+
+/* ============================================
+   DYNAMIC LAYOUTS
+   ============================================ */
+
+.lab-layout {
+    display: grid;
+    /* Replaced 400px with fractional/percentage logic */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+/* Responsive Canvas Wrapper */
+canvas {
+    max-width: 100%;
+    height: auto !important; /* Forces aspect ratio maintenance */
+    display: block;
+    margin: 0 auto;
+}
+
+.concept-card {
+    display: flex;
+    flex-wrap: wrap; /* Wraps on small screens */
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+/* ============================================
+   QKD GRID (Dynamic Widths)
+   ============================================ */
+
+.qkd-grid {
+    display: grid;
+    /* Fluid columns that collapse based on available space */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
+    gap: 1.5rem;
+    max-width: 100%;
+}
+
+.bit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 0.5rem;
+}
+
+/* ============================================
+   GAME GRID (Dynamic Widths)
+   ============================================ */
+
+.game-grid {
+    display: grid;
+    /* Replaced hardcoded 350px/200px with minmax */
+    grid-template-columns: 1fr minmax(280px, 0.3fr) minmax(180px, 0.2fr);
+    gap: 1rem;
+    height: auto;
+    min-height: 70vh;
+}
+
+@media (max-width: 1100px) {
+    .game-grid {
+        grid-template-columns: 1fr;
+    }
+}

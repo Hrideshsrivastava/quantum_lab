@@ -465,3 +465,103 @@
         opacity: 1;
     }
 }
+
+
+
+
+/*=====================================================================================================================*/
+
+
+
+/* ============================================
+   ADVANCED LAB LAYOUT - DYNAMIC REFIT
+   ============================================ */
+
+.lab-page .container {
+    padding: 1rem !important;
+    max-width: 1800px !important;
+}
+
+.top-section {
+    display: grid;
+    /* Replaced 650px with a percentage-based minmax */
+    grid-template-columns: minmax(auto, 60%) 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.interferometer-container {
+    width: 100%;
+    aspect-ratio: 16 / 10; /* Maintains shape across devices */
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1vw;
+}
+
+#labCanvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ============================================
+   DYNAMIC CONTROL GRID
+   ============================================ */
+
+.controls-container {
+    display: grid;
+    /* Dynamically adjusts columns based on container width */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.control-section {
+    height: 100%;
+    padding: 1.25rem;
+}
+
+/* ============================================
+   OUTPUTS SECTION (Fluid 4-column)
+   ============================================ */
+
+.outputs-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Ensure wavelength value stays readable */
+.wavelength-value {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+/* ============================================
+   LANDING PAGE (Perfect Fluidity)
+   ============================================ */
+
+.mode-panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(1rem, 4vw, 4rem);
+    width: 100%;
+    padding: 0 2vw;
+}
+
+.mode-panel {
+    width: 100%;
+    padding: clamp(1.5rem, 3vw, 2.6rem);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 900px) {
+    .top-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .interferometer-container {
+        aspect-ratio: auto;
+        height: 40vh;
+    }
+}
