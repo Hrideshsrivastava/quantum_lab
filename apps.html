@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Applications | Quantum Lab</title>
+    <meta name="description"
+        content="Real-world quantum and photonics engineering applications: advanced MZI structural monitoring, aerospace SHM cockpit, QKD, and the bomb detector thought experiment." />
+    <link rel="stylesheet" href="quantum-shared.css" />
+    <style>
+        body {
+            overflow-y: auto;
+        }
+
+        .apps-page {
+            padding: 0 1.5rem 5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            padding: 2.5rem 0 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }
+
+        .page-header h1 {
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0.5rem 0 0.75rem;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 500px) {
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .app-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem 1.75rem 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            overflow: hidden;
+            transition: all 0.35s ease;
+            backdrop-filter: blur(16px);
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .app-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .app-card:hover::before {
+            opacity: 1;
+        }
+
+        .app-card.cyan:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 20px 50px rgba(0, 212, 255, 0.18);
+        }
+
+        .app-card.green:hover {
+            border-color: var(--neon-green);
+            box-shadow: 0 20px 50px rgba(0, 255, 157, 0.18);
+        }
+
+        .app-card.purple:hover {
+            border-color: var(--neon-purple);
+            box-shadow: 0 20px 50px rgba(176, 38, 255, 0.18);
+        }
+
+        .app-card.gold:hover {
+            border-color: var(--neon-gold);
+            box-shadow: 0 20px 50px rgba(255, 214, 10, 0.18);
+        }
+
+        .app-card.red:hover {
+            border-color: var(--neon-red);
+            box-shadow: 0 20px 50px rgba(255, 45, 85, 0.18);
+        }
+
+        .app-card.cyan::before {
+            background: radial-gradient(ellipse at top left, rgba(0, 212, 255, 0.07), transparent 60%);
+        }
+
+        .app-card.green::before {
+            background: radial-gradient(ellipse at top left, rgba(0, 255, 157, 0.07), transparent 60%);
+        }
+
+        .app-card.purple::before {
+            background: radial-gradient(ellipse at top left, rgba(176, 38, 255, 0.07), transparent 60%);
+        }
+
+        .app-card.gold::before {
+            background: radial-gradient(ellipse at top left, rgba(255, 214, 10, 0.07), transparent 60%);
+        }
+
+        .app-card.red::before {
+            background: radial-gradient(ellipse at top left, rgba(255, 45, 85, 0.07), transparent 60%);
+        }
+
+        .app-icon {
+            font-size: 2.8rem;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .app-tag-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .app-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.6rem;
+            line-height: 1.25;
+        }
+
+        .app-desc {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            flex: 1;
+        }
+
+        .app-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .app-launch {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            transition: gap 0.2s ease;
+        }
+
+        .app-card:hover .app-launch {
+            gap: 0.7rem;
+        }
+
+        .app-card.cyan .app-launch {
+            color: var(--neon-cyan);
+        }
+
+        .app-card.green .app-launch {
+            color: var(--neon-green);
+        }
+
+        .app-card.purple .app-launch {
+            color: var(--neon-purple);
+        }
+
+        .app-card.gold .app-launch {
+            color: var(--neon-gold);
+        }
+
+        .app-card.red .app-launch {
+            color: var(--neon-red);
+        }
+
+        .app-complexity {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            padding: 0.25rem 0.7rem;
+            border-radius: 100px;
+            text-transform: uppercase;
+        }
+
+        .complex-beginner {
+            background: rgba(0, 255, 157, 0.1);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 157, 0.25);
+        }
+
+        .complex-intermediate {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--neon-cyan);
+            border: 1px solid rgba(0, 212, 255, 0.25);
+        }
+
+        .complex-advanced {
+            background: rgba(176, 38, 255, 0.1);
+            color: var(--neon-purple);
+            border: 1px solid rgba(176, 38, 255, 0.25);
+        }
+
+        .card-strip {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .app-card:hover .card-strip {
+            opacity: 1;
+        }
+
+        .app-card.cyan .card-strip {
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+
+        .app-card.green .card-strip {
+            background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+        }
+
+        .app-card.purple .card-strip {
+            background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+        }
+
+        .app-card.gold .card-strip {
+            background: linear-gradient(90deg, transparent, var(--neon-gold), transparent);
+        }
+
+        .app-card.red .card-strip {
+            background: linear-gradient(90deg, transparent, var(--neon-red), transparent);
+        }
+
+        .info-section {
+            margin-top: 3rem;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .info-section h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+        }
+
+        .info-item h3 {
+            font-size: 0.8rem;
+            color: var(--neon-cyan);
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .info-item p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="q-nav">
+        <a href="index.html" class="q-nav-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Home
+        </a>
+        <ul class="q-nav-links">
+            <li><a href="bloch.html">Section 1 · Theory</a></li>
+            <li><a href="algorithms.html">Section 2 · Algorithms</a></li>
+            <li><a href="apps.html" class="active">Section 3 · Applications</a></li>
+        </ul>
+    </nav>
+
+    <div class="q-page">
+        <div class="apps-page">
+
+            <div class="page-header">
+                <span class="section-tag green">03 · Applications</span>
+                <h1>Real-World Quantum Engineering</h1>
+                <p style="color:var(--text-secondary);font-size:0.95rem;max-width:640px;margin:0;">
+                    Quantum optics and quantum information at work in engineering, aerospace sensing, and secure
+                    communications. Each app is a live simulation.
+                </p>
+            </div>
+
+            <div class="apps-grid">
+
+                <!-- Aerospace SHM Cockpit (flight.html) -->
+                <a href="flight.html" class="app-card green">
+                    <div class="app-icon">✈️</div>
+                    <div class="app-tag-row">
+                        <span class="section-tag green">Aerospace</span>
+                        <span class="section-tag cyan">SHM</span>
+                    </div>
+                    <div class="app-title">Aerospace SHM Cockpit</div>
+                    <p class="app-desc">
+                        Fibre-optic MZI sensors mounted on aircraft wings monitor structural health in real time.
+                        Simulate cruise, banking, max-G manoeuvres, crack propagation, and ice accretion — watch FFT,
+                        V-n envelope, and MZI phase respond live.
+                    </p>
+                    <div class="app-footer">
+                        <span class="app-complexity complex-advanced">Advanced</span>
+                        <span class="app-launch">Launch →</span>
+                    </div>
+                    <div class="card-strip"></div>
+                </a>
+
+                <!-- Advanced MZI Lab (interferometer-advanced.html or mzi_structural.html) -->
+                <a href="mzi_structural.html" class="app-card cyan">
+                    <div class="app-icon">🌉</div>
+                    <div class="app-tag-row">
+                        <span class="section-tag cyan">Sensing</span>
+                        <span class="section-tag gold">Engineering</span>
+                    </div>
+                    <div class="app-title">MZI Structural Health Monitor</div>
+                    <p class="app-desc">
+                        A digital twin of a bridge instrumented with fibre-optic Mach–Zehnder interferometers. Simulate
+                        vehicle loads, temperature drift, and damage events. Watch FFT spectral shifts and phase-delay
+                        changes respond to structural stiffness loss.
+                    </p>
+                    <div class="app-footer">
+                        <span class="app-complexity complex-advanced">Expert</span>
+                        <span class="app-launch">Launch →</span>
+                    </div>
+                    <div class="card-strip"></div>
+                </a>
+
+                <!-- Advanced MZI Lab -->
+                <a href="interferometer-advanced.html" class="app-card purple">
+                    <div class="app-icon">⚗️</div>
+                    <div class="app-tag-row">
+                        <span class="section-tag purple">Advanced</span>
+                        <span class="section-tag cyan">Optics</span>
+                    </div>
+                    <div class="app-title">Advanced MZI Lab</div>
+                    <p class="app-desc">
+                        Full engineering-grade MZI simulator: multi-mode operation, noise models, coherence length
+                        controls, and a signal-processing pipeline. Adjust beam splitter ratios, insert phase shifters,
+                        and observe interference on the detector. Built for serious sensing system design.
+                    </p>
+                    <div class="app-footer">
+                        <span class="app-complexity complex-advanced">Advanced</span>
+                        <span class="app-launch">Launch →</span>
+                    </div>
+                    <div class="card-strip"></div>
+                </a>
+
+                <!-- QKD -->
+                <a href="qkd.html" class="app-card gold">
+                    <div class="app-icon">🔐</div>
+                    <div class="app-tag-row">
+                        <span class="section-tag gold">Cryptography</span>
+                        <span class="section-tag cyan">Security</span>
+                    </div>
+                    <div class="app-title">Quantum Key Distribution — BB84</div>
+                    <p class="app-desc">
+                        Step through the full BB84 QKD protocol. Alice transmits qubits in random bases; Bob measures;
+                        they sift keys over the public channel. Introduce an eavesdropper and watch the error rate
+                        reveal her presence.
+                    </p>
+                    <div class="app-footer">
+                        <span class="app-complexity complex-intermediate">Intermediate</span>
+                        <span class="app-launch">Launch →</span>
+                    </div>
+                    <div class="card-strip"></div>
+                </a>
+
+                <!-- Bomb Game -->
+                <a href="bomb-game.html" class="app-card red">
+                    <div class="app-icon">💣</div>
+                    <div class="app-tag-row">
+                        <span class="section-tag"
+                            style="background:rgba(255,45,85,0.1);color:var(--neon-red);border:1px solid rgba(255,45,85,0.25);">Thought
+                            Experiment</span>
+                        <span class="section-tag purple">Paradox</span>
+                    </div>
+                    <div class="app-title">Elitzur–Vaidman Bomb Detector</div>
+                    <p class="app-desc">
+                        Can you detect a bomb without detonating it — without the photon ever touching the bomb? The
+                        Elitzur–Vaidman interaction-free measurement shows this is possible using quantum interference.
+                        Explore the game to see it happen.
+                    </p>
+                    <div class="app-footer">
+                        <span class="app-complexity complex-beginner">Beginner</span>
+                        <span class="app-launch">Launch →</span>
+                    </div>
+                    <div class="card-strip"></div>
+                </a>
+
+            </div>
+
+            <div class="info-section">
+                <h2>📖 What connects these applications?</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h3>Quantum Superposition</h3>
+                        <p>Every application here relies on a particle or photon existing in multiple states
+                            simultaneously — a resource with no classical equivalent.</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>Optical Interference</h3>
+                        <p>MZI sensing and the bomb detector both exploit constructive/destructive interference to
+                            encode information with extreme precision.</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>No-Cloning Theorem</h3>
+                        <p>QKD security rests on the impossibility of copying an unknown quantum state — any
+                            eavesdropper inevitably disturbs and reveals herself.</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>Measurement Back-Action</h3>
+                        <p>The aerospace and bridge SHM tools leverage ultra-sensitive MZI phase measurement. The bomb
+                            detector turns back-action into a feature.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>

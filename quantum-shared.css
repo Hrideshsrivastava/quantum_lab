@@ -1,0 +1,220 @@
+/* ============================================================
+   QUANTUM LAB — SHARED DESIGN SYSTEM
+   Used by: index.html, bloch.html, algorithms.html, apps.html
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+/* ── Design Tokens ─────────────────────────────────────────── */
+:root {
+  --bg-void:      #03060f;
+  --bg-deep:      #060d1e;
+  --bg-mid:       #0b1628;
+  --bg-card:      #0f1e36;
+  --bg-glass:     rgba(15, 30, 54, 0.6);
+  --bg-hover:     rgba(0, 212, 255, 0.05);
+
+  --neon-cyan:    #00d4ff;
+  --neon-blue:    #2979ff;
+  --neon-purple:  #b026ff;
+  --neon-green:   #00ff9d;
+  --neon-gold:    #ffd60a;
+  --neon-red:     #ff2d55;
+
+  --text-primary:   #e8f0f8;
+  --text-secondary: #7a91ad;
+  --text-dim:       #3d5472;
+
+  --border:         rgba(0, 212, 255, 0.15);
+  --border-bright:  rgba(0, 212, 255, 0.4);
+  --glow-cyan:      0 0 24px rgba(0, 212, 255, 0.35);
+  --glow-purple:    0 0 24px rgba(176, 38, 255, 0.35);
+
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   20px;
+
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+/* ── Reset ──────────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-void);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.3); border-radius: 3px; }
+
+/* ── Shared Nav Bar ─────────────────────────────────────────── */
+.q-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 60px;
+  background: rgba(3, 6, 15, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.q-nav-logo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+}
+
+.q-nav-links {
+  display: flex;
+  gap: 0.25rem;
+  list-style: none;
+}
+
+.q-nav-links a {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.q-nav-links a:hover,
+.q-nav-links a.active {
+  color: var(--neon-cyan);
+  background: var(--bg-hover);
+  border-color: var(--border);
+}
+
+.q-nav-back {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+.q-nav-back:hover {
+  color: var(--neon-cyan);
+  border-color: var(--border-bright);
+}
+.q-nav-back svg { width: 16px; height: 16px; }
+
+/* ── Page wrapper ───────────────────────────────────────────── */
+.q-page { padding-top: 60px; }
+
+/* ── Glass Card ─────────────────────────────────────────────── */
+.glass-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(16px);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.glass-card:hover {
+  border-color: var(--border-bright);
+  box-shadow: var(--glow-cyan);
+}
+
+/* ── Neon Button ────────────────────────────────────────────── */
+.btn-neon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  background: transparent;
+  border: 1.5px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+.btn-neon:hover {
+  background: rgba(0, 212, 255, 0.12);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+  transform: translateY(-1px);
+}
+.btn-neon:active { transform: translateY(0); }
+
+.btn-neon.purple {
+  border-color: var(--neon-purple);
+  color: var(--neon-purple);
+}
+.btn-neon.purple:hover {
+  background: rgba(176, 38, 255, 0.12);
+  box-shadow: var(--glow-purple);
+}
+
+.btn-neon.solid {
+  background: linear-gradient(135deg, var(--neon-blue), var(--neon-cyan));
+  border-color: transparent;
+  color: var(--bg-void);
+}
+.btn-neon.solid:hover {
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+/* ── Section tag / Badge ────────────────────────────────────── */
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.section-tag.cyan  { background: rgba(0,212,255,0.1);  color: var(--neon-cyan);   border: 1px solid rgba(0,212,255,0.25); }
+.section-tag.purple{ background: rgba(176,38,255,0.1); color: var(--neon-purple); border: 1px solid rgba(176,38,255,0.25); }
+.section-tag.green { background: rgba(0,255,157,0.1);  color: var(--neon-green);  border: 1px solid rgba(0,255,157,0.25); }
+.section-tag.gold  { background: rgba(255,214,10,0.1); color: var(--neon-gold);   border: 1px solid rgba(255,214,10,0.25); }
+
+/* ── Mono number display ────────────────────────────────────── */
+.mono { font-family: var(--font-mono); }
+
+/* ── Glow text ──────────────────────────────────────────────── */
+.glow-text-cyan {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 20px rgba(0,212,255,0.6);
+}
+
+/* ── Particle canvas background (shared) ────────────────────── */
+.particle-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}

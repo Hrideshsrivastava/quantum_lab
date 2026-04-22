@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quantum Theory | Quantum Lab</title>
+    <meta name="description"
+        content="Foundations of quantum mechanics for computing: qubits, superposition, Bloch sphere, gates, and measurement." />
+    <link rel="stylesheet" href="quantum-shared.css" />
+    <style>
+        body {
+            overflow-y: auto;
+        }
+
+        .theory-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 6rem;
+        }
+
+        .theory-page h1 {
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .theory-page h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            margin: 2.5rem 0 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theory-page h2::before {
+            content: '';
+            flex: none;
+            width: 3px;
+            height: 1em;
+            background: var(--neon-cyan);
+            border-radius: 2px;
+        }
+
+        .theory-page p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.75;
+            margin-bottom: 1rem;
+        }
+
+        .theory-page strong {
+            color: var(--text-primary);
+        }
+
+        /* Content cards */
+        .theory-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem 2rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(12px);
+        }
+
+        /* Key concept highlight */
+        .key-concept {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.07), rgba(176, 38, 255, 0.07));
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.5rem;
+            margin: 1rem 0;
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .key-concept .kc-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--neon-cyan);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Equation display */
+        .equation {
+            background: var(--bg-void);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            color: var(--neon-green);
+            letter-spacing: 0.05em;
+        }
+
+        .equation .sub {
+            font-size: 0.75em;
+            vertical-align: sub;
+        }
+
+        .equation .sup {
+            font-size: 0.75em;
+            vertical-align: super;
+        }
+
+        /* Comparison table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin: 1rem 0;
+        }
+
+        .compare-table th {
+            background: var(--bg-card);
+            color: var(--neon-cyan);
+            font-weight: 700;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid var(--border);
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .compare-table td {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .compare-table tr:hover td {
+            background: rgba(0, 212, 255, 0.03);
+        }
+
+        /* Bloch diagram SVG area */
+        .bloch-diagram {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .bloch-svg-wrap {
+            flex: 0 0 200px;
+        }
+
+        .bloch-svg-wrap svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .bloch-text {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        /* Gate cards row */
+        .gate-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .gate-entry {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 0.9rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .gate-entry:hover {
+            border-color: var(--neon-cyan);
+        }
+
+        .gate-name {
+            font-family: var(--font-mono);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+        }
+
+        .gate-name.purple {
+            color: var(--neon-purple);
+        }
+
+        .gate-name.gold {
+            color: var(--neon-gold);
+        }
+
+        .gate-matrix {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            margin: 0.4rem 0;
+            white-space: pre;
+            line-height: 1.5;
+        }
+
+        .gate-effect {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        /* Section nav */
+        .section-nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+
+        .section-nav a {
+            padding: 0.4rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .section-nav a:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        /* Bottom CTA */
+        .theory-cta {
+            margin-top: 3rem;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.06), rgba(176, 38, 255, 0.06));
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .theory-cta p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 2rem;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.95rem;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            color: #000;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.35);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="q-nav">
+        <a href="index.html" class="q-nav-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Home
+        </a>
+        <ul class="q-nav-links">
+            <li><a href="theory.html" class="active">Theory</a></li>
+            <li><a href="bloch.html">Bloch Sphere ↗</a></li>
+            <li><a href="algorithms.html">Section 2 · Algorithms</a></li>
+            <li><a href="apps.html">Section 3 · Applications</a></li>
+        </ul>
+    </nav>
+
+    <div class="q-page">
+        <div class="theory-page">
+
+            <span class="section-tag cyan" style="margin-top:1.5rem;display:inline-flex;">01 · Quantum Theory</span>
+            <h1>From Bits to Qubits</h1>
+            <p style="font-size:1.05rem;color:var(--text-secondary);max-width:680px;margin-bottom:2rem;">
+                A compact foundation for quantum computing — covering qubits, superposition, the Bloch sphere,
+                measurement, and the gates you'll apply in the interactive lab.
+            </p>
+
+            <div class="section-nav">
+                <a href="#classical">Classical vs Quantum</a>
+                <a href="#qubit">Qubits & State Vectors</a>
+                <a href="#superposition">Superposition</a>
+                <a href="#bloch">Bloch Sphere</a>
+                <a href="#measurement">Measurement</a>
+                <a href="#gates">Quantum Gates</a>
+                <a href="#entanglement">Entanglement</a>
+            </div>
+
+            <!-- ── 1. Classical vs Quantum ───────────────────────────── -->
+            <div class="theory-card" id="classical">
+                <h2>Classical Bits vs Qubits</h2>
+                <p>A classical computer stores information in <strong>bits</strong> — each is either 0 or 1 at any given
+                    moment. A quantum computer uses <strong>qubits</strong>. The key difference isn't speed — it's the
+                    fundamental rules governing the physics of information.</p>
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Classical Bit</th>
+                            <th>Qubit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Possible values</td>
+                            <td>0 or 1 (one at a time)</td>
+                            <td>α|0⟩ + β|1⟩ (superposition of both)</td>
+                        </tr>
+                        <tr>
+                            <td>Can be copied?</td>
+                            <td>Yes — freely</td>
+                            <td>No — No-Cloning Theorem</td>
+                        </tr>
+                        <tr>
+                            <td>On measurement</td>
+                            <td>Value unchanged</td>
+                            <td>State collapses to 0 or 1, probability from |α|², |β|²</td>
+                        </tr>
+                        <tr>
+                            <td>Multi-qubit states</td>
+                            <td>2ⁿ states, only one at a time</td>
+                            <td>Superposition over all 2ⁿ states simultaneously</td>
+                        </tr>
+                        <tr>
+                            <td>Correlations</td>
+                            <td>Always local</td>
+                            <td>Can be entangled — non-local correlations</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ── 2. Qubit & State Vector ─────────────────────────── -->
+            <div class="theory-card" id="qubit">
+                <h2>Qubit State Vectors</h2>
+                <p>The state of a qubit is a <strong>unit vector in a 2D complex vector space</strong> (Hilbert space).
+                    We write it in bra-ket (Dirac) notation:</p>
+                <div class="equation">|ψ⟩ = α|0⟩ + β|1⟩</div>
+                <p>Where:</p>
+                <ul style="color:var(--text-secondary);font-size:0.92rem;line-height:1.8;margin:0 0 1rem 1.5rem;">
+                    <li><strong style="color:var(--neon-cyan)">α, β</strong> are complex numbers (amplitudes)</li>
+                    <li>|0⟩ = [1, 0]<sup>T</sup> and |1⟩ = [0, 1]<sup>T</sup> are the <strong>computational basis
+                            states</strong></li>
+                    <li>The normalisation condition must hold: <strong>|α|² + |β|² = 1</strong></li>
+                    <li>|α|² = probability of measuring 0, |β|² = probability of measuring 1</li>
+                </ul>
+                <div class="key-concept">
+                    <span class="kc-label">Why complex numbers?</span>
+                    Complex amplitudes carry both a magnitude (probability weight) and a <em>phase</em>. The relative
+                    phase between |0⟩ and |1⟩ determines how quantum states interfere — constructively or destructively.
+                    This is the engine behind every quantum algorithm.
+                </div>
+            </div>
+
+            <!-- ── 3. Superposition ───────────────────────────────── -->
+            <div class="theory-card" id="superposition">
+                <h2>Superposition</h2>
+                <p>A qubit in superposition doesn't "secretly" have a value — it genuinely occupies multiple states
+                    simultaneously until measured. The equal superposition state is:</p>
+                <div class="equation">|+⟩ = (1/√2)|0⟩ + (1/√2)|1⟩</div>
+                <p>Measuring |+⟩ gives 0 or 1 each with 50% probability. But before measurement, the qubit responds to
+                    operations <em>as if it is both 0 and 1</em> at once. An n-qubit system in superposition represents
+                    2ⁿ basis states simultaneously.</p>
+                <div class="key-concept">
+                    <span class="kc-label">Important: superposition ≠ randomness</span>
+                    A random bit is unknown but has a definite value. A superposed qubit has <em>no definite value</em>.
+                    This is not a limitation — it's a computational resource: quantum algorithms use interference
+                    between the 2ⁿ branches to amplify correct answers and cancel wrong ones.
+                </div>
+            </div>
+
+            <!-- ── 4. Bloch Sphere ─────────────────────────────────── -->
+            <div class="theory-card" id="bloch">
+                <h2>The Bloch Sphere</h2>
+                <div class="bloch-diagram">
+                    <!-- Simple SVG diagram of the Bloch sphere -->
+                    <div class="bloch-svg-wrap">
+                        <svg viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Sphere outline -->
+                            <ellipse cx="100" cy="110" rx="85" ry="85" stroke="rgba(0,212,255,0.25)"
+                                stroke-width="1.5" />
+                            <!-- Equator (ellipse) -->
+                            <ellipse cx="100" cy="110" rx="85" ry="22" stroke="rgba(0,212,255,0.35)" stroke-width="1"
+                                stroke-dasharray="4 3" />
+                            <!-- Vertical axis -->
+                            <line x1="100" y1="15" x2="100" y2="205" stroke="rgba(0,255,157,0.6)" stroke-width="1.5" />
+                            <!-- Horizontal axes -->
+                            <line x1="10" y1="110" x2="190" y2="110" stroke="rgba(255,68,85,0.5)" stroke-width="1.5" />
+                            <!-- State vector arrow -->
+                            <line x1="100" y1="110" x2="148" y2="65" stroke="#00ffdd" stroke-width="2.5" />
+                            <polygon points="148,65 140,72 155,75" fill="#00ffdd" />
+                            <!-- Poles -->
+                            <circle cx="100" cy="25" r="5" fill="#00d4ff" />
+                            <circle cx="100" cy="195" r="5" fill="#b026ff" />
+                            <!-- Labels -->
+                            <text x="106" y="20" fill="#00d4ff" font-size="12" font-family="monospace">|0⟩</text>
+                            <text x="106" y="200" fill="#b026ff" font-size="12" font-family="monospace">|1⟩</text>
+                            <text x="155" y="115" fill="rgba(255,68,85,0.8)" font-size="11"
+                                font-family="monospace">x</text>
+                            <text x="103" y="210" fill="rgba(0,255,157,0.8)" font-size="11"
+                                font-family="monospace">z</text>
+                            <!-- Angles -->
+                            <text x="120" y="80" fill="#00ffdd" font-size="10" font-family="monospace">|ψ⟩</text>
+                            <!-- Theta arc -->
+                            <path d="M 100 110 A 25 25 0 0 0 100 85" stroke="rgba(255,255,255,0.3)" stroke-width="1"
+                                fill="none" />
+                            <text x="105" y="95" fill="rgba(255,255,255,0.4)" font-size="9"
+                                font-family="monospace">θ</text>
+                        </svg>
+                    </div>
+                    <div class="bloch-text">
+                        <p>Every pure qubit state corresponds to exactly one point on the surface of the Bloch sphere.
+                            The geometric representation makes quantum gate effects intuitive:</p>
+                        <ul
+                            style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin:0 0 0.5rem 1.2rem;">
+                            <li><strong style="color:var(--neon-green)">North pole:</strong> |0⟩ (prob. 0 = 1)</li>
+                            <li><strong style="color:var(--neon-purple)">South pole:</strong> |1⟩ (prob. 1 = 1)</li>
+                            <li><strong style="color:var(--neon-cyan)">Equator:</strong> equal superposition (50/50)
+                            </li>
+                        </ul>
+                        <p>The state vector is parameterised by two angles:</p>
+                        <div class="equation" style="font-size:0.88rem;padding:0.7rem;">|ψ⟩ = cos(θ/2)|0⟩ + e<span
+                                class="sup">iφ</span>sin(θ/2)|1⟩</div>
+                        <p style="margin:0;font-size:0.85rem;">The Bloch vector (x,y,z) is derived from the state: x =
+                            2Re(α*β̄), y = 2Im(α*β̄), z = |α|²−|β|²</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── 5. Measurement ─────────────────────────────────── -->
+            <div class="theory-card" id="measurement">
+                <h2>Quantum Measurement</h2>
+                <p>Measuring a qubit in state |ψ⟩ = α|0⟩ + β|1⟩ in the computational basis gives:</p>
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th>Outcome</th>
+                            <th>Probability</th>
+                            <th>State after measurement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>|α|²</td>
+                            <td>Collapses irreversibly to |0⟩</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>|β|²</td>
+                            <td>Collapses irreversibly to |1⟩</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="key-concept">
+                    <span class="kc-label">The Measurement Problem</span>
+                    This collapse is irreversible — you cannot "undo" a measurement. This is why quantum algorithms must
+                    be carefully designed: you only measure at the end, after all interference has shaped the
+                    probability distribution to peak at the correct answer.
+                </div>
+            </div>
+
+            <!-- ── 6. Quantum Gates ─────────────────────────────── -->
+            <div class="theory-card" id="gates">
+                <h2>Quantum Gates</h2>
+                <p>Quantum gates are <strong>unitary matrices</strong> applied to state vectors. Unitary means U†U = I —
+                    gates are reversible and preserve the norm (total probability stays at 1). Unlike classical gates,
+                    most single-qubit gates have no classical equivalent.</p>
+                <div class="gate-row">
+                    <div class="gate-entry">
+                        <div class="gate-name">X</div>
+                        <div class="gate-matrix">[ 0 1 ]
+                            [ 1 0 ]</div>
+                        <div class="gate-effect">NOT gate: |0⟩↔|1⟩. π rotation about X-axis.</div>
+                    </div>
+                    <div class="gate-entry">
+                        <div class="gate-name">Y</div>
+                        <div class="gate-matrix">[ 0 -i ]
+                            [ i 0 ]</div>
+                        <div class="gate-effect">Flip + phase: π rotation about Y-axis.</div>
+                    </div>
+                    <div class="gate-entry">
+                        <div class="gate-name">Z</div>
+                        <div class="gate-matrix">[ 1 0 ]
+                            [ 0 -1 ]</div>
+                        <div class="gate-effect">Phase flip. |+⟩↔|−⟩. π rotation about Z-axis.</div>
+                    </div>
+                    <div class="gate-entry">
+                        <div class="gate-name purple">H</div>
+                        <div class="gate-matrix">1/√2·[ 1 1 ]
+                            [ 1 -1 ]</div>
+                        <div class="gate-effect">Hadamard: creates superposition |0⟩→|+⟩, |1⟩→|−⟩.</div>
+                    </div>
+                    <div class="gate-entry">
+                        <div class="gate-name gold">S</div>
+                        <div class="gate-matrix">[ 1 0 ]
+                            [ 0 e^iπ/2 ]</div>
+                        <div class="gate-effect">Phase gate: π/2 rotation about Z-axis.</div>
+                    </div>
+                    <div class="gate-entry">
+                        <div class="gate-name gold">T</div>
+                        <div class="gate-matrix">[ 1 0 ]
+                            [ 0 e^iπ/4 ]</div>
+                        <div class="gate-effect">T-gate: π/4 rotation about Z-axis.</div>
+                    </div>
+                </div>
+                <div class="key-concept" style="margin-top:1rem;">
+                    <span class="kc-label">Key Property: Reversibility</span>
+                    Every quantum gate U has an inverse U† (conjugate transpose). This means every computation is
+                    reversible — no information is ever lost. Classical logic gates like AND are irreversible (you can't
+                    recover the inputs from the output), which is why quantum computing requires fundamentally different
+                    circuit designs.
+                </div>
+            </div>
+
+            <!-- ── 7. Entanglement ─────────────────────────────── -->
+            <div class="theory-card" id="entanglement">
+                <h2>Entanglement</h2>
+                <p>When two qubits interact (e.g., via a CNOT gate), they can become <strong>entangled</strong> — their
+                    states can no longer be described independently. The simplest entangled state (Bell state):</p>
+                <div class="equation">|Φ⁺⟩ = (1/√2)(|00⟩ + |11⟩)</div>
+                <p>This is not a product state — there's no way to write it as |A⟩ ⊗ |B⟩. Measuring the first qubit
+                    instantly determines the second — regardless of distance. This non-local correlation is what
+                    Einstein called "spooky action at a distance."</p>
+                <div class="key-concept">
+                    <span class="kc-label">Why entanglement matters for computing</span>
+                    Entanglement allows n qubits to represent and manipulate correlations across all 2ⁿ basis states in
+                    parallel. Grover's algorithm uses it to amplify the correct answer; Shor's algorithm uses it to find
+                    periodicity exponentially faster; QKD uses it to guarantee information-theoretically secure
+                    communication.
+                </div>
+            </div>
+
+            <!-- CTA to interactive lab -->
+            <div class="theory-cta">
+                <div>
+                    <p style="font-size:1rem;color:var(--text-primary);font-weight:600;margin-bottom:0.25rem;">Ready to
+                        apply what you've learned?</p>
+                    <p>Open the interactive Bloch sphere lab and apply X, Y, Z, H, S, T gates to a live qubit. Watch
+                        probabilities update in real time.</p>
+                </div>
+                <a href="bloch.html" class="cta-btn">Open Bloch Sphere Lab →</a>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
