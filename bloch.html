@@ -335,8 +335,8 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0.25rem;
-            background: rgba(0,0,0,0.35);
-            border: 1px solid rgba(0,212,255,0.15);
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(0, 212, 255, 0.15);
             border-radius: 8px;
             padding: 0.75rem;
             font-family: var(--font-mono);
@@ -349,13 +349,13 @@
             padding: 0.25rem 0.1rem;
             border-radius: 4px;
             color: var(--neon-cyan);
-            background: rgba(0,212,255,0.04);
-            border: 1px solid rgba(0,212,255,0.08);
+            background: rgba(0, 212, 255, 0.04);
+            border: 1px solid rgba(0, 212, 255, 0.08);
             transition: background 0.3s ease, color 0.3s ease;
         }
 
         .mx-cell.changed {
-            background: rgba(0,212,255,0.2);
+            background: rgba(0, 212, 255, 0.2);
             color: #fff;
         }
 
@@ -375,18 +375,27 @@
             font-family: var(--font-mono);
             font-size: 0.65rem;
             line-height: 1.7;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(176,38,255,0.15);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(176, 38, 255, 0.15);
             border-radius: 6px;
             padding: 0.5rem 0.7rem;
             margin-top: 0.5rem;
             scrollbar-width: thin;
-            scrollbar-color: rgba(176,38,255,0.3) transparent;
+            scrollbar-color: rgba(176, 38, 255, 0.3) transparent;
         }
 
-        .cache-hit  { color: #00ff9d; }
-        .cache-miss { color: #ffd60a; }
-        .cache-key  { color: rgba(255,255,255,0.4); font-size:0.6rem; }
+        .cache-hit {
+            color: #00ff9d;
+        }
+
+        .cache-miss {
+            color: #ffd60a;
+        }
+
+        .cache-key {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.6rem;
+        }
     </style>
 </head>
 
@@ -467,8 +476,9 @@
 
                 <!-- Composed Unitary Matrix -->
                 <div class="panel-section">
-                    <h3>Composed Unitary  U = G_n · … · G_1 · G_0</h3>
-                    <p style="font-size:0.75rem;color:var(--text-dim);line-height:1.5;">Strassen 2×2 matrix product of every gate applied so far. Each new gate costs 7 complex multiplications (vs standard 8).</p>
+                    <h3>Composed Unitary U = G_n · … · G_1 · G_0</h3>
+                    <p style="font-size:0.75rem;color:var(--text-dim);line-height:1.5;">Strassen 2×2 matrix product of
+                        every gate applied so far. Each new gate costs 7 complex multiplications (vs standard 8).</p>
                     <div class="matrix-grid">
                         <div class="mx-cell" id="u00">1+0i</div>
                         <div class="mx-cell" id="u01">0+0i</div>
@@ -481,14 +491,17 @@
                 <!-- DP Cache -->
                 <div class="panel-section">
                     <h3>DP Memoization Cache</h3>
-                    <p style="font-size:0.75rem;color:var(--text-dim);line-height:1.5;">Gate sequences already computed are stored and reused — cache hits cost 0 multiplications.</p>
+                    <p style="font-size:0.75rem;color:var(--text-dim);line-height:1.5;">Gate sequences already computed
+                        are stored and reused — cache hits cost 0 multiplications.</p>
                     <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.78rem;margin-bottom:0.4rem;">
                         <span style="color:var(--neon-green)">Hits: <strong id="cacheHits">0</strong></span>
                         <span style="color:var(--neon-gold)">Misses: <strong id="cacheMisses">0</strong></span>
                         <span style="color:var(--text-dim)">Size: <strong id="cacheSize">0</strong></span>
-                        <button onclick="clearDPCache()" style="margin-left:auto;font-size:0.7rem;padding:0.2rem 0.55rem;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;">Clear</button>
+                        <button onclick="clearDPCache()"
+                            style="margin-left:auto;font-size:0.7rem;padding:0.2rem 0.55rem;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;">Clear</button>
                     </div>
-                    <div class="cache-log" id="cacheLog"><span style="color:var(--text-dim)">No cache entries yet.</span></div>
+                    <div class="cache-log" id="cacheLog"><span style="color:var(--text-dim)">No cache entries
+                            yet.</span></div>
                 </div>
 
                 <!-- Options -->
@@ -546,14 +559,14 @@
         //  COMPLEX NUMBER LIBRARY
         // ═══════════════════════════════════════════════════════════════
         const C = {
-            add:  (a, b) => ({ r: a.r + b.r, i: a.i + b.i }),
-            sub:  (a, b) => ({ r: a.r - b.r, i: a.i - b.i }),
-            mul:  (a, b) => ({ r: a.r*b.r - a.i*b.i, i: a.r*b.i + a.i*b.r }),
-            scale:(a, s) => ({ r: a.r * s,   i: a.i * s }),
-            conj: (a)    => ({ r: a.r, i: -a.i }),
-            abs2: (a)    => a.r*a.r + a.i*a.i,
-            abs:  (a)    => Math.sqrt(a.r*a.r + a.i*a.i),
-            fmt:  (a, d=3) => {
+            add: (a, b) => ({ r: a.r + b.r, i: a.i + b.i }),
+            sub: (a, b) => ({ r: a.r - b.r, i: a.i - b.i }),
+            mul: (a, b) => ({ r: a.r * b.r - a.i * b.i, i: a.r * b.i + a.i * b.r }),
+            scale: (a, s) => ({ r: a.r * s, i: a.i * s }),
+            conj: (a) => ({ r: a.r, i: -a.i }),
+            abs2: (a) => a.r * a.r + a.i * a.i,
+            abs: (a) => Math.sqrt(a.r * a.r + a.i * a.i),
+            fmt: (a, d = 3) => {
                 const rs = a.r.toFixed(d);
                 const is = (a.i >= 0 ? '+' : '') + a.i.toFixed(d) + 'i';
                 return rs + is;
@@ -591,16 +604,16 @@
             // 7 complex multiplications (each costs 4 real mul, 2 add)
             const M1 = C.mul(C.add(a, d), C.add(e, h));
             const M2 = C.mul(C.add(c, d), e);
-            const M3 = C.mul(a,           C.sub(f, h));
-            const M4 = C.mul(d,           C.sub(g, e));
+            const M3 = C.mul(a, C.sub(f, h));
+            const M4 = C.mul(d, C.sub(g, e));
             const M5 = C.mul(C.add(a, b), h);
             const M6 = C.mul(C.sub(c, a), C.add(e, f));
             const M7 = C.mul(C.sub(b, d), C.add(g, h));
 
             // Reconstruct result using 18 complex additions (free)
             return [
-                [ C.add(C.sub(C.add(M1, M4), M5), M7),   C.add(M3, M5)           ],
-                [ C.add(M2, M4),                          C.add(C.sub(C.add(M1, M3), M2), M6) ]
+                [C.add(C.sub(C.add(M1, M4), M5), M7), C.add(M3, M5)],
+                [C.add(M2, M4), C.add(C.sub(C.add(M1, M3), M2), M6)]
             ];
         }
 
@@ -619,13 +632,13 @@
 
         // Each gate stored as [[row0], [row1]] of complex entries {r, i}
         const GATES = {
-            X: [ [{ r:0,i:0 }, { r:1,i:0 }], [{ r:1,i:0 }, { r:0,i:0 }] ],
-            Y: [ [{ r:0,i:0 }, { r:0,i:-1}], [{ r:0,i:1 }, { r:0,i:0 }] ],
-            Z: [ [{ r:1,i:0 }, { r:0,i:0 }], [{ r:0,i:0 }, { r:-1,i:0}] ],
-            H: [ [{ r:INV_SQRT2,i:0 }, { r:INV_SQRT2,i:0  }],
-                 [{ r:INV_SQRT2,i:0 }, { r:-INV_SQRT2,i:0 }] ],
-            S: [ [{ r:1,i:0 }, { r:0,i:0 }], [{ r:0,i:0 }, { r:0,i:1 }] ],
-            T: [ [{ r:1,i:0 }, { r:0,i:0 }], [{ r:0,i:0 }, { r:INV_SQRT2,i:INV_SQRT2 }] ],
+            X: [[{ r: 0, i: 0 }, { r: 1, i: 0 }], [{ r: 1, i: 0 }, { r: 0, i: 0 }]],
+            Y: [[{ r: 0, i: 0 }, { r: 0, i: -1 }], [{ r: 0, i: 1 }, { r: 0, i: 0 }]],
+            Z: [[{ r: 1, i: 0 }, { r: 0, i: 0 }], [{ r: 0, i: 0 }, { r: -1, i: 0 }]],
+            H: [[{ r: INV_SQRT2, i: 0 }, { r: INV_SQRT2, i: 0 }],
+            [{ r: INV_SQRT2, i: 0 }, { r: -INV_SQRT2, i: 0 }]],
+            S: [[{ r: 1, i: 0 }, { r: 0, i: 0 }], [{ r: 0, i: 0 }, { r: 0, i: 1 }]],
+            T: [[{ r: 1, i: 0 }, { r: 0, i: 0 }], [{ r: 0, i: 0 }, { r: INV_SQRT2, i: INV_SQRT2 }]],
         };
 
         const GATE_MATRIX_TEXT = {
@@ -639,8 +652,8 @@
 
         // 2×2 identity matrix (starting point for composition)
         const I2 = () => [
-            [{ r:1,i:0 }, { r:0,i:0 }],
-            [{ r:0,i:0 }, { r:1,i:0 }]
+            [{ r: 1, i: 0 }, { r: 0, i: 0 }],
+            [{ r: 0, i: 0 }, { r: 1, i: 0 }]
         ];
 
         // ═══════════════════════════════════════════════════════════════
@@ -655,12 +668,12 @@
         //   3. Else → cache MISS: compute newMatrix = Strassen(G, prevComposed)
         //              store in cache under new key
         // ═══════════════════════════════════════════════════════════════
-        const dpCache      = new Map();   // key → composed matrix
-        let   cacheHits    = 0;
-        let   cacheMisses  = 0;
-        let   gateSequence = [];          // ordered list of gate names applied
-        let   composedU    = I2();        // current composed unitary
-        let   prevSeqKey   = '';          // cache key for state before last gate
+        const dpCache = new Map();   // key → composed matrix
+        let cacheHits = 0;
+        let cacheMisses = 0;
+        let gateSequence = [];          // ordered list of gate names applied
+        let composedU = I2();        // current composed unitary
+        let prevSeqKey = '';          // cache key for state before last gate
 
         function seqKey(arr) { return arr.join('-') || 'I'; }
 
@@ -673,11 +686,11 @@
             const shortKey = key.length > 28 ? '…' + key.slice(-26) : key;
             if (hit) {
                 entry.innerHTML =
-                    `<span class="cache-hit">HIT </span>`+
+                    `<span class="cache-hit">HIT </span>` +
                     `<span class="cache-key">[${shortKey}]</span> → 0 muls`;
             } else {
                 entry.innerHTML =
-                    `<span class="cache-miss">MISS</span>`+
+                    `<span class="cache-miss">MISS</span>` +
                     `<span class="cache-key">[${shortKey}]</span> → Strassen (7 muls)`;
             }
             // Prepend so newest is at top
@@ -685,9 +698,9 @@
             // Trim log to 40 entries
             while (log.children.length > 40) log.removeChild(log.lastChild);
 
-            document.getElementById('cacheHits').textContent   = cacheHits;
+            document.getElementById('cacheHits').textContent = cacheHits;
             document.getElementById('cacheMisses').textContent = cacheMisses;
-            document.getElementById('cacheSize').textContent   = dpCache.size;
+            document.getElementById('cacheSize').textContent = dpCache.size;
         }
 
         function clearDPCache() {
@@ -695,9 +708,9 @@
             dpCache.set('I', I2());
             cacheHits = 0; cacheMisses = 0;
             gateSequence = []; composedU = I2(); prevSeqKey = '';
-            document.getElementById('cacheHits').textContent   = '0';
+            document.getElementById('cacheHits').textContent = '0';
             document.getElementById('cacheMisses').textContent = '0';
-            document.getElementById('cacheSize').textContent   = '1';
+            document.getElementById('cacheSize').textContent = '1';
             document.getElementById('cacheLog').innerHTML =
                 '<span style="color:var(--text-dim)">Cache cleared.</span>';
             updateComposedPanel();
@@ -706,10 +719,10 @@
         // Update the composed matrix 2×2 grid in the UI
         let prevCells = [null, null, null, null];
         function updateComposedPanel() {
-            const ids  = ['u00','u01','u10','u11'];
+            const ids = ['u00', 'u01', 'u10', 'u11'];
             const vals = [composedU[0][0], composedU[0][1], composedU[1][0], composedU[1][1]];
             ids.forEach((id, k) => {
-                const el  = document.getElementById(id);
+                const el = document.getElementById(id);
                 const txt = C.fmtShort(vals[k]);
                 if (txt !== prevCells[k]) {
                     el.textContent = txt;
@@ -719,28 +732,28 @@
                 }
             });
             const totalMuls = cacheMisses * 7;
-            const nGates    = gateSequence.length;
+            const nGates = gateSequence.length;
             document.getElementById('strassenStat').textContent =
-                `7 complex muls/gate · ${nGates} gate${nGates!==1?'s':''} · ${totalMuls} total muls`;
+                `7 complex muls/gate · ${nGates} gate${nGates !== 1 ? 's' : ''} · ${totalMuls} total muls`;
         }
 
         // ═══════════════════════════════════════════════════════════════
         //  STATE VECTOR
         // ═══════════════════════════════════════════════════════════════
         let alpha = { r: 1, i: 0 };
-        let beta  = { r: 0, i: 0 };
+        let beta = { r: 0, i: 0 };
 
         function normalise() {
             const norm = Math.sqrt(C.abs2(alpha) + C.abs2(beta));
-            if (norm < 1e-12) { alpha = { r:1,i:0 }; beta = { r:0,i:0 }; return; }
-            alpha = { r: alpha.r/norm, i: alpha.i/norm };
-            beta  = { r: beta.r/norm,  i: beta.i/norm  };
+            if (norm < 1e-12) { alpha = { r: 1, i: 0 }; beta = { r: 0, i: 0 }; return; }
+            alpha = { r: alpha.r / norm, i: alpha.i / norm };
+            beta = { r: beta.r / norm, i: beta.i / norm };
         }
 
         // Bloch vector from state: x=2Re(αβ̄), y=2Im(αβ̄), z=|α|²-|β|²
         function stateToBloch() {
             const acb = C.mul(C.conj(alpha), beta);
-            return { x: 2*acb.r, y: 2*acb.i, z: C.abs2(alpha) - C.abs2(beta) };
+            return { x: 2 * acb.r, y: 2 * acb.i, z: C.abs2(alpha) - C.abs2(beta) };
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -766,16 +779,16 @@
                 logCache(false, newKey, newMatrix);
             }
 
-            composedU    = newMatrix;
+            composedU = newMatrix;
             gateSequence = newSeq;
-            prevSeqKey   = newKey;
+            prevSeqKey = newKey;
 
             // Apply composed U to initial |0⟩ = [1, 0]
             // (equivalent to reading off first column of U)
             // But we want to apply just the NEW gate to current state:
             const newState = matVec(GATES[name], [alpha, beta]);
             alpha = newState[0];
-            beta  = newState[1];
+            beta = newState[1];
             normalise();
 
             // Update matrix badge
@@ -789,15 +802,15 @@
         const EPS = 0.06;
         function getStateLabel() {
             const p0 = C.abs2(alpha), p1 = C.abs2(beta);
-            if (p0 > 1-EPS) return '|0⟩';
-            if (p1 > 1-EPS) return '|1⟩';
+            if (p0 > 1 - EPS) return '|0⟩';
+            if (p1 > 1 - EPS) return '|1⟩';
             const acb = C.mul(C.conj(alpha), beta);
-            const x = 2*acb.r, y = 2*acb.i, z = p0-p1;
+            const x = 2 * acb.r, y = 2 * acb.i, z = p0 - p1;
             if (Math.abs(z) < EPS) {
-                if (x >  1-EPS) return '|+⟩';
-                if (x < -1+EPS) return '|−⟩';
-                if (y >  1-EPS) return '|i⟩';
-                if (y < -1+EPS) return '|−i⟩';
+                if (x > 1 - EPS) return '|+⟩';
+                if (x < -1 + EPS) return '|−⟩';
+                if (y > 1 - EPS) return '|i⟩';
+                if (y < -1 + EPS) return '|−i⟩';
             }
             return '|ψ⟩';
         }
@@ -807,12 +820,12 @@
             document.getElementById('stateRaw').textContent =
                 'α = ' + C.fmt(alpha) + '\nβ = ' + C.fmt(beta);
             const p0 = C.abs2(alpha), p1 = C.abs2(beta);
-            const pct0 = (p0*100).toFixed(1)+'%';
-            const pct1 = (p1*100).toFixed(1)+'%';
+            const pct0 = (p0 * 100).toFixed(1) + '%';
+            const pct1 = (p1 * 100).toFixed(1) + '%';
             document.getElementById('prob0').textContent = pct0;
             document.getElementById('prob1').textContent = pct1;
-            document.getElementById('bar0').style.width  = pct0;
-            document.getElementById('bar1').style.width  = pct1;
+            document.getElementById('bar0').style.width = pct0;
+            document.getElementById('bar1').style.width = pct1;
         }
 
         // ═══════════════════════════════════════════════════════════════
