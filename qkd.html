@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QKD Lab - Eavesdropping Detection</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
     <style>
         /* QKD Results Modal - Compact Styling */
         .modal {
@@ -465,6 +467,7 @@
         </main>
     </div>
 
+    <script>qlAuthGuard();</script>
     <script src="qkd.js"></script>
 </body>
 </html>

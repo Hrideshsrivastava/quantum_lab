@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SHM Cockpit: Aerospace Structural Health Monitoring</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
     <style>
         :root {
             --bg-color: #0b0d10;
@@ -149,6 +151,7 @@
 
         input[type="range"] {
             -webkit-appearance: none;
+            appearance: none;
             width: 120px;
             height: 4px;
             background: #333;
@@ -285,6 +288,8 @@
         </div>
     </div>
 <script>
+        qlAuthGuard();
+
         /**
          * ENGINEERING CONSTANTS
          */

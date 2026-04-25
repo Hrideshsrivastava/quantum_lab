@@ -8,6 +8,8 @@
     <meta name="description"
         content="Real-world quantum and photonics engineering applications: advanced MZI structural monitoring, aerospace SHM cockpit, QKD, and the bomb detector thought experiment." />
     <link rel="stylesheet" href="quantum-shared.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
     <style>
         body {
             overflow-y: auto;
@@ -301,6 +303,7 @@
 </head>
 
 <body>
+<script>qlAuthGuard();</script>
     <nav class="q-nav">
         <a href="index.html" class="q-nav-back">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

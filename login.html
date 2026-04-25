@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Quantum Lab</title>
+  <link rel="stylesheet" href="quantum-shared.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .orb {
+      position: fixed; border-radius: 50%; filter: blur(80px);
+      pointer-events: none; z-index: 0; opacity: .18;
+      animation: orb-drift 20s ease-in-out infinite alternate;
+    }
+    .orb-1 { width:600px;height:600px;top:-200px;left:-200px;background:var(--neon-cyan);animation-duration:22s; }
+    .orb-2 { width:500px;height:500px;bottom:-150px;right:-150px;background:var(--neon-purple);animation-duration:17s;animation-delay:-8s; }
+    @keyframes orb-drift {
+      0%   { transform:translate(0,0) scale(1); }
+      100% { transform:translate(40px,30px) scale(1.08); }
+    }
+
+    .auth-card {
+      position: relative; z-index: 1; width: 100%; max-width: 420px;
+      margin: 0 1.5rem;
+      background: var(--bg-glass); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); backdrop-filter: blur(24px);
+      padding: 2.5rem 2.25rem 2rem;
+      animation: card-in .45s ease both;
+    }
+    @keyframes card-in {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .auth-logo { text-align:center; margin-bottom:1.75rem; }
+    .auth-logo .icon { font-size:2.2rem; display:block; margin-bottom:.5rem; }
+    .auth-logo .wordmark {
+      font-size:1.3rem; font-weight:800;
+      background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+
+    .auth-tabs {
+      display:flex; border:1px solid var(--border);
+      border-radius:var(--radius-sm); overflow:hidden; margin-bottom:1.75rem;
+    }
+    .auth-tab {
+      flex:1; padding:.6rem; background:transparent; border:none;
+      color:var(--text-secondary); font-size:.9rem; font-weight:600;
+      cursor:pointer; transition:all .22s; font-family:var(--font-body);
+    }
+    .auth-tab.active { background:rgba(0,212,255,.12); color:var(--neon-cyan); }
+    .auth-tab:hover:not(.active) { background:var(--bg-hover); color:var(--text-primary); }
+
+    .auth-form { display:flex; flex-direction:column; gap:.9rem; }
+    .field { display:flex; flex-direction:column; gap:.4rem; }
+    .field label {
+      font-size:.78rem; font-weight:600; color:var(--text-secondary);
+      letter-spacing:.04em; text-transform:uppercase;
+    }
+    .field input {
+      padding:.7rem 1rem; background:rgba(0,0,0,.3);
+      border:1.5px solid var(--border); border-radius:var(--radius-sm);
+      color:var(--text-primary); font-size:.95rem; font-family:var(--font-body);
+      outline:none; transition:border-color .2s, box-shadow .2s;
+    }
+    .field input:focus {
+      border-color:var(--neon-cyan);
+      box-shadow:0 0 0 3px rgba(0,212,255,.12);
+    }
+    .field input::placeholder { color:var(--text-dim); }
+
+    .signup-only { display:none; }
+    .signup-only.on { display:flex; }
+
+    .auth-submit {
+      margin-top:.25rem; padding:.75rem;
+      background:linear-gradient(135deg,var(--neon-blue),var(--neon-cyan));
+      border:none; border-radius:var(--radius-sm); color:var(--bg-void);
+      font-size:1rem; font-weight:700; cursor:pointer;
+      font-family:var(--font-body); transition:all .25s;
+    }
+    .auth-submit:hover { box-shadow:0 0 28px rgba(0,212,255,.5); transform:translateY(-1px); }
+    .auth-submit:active { transform:translateY(0); }
+    .auth-submit:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+    .auth-msg {
+      font-size:.84rem; text-align:center; padding:.6rem 1rem;
+      border-radius:var(--radius-sm); display:none;
+      animation:fadeIn .25s ease;
+    }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+    .auth-msg.err { background:rgba(255,45,85,.1); border:1px solid rgba(255,45,85,.35); color:var(--neon-red); }
+    .auth-msg.ok  { background:rgba(0,255,157,.08); border:1px solid rgba(0,255,157,.3); color:var(--neon-green); }
+
+    .forgot-link, .guest-link {
+      display:block; text-align:center; margin-top:.6rem;
+      font-size:.82rem; color:var(--text-dim); cursor:pointer;
+      text-decoration:none; transition:color .2s;
+    }
+    .forgot-link:hover { color:var(--neon-cyan); }
+    .guest-link { margin-top:.9rem; border-top:1px solid var(--border); padding-top:.9rem; }
+    .guest-link:hover { color:var(--neon-cyan); }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="auth-card">
+    <div class="auth-logo">
+      <span class="icon">⚛</span>
+      <span class="wordmark">Quantum Lab</span>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin"  onclick="switchTab('login')">Login</button>
+      <button class="auth-tab"        id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <form class="auth-form" id="form" onsubmit="handleSubmit(event)">
+
+      <div class="field signup-only" id="fName">
+        <label for="iName">Full Name</label>
+        <input id="iName" type="text" placeholder="Enter your name" autocomplete="name" />
+      </div>
+
+      <div class="field">
+        <label for="iEmail">Email</label>
+        <input id="iEmail" type="email" placeholder="you@example.com" autocomplete="email" required />
+      </div>
+
+      <div class="field">
+        <label for="iPwd">Password</label>
+        <input id="iPwd" type="password" placeholder="••••••••" autocomplete="current-password" required minlength="6" />
+      </div>
+
+      <div class="field signup-only" id="fConfirm">
+        <label for="iConfirm">Confirm Password</label>
+        <input id="iConfirm" type="password" placeholder="••••••••" autocomplete="new-password" />
+      </div>
+
+      <div class="auth-msg" id="msg"></div>
+      <button class="auth-submit" id="submitBtn" type="submit">Login</button>
+    </form>
+
+    <a class="forgot-link" id="forgotLink" onclick="forgotPassword()">Forgot password?</a>
+    <a class="guest-link" onclick="continueGuest()">Continue without account →</a>
+  </div>
+
+  <script>
+    let mode = 'login';
+
+    // ── Auto-redirect if already logged in ───────────────────
+    (async () => {
+      const { data: { session } } = await qlSupabase.auth.getSession();
+      if (session) window.location.replace('index.html');
+    })();
+
+    // ── Tab switch ───────────────────────────────────────────
+    function switchTab(m) {
+      mode = m;
+      const isSignup = m === 'signup';
+      document.getElementById('tabLogin').classList.toggle('active', !isSignup);
+      document.getElementById('tabSignup').classList.toggle('active', isSignup);
+      document.querySelectorAll('.signup-only').forEach(el =>
+        el.classList.toggle('on', isSignup));
+      document.getElementById('submitBtn').textContent = isSignup ? 'Create Account' : 'Login';
+      document.getElementById('forgotLink').style.display = isSignup ? 'none' : 'block';
+      hideMsg();
+    }
+
+    // ── Form submit ──────────────────────────────────────────
+    async function handleSubmit(e) {
+      e.preventDefault();
+      hideMsg();
+      const btn   = document.getElementById('submitBtn');
+      const email = document.getElementById('iEmail').value.trim().toLowerCase();
+      const pwd   = document.getElementById('iPwd').value;
+      btn.disabled = true;
+
+      try {
+        if (mode === 'signup') {
+          const name    = document.getElementById('iName').value.trim();
+          const confirm = document.getElementById('iConfirm').value;
+          if (!name)           return showMsg('Please enter your full name.', 'err');
+          if (pwd !== confirm)  return showMsg('Passwords do not match.', 'err');
+          if (pwd.length < 6)   return showMsg('Password must be at least 6 characters.', 'err');
+
+          const { data, error } = await qlSupabase.auth.signUp({
+            email, password: pwd,
+            options: { data: { name } }
+          });
+          if (error) return showMsg(error.message, 'err');
+
+          // If email confirmation is required (Supabase default)
+          if (data.user && !data.session) {
+            showMsg('✅ Check your email to confirm your account!', 'ok');
+          } else {
+            showMsg('Account created! Redirecting…', 'ok');
+            setTimeout(() => window.location.replace('index.html'), 900);
+          }
+
+        } else {
+          const { data, error } = await qlSupabase.auth.signInWithPassword({ email, password: pwd });
+          if (error) return showMsg(error.message, 'err');
+          const name = data.user?.user_metadata?.name || '!';
+          showMsg(`Welcome back${name !== '!' ? ', ' + name : ''}! Redirecting…`, 'ok');
+          setTimeout(() => window.location.replace('index.html'), 800);
+        }
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // ── Forgot Password ──────────────────────────────────────
+    async function forgotPassword() {
+      const email = document.getElementById('iEmail').value.trim();
+      if (!email) return showMsg('Enter your email above first.', 'err');
+      const { error } = await qlSupabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/login.html'
+      });
+      if (error) return showMsg(error.message, 'err');
+      showMsg('📧 Password reset email sent!', 'ok');
+    }
+
+    // ── Guest (no login) ─────────────────────────────────────
+    // Uses a temporary anonymous Supabase session
+    async function continueGuest() {
+      const { data, error } = await qlSupabase.auth.signInAnonymously();
+      if (error) {
+        // Fallback: just let them in with a flag
+        sessionStorage.setItem('ql_guest', '1');
+        window.location.replace('index.html');
+        return;
+      }
+      window.location.replace('index.html');
+    }
+
+    // ── Helpers ──────────────────────────────────────────────
+    function showMsg(txt, cls) {
+      const el = document.getElementById('msg');
+      el.textContent = txt;
+      el.className = 'auth-msg ' + cls;
+      el.style.display = 'block';
+    }
+    function hideMsg() {
+      document.getElementById('msg').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
