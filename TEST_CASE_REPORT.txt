@@ -1,0 +1,217 @@
+================================================================================
+              QUANTUM LAB — TEST CASE REPORT
+              Software Quality Assurance Document
+================================================================================
+  Project     : Quantum Lab — Interactive Quantum Computing Education Platform
+  Version     : 1.0 → 1.1 (Post-Fix)
+  Date        : April 2026
+  Repository  : Hrideshsrivastava/quantum_lab
+================================================================================
+
+
+REQUIREMENTS TRACEABILITY MATRIX
+─────────────────────────────────
+  REQ-1 : Bloch Sphere 3D visualisation module shall load and render correctly
+  REQ-2 : Quantum gates shall apply correctly and update the qubit state
+  REQ-3 : Algorithm simulations shall execute when triggered
+  REQ-4 : Quantum and classical algorithms shall run simultaneously for comparison
+  REQ-5 : All UI interactions (buttons, sliders, inputs) shall respond correctly
+  REQ-6 : Dynamic parameter changes shall update simulation output in real time
+  REQ-7 : The Applications module and navigation shall load and route correctly
+  REQ-8 : QKD (BB84) simulation shall complete the full protocol and show results
+  REQ-9 : The Elitzur–Vaidman Bomb Detector game shall load and handle all inputs
+
+
+================================================================================
+TEST CASE TABLE
+================================================================================
+
+┌────────┬──────────┬───────────────────────────────┬─────────────────────────────┬──────────────────────────────┬──────────────────────────────┬──────────┐
+│ Test ID│ Req.     │ Test Scenario                 │ Input                       │ Expected Output              │ Actual Output                │ Result   │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-1   │ REQ-1    │ Load Bloch Sphere             │ Open Bloch module           │ 3D sphere displayed          │ Sphere displayed correctly   │ PASS     │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-2   │ REQ-1    │ Invalid page load             │ Broken / incorrect URL      │ Error or fallback message    │ 404.html shown with nav back │ PASS ✓   │
+│        │          │                               │                             │                              │ to Home — all links work     │ (Fixed)  │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-3   │ REQ-2    │ Apply valid gate (X)          │ Click X gate button         │ Quantum state updates        │ State updated correctly       │ PASS     │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-4   │ REQ-2    │ Apply gate before init        │ Click gate before Three.js  │ Warning or no action         │ Loading overlay shown;       │ PASS ✓   │
+│        │          │                               │ scene loads                 │                              │ toast: "Scene still          │ (Fixed)  │
+│        │          │                               │                             │                              │ initialising — please wait"  │          │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-5   │ REQ-3    │ Run algorithm simulation      │ Click ▶ Play (Grover)       │ Simulation executes          │ Simulation executed          │ PASS     │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-6   │ REQ-3    │ Run without selecting algo    │ Click ▶ Play with no tab    │ Error message                │ Toast: "Please select an     │ PASS ✓   │
+│        │          │                               │ selected / invalid N        │ or validation                │ algorithm tab before         │ (Fixed)  │
+│        │          │                               │                             │                              │ running"                     │          │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-7   │ REQ-4    │ Compare classical vs quantum  │ Select BFS + Quantum Walk   │ Both panels displayed        │ Both outputs shown side by   │ PASS     │
+│        │          │                               │ and press ▶ Play            │ simultaneously               │ side with step counters      │          │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-8   │ REQ-4    │ Missing input for comparison  │ Graph mode attempted without │ Prompt for missing           │ Toast: "Select both a        │ PASS ✓   │
+│        │          │                               │ a quantum or classical algo  │ selection                    │ Quantum and a Classical      │ (Fixed)  │
+│        │          │                               │ being set                   │                              │ graph algorithm first"       │          │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-9   │ REQ-5    │ UI interaction                │ Click buttons / sliders     │ System responds immediately  │ Works correctly              │ PASS     │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-10  │ REQ-5    │ Invalid input interaction     │ Enter N = -5 or N = 999     │ Error or validation message  │ Red border on N input;       │ PASS ✓   │
+│        │          │                               │ in N field                  │                              │ toast: "N must be between    │ (Fixed)  │
+│        │          │                               │                             │                              │ 8 and 32"; play blocked      │          │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-11  │ REQ-6    │ Dynamic output update         │ Change simulation parameter │ Output updates in real time  │ Output updated correctly     │ PASS     │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-12  │ REQ-6    │ No update on N change         │ Modify N input field        │ Simulation resets and output │ oninput handler now fires    │ PASS ✓   │
+│        │          │                               │                             │ refreshes immediately        │ resetSim() on every          │ (Fixed)  │
+│        │          │                               │                             │                              │ keystroke; instant update    │          │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-13  │ REQ-7    │ Open applications module      │ Click "Applications" in nav │ Module loads successfully    │ Module loaded correctly      │ PASS     │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-14  │ REQ-7    │ Broken navigation             │ Navigate to invalid URL     │ Error message or 404 page    │ 404.html displays with       │ PASS ✓   │
+│        │          │                               │                             │                              │ styled error, module nav     │ (Fixed)  │
+│        │          │                               │                             │                              │ links, and "Return Home"     │          │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-15  │ REQ-8    │ Run QKD simulation            │ Start transmission          │ Eve detection result shown   │ Result shown correctly       │ PASS     │
+│        │          │                               │ (close intro → run)         │                              │ after full 100-photon run    │          │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-16  │ REQ-8    │ QKD without completing input  │ Click "Eve Present / Absent"│ Error message                │ Alert: "Transmission not     │ PASS ✓   │
+│        │          │                               │ or Submit before 100 photons│                              │ complete yet"; Submit also   │ (Fixed)  │
+│        │          │                               │ have been sent              │                              │ blocked with clear message   │          │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-17  │ REQ-9    │ Play bomb game                │ Start game (close intro)    │ Game loads and runs          │ Game works correctly         │ PASS     │
+├────────┼──────────┼───────────────────────────────┼─────────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────────┤
+│ TC-18  │ REQ-9    │ Invalid game action           │ (a) Click "Lock: Bomb/Safe" │ Error or restriction         │ Alert: "Select a channel     │ PASS ✓   │
+│        │          │                               │     without selecting a ch. │                              │ first"; "Send photons        │ (Fixed)  │
+│        │          │                               │ (b) Lock decision without   │                              │ before deciding"; "Channel   │          │
+│        │          │                               │     sending any photons     │                              │ already locked" as approp.   │          │
+└────────┴──────────┴───────────────────────────────┴─────────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────────┘
+
+
+================================================================================
+SUMMARY OF FIXES (v1.0 → v1.1)
+================================================================================
+
+Previously Failed: TC-2, TC-4, TC-6, TC-8, TC-10, TC-12, TC-14, TC-16, TC-18
+After Fixes Applied: ALL 18 TEST CASES PASS
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Test Results   │  v1.0 (Original) │  v1.1 (Fixed)                     │
+  ├─────────────────┼──────────────────┼───────────────────────────────────┤
+  │  Passed         │  9 / 18          │  18 / 18                           │
+  │  Failed         │  9 / 18          │  0 / 18                            │
+  │  Pass Rate      │  50%             │  100%                              │
+  └─────────────────┴──────────────────┴───────────────────────────────────┘
+
+
+FIX DETAILS
+───────────
+  TC-2 + TC-14 │ 404 Error Page
+  ─────────────┴───────────────────────────────────────────────────────────
+  File Created  : 404.html
+  Description   : New branded 404 error page matching the Quantum Lab design
+                  system. Features animated error code, direct module navigation
+                  shortcuts (Theory / Algorithms / Applications / QKD / Bomb /
+                  MZI), "Return Home" CTA, and particle canvas background.
+                  Any invalid URL now renders this page instead of a blank screen.
+
+
+  TC-4          │ Gate Applied Before Bloch Scene Initialises
+  ─────────────┴───────────────────────────────────────────────────────────
+  File Modified : bloch.html
+  Changes       :
+    • Added isBlochReady = false flag (top of script block).
+    • Added a spinning loader overlay (position: absolute over the 3D canvas)
+      that is visible until Three.js scene fully initialises.
+    • applyGate() now returns early with a toast message if !isBlochReady.
+    • After animate(0) is called, isBlochReady = true and the overlay fades
+      out smoothly (opacity transition 0.5s) then is removed from DOM.
+    • showBlochToast() helper added for consistent error feedback UX.
+
+
+  TC-6          │ Play Clicked Without Algorithm Selected
+  ─────────────┴───────────────────────────────────────────────────────────
+  File Modified : algorithms.html
+  Changes       :
+    • play() now checks if currentAlgo is truthy.
+    • If not set, shows toast: "Please select an algorithm tab before running".
+    • showToast() utility function added to algorithms.html script.
+
+
+  TC-8          │ Graph Mode with Only One Algorithm Selected
+  ─────────────┴───────────────────────────────────────────────────────────
+  File Modified : algorithms.html
+  Changes       :
+    • play() now checks if currentAlgo === 'graph' and whether both
+      currentGraphQ and currentGraphC are set.
+    • If either is missing, shows toast: "Select both a Quantum and a
+      Classical graph algorithm first."
+
+
+  TC-10         │ Invalid N Input (Out-of-Range or Non-Numeric)
+  ─────────────┴───────────────────────────────────────────────────────────
+  File Modified : algorithms.html
+  Changes       :
+    • validateN(input) function added; checks 8 ≤ N ≤ 32 (integer).
+    • N input gains CSS class .invalid on bad input → red border + glow.
+    • #nValidMsg span "⚠ Use 8–32 (step 4)" appears inline next to the field.
+    • Toast notification shown alongside inline error.
+    • play() calls validateN() first and blocks execution if invalid.
+
+
+  TC-12         │ N Input Change Doesn't Update Simulation
+  ─────────────┴───────────────────────────────────────────────────────────
+  File Modified : algorithms.html
+  Changes       :
+    • N input handler changed from onchange (fires only on blur after change)
+      to oninput (fires on every keystroke/spinner click immediately).
+    • Handler now calls: oninput="validateN(this); resetSim()"
+    • Output now updates in real time as the user types/adjusts N.
+
+
+  TC-16         │ QKD Submit Without Completing Transmission
+  ─────────────┴───────────────────────────────────────────────────────────
+  File Modified : qkd.js
+  Changes       :
+    • isTransmissionComplete: false flag added to qkdLab object.
+    • Flag reset to false at start of each setupTransmission() call.
+    • Flag set to true just before showAnalysisPhase() is called (after all
+      100 photons have been sent).
+    • selectEve() now checks isTransmissionComplete; shows alert if false.
+    • submitDecision() now checks isTransmissionComplete; shows descriptive
+      alert before any other logic runs.
+    • Alert messages clearly explain what the user needs to do.
+
+
+  TC-18         │ Bomb Game Invalid Actions
+  ─────────────┴───────────────────────────────────────────────────────────
+  File Modified : bomb-game.js
+  Changes       :
+    • sendPhotons() replaced silent early return with four named alerts:
+        – No channel selected
+        – Round not active
+        – Channel already locked
+        – Channel already exploded
+    • lockDecision() replaced silent early return with three named alerts:
+        – No channel selected
+        – Channel already locked
+        – No photons sent yet (cannot decide without data)
+    • Each alert uses ⚠ prefix for visual consistency.
+    • Guards prevent unexpected behavior from out-of-order game actions.
+
+
+================================================================================
+FILES MODIFIED IN v1.1
+================================================================================
+
+  File                   Change Type   Test Case Fixed
+  ─────────────────────────────────────────────────────
+  404.html               NEW           TC-2, TC-14
+  bloch.html             MODIFIED      TC-4
+  algorithms.html        MODIFIED      TC-6, TC-8, TC-10, TC-12
+  qkd.js                 MODIFIED      TC-16
+  bomb-game.js           MODIFIED      TC-18
+
+
+================================================================================
+                          END OF TEST CASE REPORT
+================================================================================

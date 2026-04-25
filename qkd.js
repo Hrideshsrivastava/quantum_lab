@@ -20,6 +20,9 @@ const qkdLab = {
     PHOTONS_PER_BIT: 10,
     TOTAL_PHOTONS: 100,
     
+    // TC-16 fix: track whether transmission phase is complete
+    isTransmissionComplete: false,
+    
     // Alice's data (hidden from user initially)
     aliceBits: [],
     
@@ -89,6 +92,8 @@ const qkdLab = {
         }
         
         this.eveGuess = null;
+        // TC-16: reset flag at start of each transmission
+        this.isTransmissionComplete = false;
         
         // Show transmission phase
         document.getElementById('transmissionPhase').style.display = 'block';
@@ -147,6 +152,8 @@ const qkdLab = {
         
         // Transmission complete - switch to analysis phase
         await this.sleep(500);
+        // TC-16: mark transmission as done before showing analysis
+        this.isTransmissionComplete = true;
         this.showAnalysisPhase();
     },
     
@@ -315,6 +322,11 @@ const qkdLab = {
     },
     
     selectEve(guess) {
+        // TC-16: block selection before transmission completes
+        if (!this.isTransmissionComplete) {
+            alert('⚠ Please wait for the full photon transmission to complete before making a decision.');
+            return;
+        }
         this.eveGuess = guess;
         
         document.getElementById('eveYes').classList.remove('selected');
@@ -328,11 +340,15 @@ const qkdLab = {
     },
     
     submitDecision() {
-        if (this.eveGuess === null) {
-            alert('Please select whether you think Eve was present!');
+        // TC-16: block submission if transmission hasn't finished
+        if (!this.isTransmissionComplete) {
+            alert('⚠ Transmission is not complete yet. Please wait for all 100 photons to be sent before submitting.');
             return;
         }
-        
+        if (this.eveGuess === null) {
+            alert('⚠ Please select whether you think Eve was present before submitting your decision!');
+            return;
+        }
         this.showResults();
     },
     

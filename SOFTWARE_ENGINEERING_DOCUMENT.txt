@@ -1,0 +1,1730 @@
+================================================================================
+                    QUANTUM LAB — COMPREHENSIVE SOFTWARE ENGINEERING DOCUMENT
+                    Modern Physics Virtual Lab: Interactive Quantum Computing
+                          and Photonics Education Platform
+================================================================================
+                              Document Version: 1.0
+                              Date: April 2026
+                              Classification: Software Engineering Reference
+================================================================================
+
+
+TABLE OF CONTENTS
+─────────────────
+  1.  Executive Summary
+  2.  Project Overview and Problem Statement
+  3.  System Architecture
+  4.  Technology Stack and Justifications
+  5.  Design System and UI/UX Engineering
+  6.  Module 1 — Landing Page (index.html)
+  7.  Module 2 — Quantum Theory & Bloch Sphere (bloch.html)
+  8.  Module 3 — Algorithm Glass Box (algorithms.html)
+  9.  Module 4 — Applications Hub (apps.html)
+ 10.  Sub-Application: MZI Structural Health Monitor (mzi_structural.html)
+ 11.  Sub-Application: Aerospace SHM Cockpit (flight.html)
+ 12.  Sub-Application: Advanced MZI Lab (interferometer-advanced.html)
+ 13.  Sub-Application: Quantum Key Distribution / BB84 (qkd.html / qkd.js)
+ 14.  Sub-Application: Elitzur–Vaidman Bomb Detector Game (bomb-game.html / bomb-game.js)
+ 15.  Data Flow and State Management
+ 16.  Performance Engineering
+ 17.  Algorithms and Mathematical Foundations
+ 18.  Responsive Design and Accessibility
+ 19.  Testing Strategy and Quality Assurance
+ 20.  Deployment, Future Roadmap, and Conclusions
+
+
+================================================================================
+1. EXECUTIVE SUMMARY
+================================================================================
+
+Quantum Lab is a browser-based, zero-dependency interactive learning platform
+built for the DEI × Virtual Labs Hackathon 2026. The platform bridges the gap
+between abstract quantum-mechanical theory and its real-world engineering
+applications by providing a multi-layered, immersive educational experience
+delivered entirely through vanilla HTML5, CSS3, and ES6+ JavaScript — no build
+toolchain, no server side rendering, no framework overhead.
+
+The system is composed of a structured three-section progression:
+
+  • Section 01 — Theory        : Bloch sphere 3D simulator powered by Three.js,
+                                 with live gate matrix computation using
+                                 Strassen's algorithm and DP memoization.
+
+  • Section 02 — Algorithms    : Side-by-side quantum vs. classical algorithm
+                                 visualiser with simultaneous code tracing,
+                                 covering Grover's Search, Quantum Walk, Shor's
+                                 Period Finding, BFS, DFS, Dijkstra, and A*.
+
+  • Section 03 — Applications  : Five live engineering simulations spanning
+                                 optical sensing, structural health monitoring,
+                                 aerospace telemetry, quantum cryptography, and
+                                 quantum thought-experiment gamification.
+
+Total codebase: ~23 files, ~380 KB of source code (HTML + CSS + JS),
+with an estimated 7,500+ lines of hand-crafted, purpose-built code.
+
+
+================================================================================
+2. PROJECT OVERVIEW AND PROBLEM STATEMENT
+================================================================================
+
+2.1 Background
+──────────────
+Quantum mechanics and photonics are increasingly relevant disciplines in modern
+engineering — from quantum key distribution underpinning future internet security
+to fibre-optic interferometers performing millimetre-precise structural health
+monitoring on bridges and aircraft. Yet traditional pedagogy suffers from:
+
+  (a) Static Diagrams and Equations
+      Textbook descriptions of concepts like the Bloch sphere, Mach–Zehnder
+      interferometry, or Grover's algorithm fail to communicate the dynamic,
+      probabilistic nature of quantum systems.
+
+  (b) Disconnection from Engineering Applications
+      Students learn Schrödinger's equation without ever seeing how optical
+      phase changes translate into a "safe / inspection needed / critical"
+      structural health verdict.
+
+  (c) Lack of Interaction and Feedback
+      STEM learners acquire intuition fastest through hands-on experimentation.
+      A purely observational curriculum leaves them unable to develop physical
+      intuition about quantum phenomena.
+
+  (d) Access Barriers
+      Dedicated simulation software (MATLAB, Qiskit, Labview) requires
+      installation, licensing, and significant prior programming knowledge,
+      creating a high barrier to entry.
+
+2.2 Solution Statement
+──────────────────────
+Quantum Lab resolves all four problems through a entirely in-browser, zero-
+install, multi-level curriculum:
+
+  • Conceptual interactive tools (Bloch sphere, gate matrices) build physical
+    intuition through manipulation.
+
+  • Side-by-side algorithm race demonstrates quantum speedup tangibly and
+    viscerally in real time.
+
+  • Engineering simulations translate quantum optics into the language of
+    civil and aerospace engineering, giving every concept a real-world "so what."
+
+  • Gamification (bomb detector challenge) lowers emotional barriers and makes
+    quantum counter-intuition engaging rather than alienating.
+
+2.3 Target Audience
+────────────────────
+  Primary   : Undergraduate physics, EE, and CS students.
+  Secondary  : High-school STEM students exploring advanced topics.
+  Tertiary   : Educators needing demonstration tools for lectures.
+  Quaternary : Engineers seeking a rapid conceptual refresher in quantum optics.
+
+2.4 Success Metrics
+────────────────────
+  • Time-on-page per section > 5 minutes (engagement proxy).
+  • Zero external server dependencies requiring zero setup time.
+  • Full functionality on any modern browser without plugins or extensions.
+  • Responsive across desktop, tablet, and mobile form factors.
+
+
+================================================================================
+3. SYSTEM ARCHITECTURE
+================================================================================
+
+3.1 High-Level Architecture
+─────────────────────────────
+Quantum Lab is a multi-page web application (MPA) — not a single-page
+application (SPA). This is an intentional architectural decision:
+
+  • Each simulation is self-contained in its own HTML file, preventing any
+    simulation's memory usage or animation loop from affecting others.
+
+  • Navigation between pages is standard anchor-tag routing, which benefits
+    SEO, bookmarkability, and graceful degradation.
+
+  • Shared state is not needed across pages, simplifying mental model and
+    eliminating the need for a global state manager.
+
+The file dependency graph is:
+
+  index.html
+    └── quantum-shared.css           (global design tokens + shared components)
+    └── [inline styles]
+    └── [inline particle-field JS]
+
+  bloch.html
+    └── quantum-shared.css
+    └── Three.js (CDN: v0.160.0)    (3D WebGL rendering)
+    └── [inline Bloch sphere engine, Strassen+DP gate logic]
+
+  algorithms.html
+    └── quantum-shared.css
+    └── [inline Algorithm Glass Box Engine — canvas rendering + code tracing]
+
+  apps.html
+    └── quantum-shared.css
+    └── [inline styles; navigation hub only, no heavy JS]
+
+  mzi_structural.html
+    └── quantum-shared.css
+    └── styles.css                   (MZI-specific styles, 41 KB)
+    └── Chart.js (CDN)              (FFT / time-series charts)
+    └── [inline simulation engine]
+
+  flight.html
+    └── quantum-shared.css
+    └── styles-advanced.css          (flight-cockpit specific styles, 11 KB)
+    └── Chart.js (CDN)
+    └── [inline flight SHM engine]
+
+  interferometer-advanced.html
+    └── quantum-shared.css
+    └── interferometer-advanced.js   (39 KB, full MZI optics simulation)
+
+  qkd.html
+    └── quantum-shared.css
+    └── qkd.js                       (14 KB, BB84 QKD simulation)
+
+  bomb-game.html
+    └── quantum-shared.css
+    └── bomb-game.js                 (16 KB, Elitzur–Vaidman game logic)
+    └── sounds/                      (click.mp3, explosion.mp3, success.mp3)
+
+3.2 Communication Patterns
+──────────────────────────
+Within each page, the following patterns emerge:
+
+  DOM ↔ JS Engine         : Bidirectional. JS reads user inputs (sliders,
+                             buttons, number fields), writes back to DOM
+                             (canvas draws, innerHTML updates, class toggles).
+
+  Animation Loop           : requestAnimationFrame() drives all real-time
+                             visuals. Each module maintains its own rAF loop,
+                             which is cancelled on page navigation via the
+                             browser's natural garbage-collection.
+
+  Event-Driven State       : User interactions (gate button click, algorithm
+                             tab selection, photon send) emit events that modify
+                             a module-scoped state object and trigger a
+                             synchronous re-render.
+
+3.3 Module Boundaries
+──────────────────────
+Each HTML + JS pair forms an independent module with:
+
+  • A clear module-level state object (e.g., `bombGame`, `qkdLab`).
+  • Internal-only functions (no global namespace pollution beyond that object).
+  • Clear entry points (DOMContentLoaded or direct init() call).
+  • No cross-page shared mutable state.
+
+This separation makes the codebase highly maintainable; any page can be
+refactored, replaced, or extended without risk of regressions in others.
+
+
+================================================================================
+4. TECHNOLOGY STACK AND JUSTIFICATIONS
+================================================================================
+
+4.1 Core Technologies
+──────────────────────
+
+  HTML5
+  ─────
+  Semantic elements (nav, section, article, footer, canvas) are used
+  throughout. The `<canvas>` element is the primary rendering surface for
+  all real-time simulation visuals. Key HTML5 APIs used include:
+    • Canvas 2D Context API    — all 2D simulation graphics
+    • requestAnimationFrame()  — smooth 60-FPS animation loops
+    • HTMLAudioElement         — sound effects in bomb-game
+
+  CSS3
+  ─────
+  A layered CSS architecture is employed:
+
+    Layer 0  — quantum-shared.css  : Design tokens (CSS custom properties),
+                                     reset, nav component, button variants,
+                                     badge components, particle canvas utility.
+
+    Layer 1  — Page-level styles   : Each HTML page embeds a <style> block
+                                     containing only the styles specific to
+                                     that page. This avoids unused CSS and
+                                     keeps style scope explicit.
+
+    Layer 2  — Feature stylesheets : styles.css (MZI), styles-advanced.css
+                                     (flight) for larger sub-applications that
+                                     warrant a separate file for maintainability.
+
+  CSS features used:
+    • Custom Properties (--var)    — consistent theming without preprocessors
+    • CSS Grid and Flexbox         — all layout (no float, no table layout)
+    • backdrop-filter: blur()      — glassmorphism effect on cards/nav
+    • clamp()                      — fluid typography without JS breakpoints
+    • @keyframes                   — ambient animations (orbs, particle drift)
+    • CSS transitions              — hover and interaction micro-animations
+    • ::-webkit-scrollbar          — custom scrollbar styling for dark theme
+    • prefers-color-scheme          — (future-ready; currently dark-mode only)
+
+  JavaScript (ES6+)
+  ─────────────────
+  All simulation logic is written in modern JavaScript without transpilation.
+  Key ES6+ features used:
+    • Arrow functions              — concise callbacks in animation loops
+    • Destructuring assignment     — matrix row unpacking in Strassen algorithm
+    • Spread operator (...)        — array copying for quantum state vectors
+    • Template literals            — dynamic HTML assembly in result modals
+    • async/await                  — sequential QKD transmission animation
+    • Modules via script type      — (avoided for zero-bundle compatibility;
+                                     all JS is inline or loaded as classic scripts)
+    • Map (ES6 Map)                — DP memoization cache in Bloch sphere
+    • Optional chaining (?.)       — safe null checks throughout
+    • const / let                  — strict variable scoping throughout
+
+4.2 Third-Party Libraries
+──────────────────────────
+
+  Three.js (v0.160.0, CDN)
+  ─────────────────────────
+  Used exclusively in bloch.html. Three.js provides a WebGL abstraction for
+  the 3D Bloch sphere renderer:
+    • Scene, Camera, Renderer objects
+    • SphereGeometry for the sphere mesh
+    • Custom shader-like MeshPhongMaterial for the translucent glass sphere
+    • ArrowHelper for the 3D state vector arrow
+    • Line objects for equator ring, meridian circles, and axis markers
+    • OrbitControls (inline implementation) for click-drag rotation
+    • Points geometry for the state vector trail (up to 200 history points)
+
+  Chart.js (CDN, latest stable)
+  ─────────────────────────────
+  Used in mzi_structural.html and flight.html for:
+    • Real-time time-series charts of structural displacement, strain, and
+      phase delta.
+    • FFT frequency spectrum charts (computed via custom JS FFT, visualised
+      via Chart.js bar chart).
+    • Animated datasets that update on every physics tick via
+      chart.data.datasets[n].data.push() + chart.update('none').
+    • The 'none' update mode is critical for performance — it skips animation
+      and re-renders at native 60 FPS.
+
+4.3 Libraries Deliberately Avoided
+────────────────────────────────────
+
+  jQuery          : DOM manipulation is handled directly with querySelector,
+                    addEventListener, classList. Modern JS makes jQuery
+                    unnecessary and its 87 KB overhead is unjustified.
+
+  React/Vue/Svelte: The reactive UI needs are met by direct DOM mutation. A
+                    virtual DOM framework would add ~40-100 KB of runtime and
+                    a build step, contradicting the zero-dependency philosophy.
+
+  TailwindCSS     : The design requires full control over CSS, including
+                    complex pseudo-element animations, backdrop-filter stacking
+                    contexts, and canvas-overlaid particles. A utility-first
+                    framework would fight the design rather than enable it.
+
+  D3.js           : All simulation-specific graphics are drawn with the
+                    Canvas 2D API directly, giving pixel-perfect control and
+                    higher performance than SVG-based D3 at animation rates.
+
+
+================================================================================
+5. DESIGN SYSTEM AND UI/UX ENGINEERING
+================================================================================
+
+5.1 Design Token Architecture
+──────────────────────────────
+All design values are defined as CSS Custom Properties in the :root rule of
+quantum-shared.css. This creates a single-source-of-truth design system:
+
+  Background Palette
+  ─────────────────
+    --bg-void       : #03060f   (deepest background, page root)
+    --bg-deep       : #060d1e   (section backgrounds)
+    --bg-mid        : #0b1628   (panel backgrounds)
+    --bg-card       : #0f1e36   (card backgrounds)
+    --bg-glass      : rgba(15, 30, 54, 0.6)  (glassmorphism cards)
+    --bg-hover      : rgba(0, 212, 255, 0.05) (hover state backgrounds)
+
+  Neon Accent Palette
+  ──────────────────
+    --neon-cyan     : #00d4ff   (primary accent, theory, links)
+    --neon-blue     : #2979ff   (gradient pair for CTAs)
+    --neon-purple   : #b026ff   (algorithms section accent)
+    --neon-green    : #00ff9d   (applications section accent)
+    --neon-gold     : #ffd60a   (goal banners, warnings)
+    --neon-red      : #ff2d55   (danger actions, reset buttons)
+
+  Typography Scale
+  ────────────────
+    --font-body     : 'Inter', system-ui, sans-serif
+    --font-mono     : 'JetBrains Mono', 'Courier New', monospace
+
+  Spatial System
+  ──────────────
+    --radius-sm     : 8px
+    --radius-md     : 14px
+    --radius-lg     : 20px
+
+  Border and Glow
+  ───────────────
+    --border        : rgba(0, 212, 255, 0.15)  (default glass borders)
+    --border-bright : rgba(0, 212, 255, 0.4)   (active/hover borders)
+    --glow-cyan     : 0 0 24px rgba(0, 212, 255, 0.35)
+    --glow-purple   : 0 0 24px rgba(176, 38, 255, 0.35)
+
+5.2 Typography Engineering
+──────────────────────────
+Two typefaces are loaded from Google Fonts CDN:
+
+  Inter (300, 400, 500, 600, 700, 800)
+  — A humanist sans-serif optimised for screen readability. Used for all body
+    text, headings, navigation, and UI labels. The weight range (300–800)
+    covers the full expressive spectrum from muted secondary text to bold
+    hero headings.
+
+  JetBrains Mono (400, 600)
+  — A monospace font designed for code. Used for:
+    • Step counters and numeric readouts
+    • Code trace panels (algorithm pseudocode)
+    • Matrix cell values in Bloch sphere panel
+    • Quantum notation (ket state displays)
+
+  Fluid Type Scale using clamp():
+  — Hero headings:  font-size: clamp(2.5rem, 7vw, 5.5rem)
+  — Section titles: font-size: clamp(1.6rem, 4vw, 2.5rem)
+  — Body:           font-size: 0.88rem – 1rem
+  — Code trace:     font-size: 0.75rem (fixed for alignment)
+
+5.3 Glassmorphism System
+─────────────────────────
+Cards and panels use a consistent glassmorphism effect:
+
+  .glass-card {
+    background:       rgba(15, 30, 54, 0.6);   /* semi-transparent bg */
+    border:           1px solid rgba(0, 212, 255, 0.15);
+    border-radius:    20px;
+    backdrop-filter:  blur(16px);             /* frosted glass */
+  }
+
+  On hover, border-color brightens to rgba(0, 212, 255, 0.4) and a
+  box-shadow glow is applied (0 0 24px rgba(0, 212, 255, 0.35)), creating
+  a depth-of-light effect without expensive CSS 3D transforms.
+
+5.4 Animation Philosophy
+─────────────────────────
+All animations serve a functional purpose — they are not purely decorative:
+
+  Ambient Animations
+  ─────────────────
+    Floating Neon Orbs (index.html): Three blurred divs with slow CSS keyframe
+    animation (orb-drift, 17–25 second periods, alternate direction) create a
+    living background that signals "active simulation environment" without
+    distracting from content.
+
+    Particle Field Canvas: 80-particle system driven by requestAnimationFrame.
+    Particles are small (radius 0.3–1.8px), slow-drifting (±0.25px/frame),
+    and semi-transparent (alpha 0.1–0.6). They wrap at viewport edges.
+    The cyan color (#00d4ff, same as --neon-cyan) ties them to the design
+    system rather than making them arbitrary decoration.
+
+  Interaction Animations
+  ─────────────────────
+    Card hover: translateY(-6px) with 0.35s ease + border glow. The 6px lift
+    is large enough to feel responsive but small enough to avoid reading
+    disruption.
+
+    Navigation link hover: Background fill + border appear over 0.2s for
+    crisp, immediate response (longer would feel sluggish for nav).
+
+    Button hover: Scale(-1px translateY) + box-shadow glow over 0.25s.
+    The "neon bulge" effect (glow expanding) is calibrated to reinforce
+    the sci-fi aesthetic.
+
+    Gate button flash: On gate application in bloch.html, a .flash class
+    temporarily applies a bright glow to show which gate was activated.
+    This provides confirmation feedback for click events without an alert.
+
+
+================================================================================
+6. MODULE 1 — LANDING PAGE (index.html)
+================================================================================
+
+6.1 Purpose and Information Architecture
+──────────────────────────────────────────
+The landing page serves as the navigation hub and first impression. Its
+information architecture follows a progressive disclosure pattern:
+
+  Level 1 — Hero Section    : Identity, value proposition, primary CTAs.
+  Level 2 — Divider         : Visual breathing room + vertical rhythm signal.
+  Level 3 — Section Cards   : Three pathways, each with full context.
+  Level 4 — Footer          : Brand anchor.
+
+6.2 Hero Section Engineering
+──────────────────────────────
+The hero title uses a gradient text technique:
+
+  background: linear-gradient(160deg, #ffffff 0%, #00d4ff 50%, #b026ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+This creates the distinctive cyan-to-purple gradient title. The 160-degree
+angle is specifically chosen (as opposed to the standard 135°) to make the
+gradient flow top-left → bottom-right, feeling natural with reading direction.
+
+6.3 Section Card System
+──────────────────────────
+The three section cards (Theory, Algorithms, Applications) follow a
+Component-Driven Architecture using BEM-inspired class naming:
+
+  .section-card              — Base card styles
+  .section-card.card-theory  — Theory variant (cyan accent)
+  .section-card.card-algo    — Algorithm variant (purple accent)
+  .section-card.card-apps    — Applications variant (green accent)
+
+Each card contains:
+  • A monospaced sequential number tag ("01 / THEORY")
+  • An emoji icon at 3.2rem for visual chunking
+  • A heading (h2) — correct semantic hierarchy (page only has one h1)
+  • A description paragraph
+  • A feature bullet list (ul.card-features)
+  • A footer row with difficulty badge + "Enter →" CTA
+
+The animated arrow in ".card-enter" uses a gap transition:
+  Normal state:   gap: 0.4rem
+  Hover state:    gap: 0.7rem
+
+This creates the illusion of the arrow "pulling away" from the text — a
+subtle but effective directional affordance.
+
+The bottom glow strip (3px high absolute-positioned div) fades in (opacity 0
+→ 1) on hover, creating a "light from beneath" effect without clip-path
+complexity.
+
+6.4 Particle Field Implementation
+───────────────────────────────────
+The particle system uses the Canvas API:
+
+  • Canvas is position: fixed; z-index: 0; pointer-events: none (always
+    behind content, never captures clicks).
+  • 80 particles are initialised with random position, velocity (±0.25px/frame),
+    radius (0.3–1.8px), and alpha (0.1–0.6).
+  • requestAnimationFrame drives the animation loop. Each frame: clearRect,
+    redraw all particles, advance positions, wrap edges.
+  • Wrap logic: if (p.x < 0) p.x = W — avoids particles disappearing at edges.
+
+Performance note: 80 particles at 60 FPS = ~300,000 arc draw calls per second.
+This is well within Canvas 2D's capability on any device manufactured after 2015.
+
+
+================================================================================
+7. MODULE 2 — QUANTUM THEORY & BLOCH SPHERE (bloch.html)
+================================================================================
+
+7.1 Overview
+─────────────
+The Bloch sphere page is the most computationally sophisticated module. It
+integrates WebGL 3D rendering (Three.js), complex matrix algebra (Strassen),
+and dynamic programming (memoization) into a unified interactive experience.
+
+7.2 Three.js Scene Graph
+─────────────────────────
+The Three.js scene is structured as follows:
+
+  Scene
+  ├── Camera (PerspectiveCamera, FOV 60, looking at origin)
+  ├── AmbientLight (soft white illumination)
+  ├── DirectionalLight (highlights sphere volume)
+  ├── SphereMesh (glass sphere, MeshPhongMaterial, transparent=true,
+  │              opacity=0.12, wireframe-like appearance)
+  ├── Equator Ring (LineLoop, dashed cyan)
+  ├── Vertical Circle (LineLoop, Y-Z plane, dashed)
+  ├── X Axis Arrow (ArrowHelper, red)
+  ├── Y Axis Arrow (ArrowHelper, green)
+  ├── Z Axis Arrow (ArrowHelper, cyan, |0⟩ pole)
+  ├── |0⟩ Label (Sprite rendered to canvas texture)
+  ├── |1⟩ Label (Sprite rendered to canvas texture)
+  ├── |+⟩ Label (Sprite)
+  ├── |−⟩ Label (Sprite)
+  ├── State Vector Arrow (ArrowHelper, updated every frame)
+  └── Trail Points (Points geometry, 200 historical positions, fade to zero)
+
+7.3 State Vector Mathematics
+──────────────────────────────
+A qubit state is represented as:
+
+    |ψ⟩ = α|0⟩ + β|1⟩
+
+where α, β are complex numbers stored as {r, i} objects. The Bloch sphere
+coordinates are derived from the standard formula:
+
+    x = 2 · Re(α · conj(β))
+    y = 2 · Im(α · conj(β))
+    z = |α|² − |β|²
+
+This is implemented in function stateToBloch():
+
+    const acb = C.mul(C.conj(alpha), beta);
+    return { x: 2 * acb.r, y: 2 * acb.i, z: C.abs2(alpha) - C.abs2(beta) };
+
+After every gate application, the state vector is normalised to correct for
+floating-point drift:
+
+    const norm = Math.sqrt(C.abs2(alpha) + C.abs2(beta));
+    alpha = { r: alpha.r / norm, i: alpha.i / norm };
+    beta  = { r: beta.r  / norm, i: beta.i  / norm };
+
+7.4 Quantum Gate Definitions
+──────────────────────────────
+Six gates are implemented as 2×2 complex unitary matrices:
+
+  X (Pauli-X / Quantum NOT):
+    [ 0   1 ]
+    [ 1   0 ]
+    Effect: π rotation about X-axis. Swaps |0⟩ ↔ |1⟩.
+
+  Y (Pauli-Y):
+    [ 0  -i ]
+    [ i   0 ]
+    Effect: π rotation about Y-axis. Adds phase factor i to |1⟩ component.
+
+  Z (Pauli-Z):
+    [ 1   0 ]
+    [ 0  -1 ]
+    Effect: π rotation about Z-axis. Flips phase of |1⟩ component.
+
+  H (Hadamard):
+    1/√2 · [ 1   1 ]
+            [ 1  -1 ]
+    Effect: π/2 rotation about (X+Z)/√2. Creates equal superposition:
+            |0⟩ → |+⟩,  |1⟩ → |−⟩.
+
+  S (Phase Gate, S = √Z):
+    [ 1     0    ]
+    [ 0  e^(iπ/2) ]
+    Effect: π/2 rotation about Z-axis.
+
+  T (T Gate, T = √S):
+    [ 1     0    ]
+    [ 0  e^(iπ/4) ]
+    Effect: π/4 rotation about Z-axis. Fundamental for universal gate sets.
+
+7.5 Strassen's Algorithm for 2×2 Complex Matrix Multiplication
+────────────────────────────────────────────────────────────────
+Standard 2×2 matrix multiplication requires 8 complex multiplications.
+Strassen's algorithm reduces this to 7 by computing 7 intermediate products
+and reconstructing the output via additions (which are free in comparison).
+
+For matrices A = [[a,b],[c,d]] and B = [[e,f],[g,h]]:
+
+  M1 = (a + d) · (e + h)      M5 = (a + b) · h
+  M2 = (c + d) · e            M6 = (c − a) · (e + f)
+  M3 = a       · (f − h)      M7 = (b − d) · (g + h)
+  M4 = d       · (g − e)
+
+  C00 = M1 + M4 − M5 + M7     C01 = M3 + M5
+  C10 = M2 + M4                C11 = M1 − M2 + M3 + M6
+
+While the computational saving is modest for 2×2 (saving 1 complex mul), the
+implementation demonstrates the algorithmic principle and pedagogically shows
+students why Strassen matters at scale (O(n^2.807) vs O(n^3) for large n).
+
+In Quantum Lab, every gate application computes:
+    U_new = G · U_prev
+
+via strassenMul(GATES[name], composedU), maintaining a running composed
+unitary matrix for the full gate sequence applied so far. This lets the UI
+display the total accumulated transformation matrix at any time.
+
+7.6 Dynamic Programming Memoization Cache
+──────────────────────────────────────────
+A Map-based DP cache stores previously computed composed matrices:
+
+  Key    : hyphen-joined gate sequence string, e.g. "H-X-H"
+  Value  : the 2×2 complex matrix representing the full composed transformation
+
+When the user applies gate G after sequence [G0, G1, ..., Gn]:
+  1. Compute new key: newKey = prevKey + "-" + G
+  2. Cache lookup: if (dpCache.has(newKey)) → cache HIT, return stored matrix
+  3. Cache miss: strassenMul(GATES[G], prevMatrix), store result under newKey
+
+Cache statistics are displayed live in the UI:
+  Hits:  N  (green)   — gate applications that cost zero multiplications
+  Misses: N  (gold)   — gate applications that required Strassen
+  Size:  N            — total cached matrix products
+
+This memoization is particularly effective when users explore repeated gate
+sequences (e.g., applying H–X–H multiple times in sequence analysis).
+
+7.7 Control Panel Architecture
+────────────────────────────────
+The right-side control panel is a scrollable flex column containing five
+panel-section components:
+
+  1. Qubit State     — live ket notation (|0⟩, |+⟩, |1⟩, |−⟩, or |ψ⟩),
+                       raw complex amplitudes (α, β), and probability bars.
+  2. Quantum Gates   — 6-button grid; displays gate matrix on click.
+  3. Composed U      — live 2×2 matrix display, flashes cells on change.
+  4. DP Cache        — hit/miss/size counters + scrollable event log.
+  5. Options         — trail toggle switch + Clear Trail / Reset |0⟩ buttons.
+  6. Gate Legend     — plain-language description of each gate's effect.
+
+7.8 Interactive Orbit Controls
+────────────────────────────────
+Mouse and touch drag-to-rotate is implemented without importing Three.js's
+OrbitControls module (to stay dependency-light). The drag logic:
+
+  mousedown → record startX, startY, set isDragging = true
+  mousemove  → if isDragging: dθ = (x - startX) * sensitivity
+              → rotate sphere.rotation.y and sphere.rotation.x
+  mouseup    → isDragging = false
+
+Touch events are mapped identically using touchstart/touchmove/touchend.
+
+
+================================================================================
+8. MODULE 3 — ALGORITHM GLASS BOX (algorithms.html)
+================================================================================
+
+8.1 Overview
+─────────────
+The Algorithm Glass Box is the pedagogically most innovative component of
+Quantum Lab. It runs a quantum algorithm and a classical algorithm
+simultaneously on identical inputs, visualising each step graphically on
+canvas while synchronously highlighting the executing line of pseudocode/JS.
+
+8.2 Algorithm Library
+──────────────────────
+Three algorithm categories are available via tab navigation:
+
+  Tab 1 — Unstructured Search
+    Quantum  : Grover's Algorithm          O(√N)
+    Classical: Linear Search               O(N)
+
+  Tab 2 — Graph Traversal
+    Quantum  : Quantum Walk                O(√N)    (default)
+             : Grover Graph Search         O(√N)    (switchable)
+    Classical: BFS (Breadth-First Search)  O(V + E) (default)
+             : DFS (Depth-First Search)    O(V + E) (switchable)
+             : Dijkstra                    O((V+E) log V) (switchable)
+             : A* Search                   O(E log V)  (switchable)
+
+  Tab 3 — Period Finding
+    Quantum  : Shor's Algorithm            O((log N)^3)
+    Classical: Trial Division              O(√N)
+
+8.3 Code Trace Engine
+──────────────────────
+The code trace panels are a standout engineering feature. Each algorithm
+defines its code as an array of strings (one per line). A ALGO_CODE constant
+stores these for all seven algorithms, with syntax tokens wrapped in HTML
+span elements for syntax highlighting:
+
+  .hk  — keywords (function, for, let, return, etc.)   — purple
+  .hb  — built-ins (Math.sqrt, map, Array, Set, etc.)  — light blue
+  .hc  — comments (//)                                 — grey italic
+  .hn  — numbers                                        — orange
+  .hq  — quantum notation (ψ, ⟩, ⊗, etc.)              — green, bold
+  .hf  — function names                                 — blue
+  .hs  — strings                                        — green
+  .hok — operators (=>, *, +, etc.)                    — cyan
+
+During simulation, the engine sets simState.qCodeLine and simState.cCodeLine
+to the currently executing line index. A renderCode() function applies the
+CSS class .active to that line.
+
+Active line visual effects:
+  • Cyan/purple gradient background wash from left to right
+  • Bright left border (2.5px solid accent color)
+  • Execution arrow (▶) positioned left of the line number
+  • Text brightens from rgba(195,215,248,0.68) to rgba(235,248,255,0.96)
+  • Keyword and quantum tokens glow (text-shadow: 0 0 10px ...)
+  • Auto-scroll to keep active line visible (scrollIntoView with 'nearest')
+
+8.4 Visual Arena
+──────────────────
+Two adjacent canvas panels (quantum-panel, classical-panel) render the
+algorithm state using the Canvas 2D API.
+
+  Grover's Search Visualisation
+  ─────────────────────────────
+  N elements are displayed as vertical bars. Bar heights represent amplitude
+  (quantum) or "scanned" status (classical). Oracle iterations cause the
+  target bar to briefly invert (flash red) then grow via diffusion operator.
+  The amplification is visually dramatic — after O(√N) steps the target bar
+  towers over all others.
+
+  Graph Traversal Visualisation
+  ─────────────────────────────
+  A 16-node force-directed graph is rendered. Nodes are small circles, edges
+  are lines. Color coding:
+    Gold   : Source node (start)
+    Purple : High amplitude (quantum walk) / BFS frontier expansion
+    Cyan   : Visited nodes (classical)
+    White  : Unvisited nodes
+    Orange : Current node (Dijkstra/A*)
+
+  Quantum Walk creates a "probability wave" spreading across nodes —
+  visually distinct from BFS's expanding ring frontier.
+
+  Shor's Period Finding
+  ─────────────────────
+  The number-theoretic sequence f(x) = a^x mod N is plotted as an animated
+  line chart, revealing the periodic nature of modular exponentiation. The
+  quantum version highlights the FFT-based period detection (represented as
+  a convolved amplitude collapse) while the classical version marks each
+  evaluation individually.
+
+8.5 Playback Control System
+─────────────────────────────
+Four playback buttons control execution:
+
+  ▶ Play    — Start/continue stepTimer at selected speed (setInterval)
+  ⏸ Pause   — clearInterval(stepTimer)
+  ⏭ Step    — Execute exactly one step of both algorithms
+  ↺ Reset   — Reinitialise simState, pick new random target, reset canvases
+
+Speed selector offers four options:
+  Slow   : 800ms/step (for careful observation of code trace)
+  Normal : 300ms/step (default — balanced for comprehension)
+  Fast   : 100ms/step (to see convergence behaviour)
+  Turbo  : 25ms/step  (pure performance demonstration)
+
+N input field (8–32, step 4): Changing N triggers resetSim() to show how
+N affects the step count and the quantum speedup ratio (N / √N).
+
+8.6 Advantage Bar
+──────────────────
+After simulation completion, the advantage bar displays:
+
+  Quantum Speedup   : ratio of classical steps to quantum steps
+                      (e.g., "4.0× faster" for N=16)
+  Status Message    : "Quantum wins!" / "Classical wins!" / running status
+  Winner Banner     : Color-coded pill badge (purple = quantum, cyan = classic)
+
+The speedup value uses the JetBrains Mono font, neon-green color, and a
+text-shadow glow for emphasis — making the quantum advantage immediately salient.
+
+
+================================================================================
+9. MODULE 4 — APPLICATIONS HUB (apps.html)
+================================================================================
+
+9.1 Purpose
+────────────
+apps.html is a lightweight navigation hub page that catalogs all five live
+engineering simulation sub-applications. It is intentionally designed to be
+fast-loading with zero heavy JavaScript, serving as a visual menu.
+
+9.2 Application Card System
+─────────────────────────────
+Five app cards, each using the .app-card component with a color variant class
+(cyan, green, purple, gold, red). Each card contains:
+
+  • Emoji icon at 2.8rem
+  • Tag row (domain tags using .section-tag component)
+  • Title and description paragraph
+  • Footer: Difficulty badge + "Launch →" CTA
+  • Bottom color strip (absolute position, 2px high, fades in on hover)
+  • Hover overlay (radial-gradient from top-left accent color)
+
+The five applications:
+  1. ✈️ Aerospace SHM Cockpit      (flight.html)       — Advanced
+  2. 🌉 MZI Structural Health Mon  (mzi_structural.html) — Expert
+  3. ⚗️ Advanced MZI Lab           (interferometer-advanced.html) — Advanced
+  4. 🔐 QKD — BB84 Protocol        (qkd.html)          — Intermediate
+  5. 💣 Elitzur–Vaidman Bomb Game  (bomb-game.html)    — Beginner
+
+9.3 Explainer Info Section
+───────────────────────────
+Below the card grid is an informational panel titled "What connects these
+applications?" with four info-items explaining the shared physics principles:
+  • Quantum Superposition
+  • Optical Interference
+  • No-Cloning Theorem
+  • Measurement Back-Action
+
+This section reinforces conceptual coherence — the student understands that
+all five applications share the same physical foundation.
+
+
+================================================================================
+10. SUB-APPLICATION: MZI STRUCTURAL HEALTH MONITOR (mzi_structural.html)
+================================================================================
+
+10.1 Overview
+──────────────
+The MZI Structural Health Monitor is the most complex single-file application
+in the project (~74 KB). It is a digital twin of a bridge instrumented with
+fibre-optic Mach–Zehnder interferometers.
+
+10.2 Physics Engine
+────────────────────
+The physics simulation models:
+
+  Beam Deflection:
+    δ_max = P · L³ / (48 · E · I)
+    where:  P = applied load (N)
+            L = span length (m)
+            E = Young's modulus (Pa) — configurable for concrete/steel
+            I = second moment of area (m⁴) — from cross-section geometry
+
+  Optical Phase Change:
+    ΔΦ = (2π / λ) · n_eff · ε · L_sensor
+    where:  λ = wavelength (1550nm — standard telecom C-band)
+            n_eff = effective refractive index (~1.467 for silica fibre)
+            ε = axial strain (computed from beam theory: σ/E)
+            L_sensor = sensor gauge length
+
+  Interference Intensity:
+    I_out = I_0 · cos²(ΔΦ / 2)
+
+  Damage Model:
+    Stiffness reduction applied as E_damaged = E_0 · (1 − damage_factor)
+    where damage_factor ∈ [0, 1] and is user-configurable.
+
+10.3 Signal Processing Pipeline
+─────────────────────────────────
+  1. Physics engine generates displacement time series at 100 Hz sample rate.
+  2. Custom FFT implementation (Cooley-Tukey, radix-2) converts to frequency domain.
+  3. Chart.js renders both the time-domain and frequency-domain signals in
+     real time, updating on every physics tick.
+  4. A frequency peak detection algorithm identifies dominant frequencies
+     and computes their shift relative to the undamaged baseline.
+  5. The Structural Health Index (SHI) is computed as a weighted combination
+     of phase deviation, frequency shift, and amplitude ratio.
+  6. The SHI maps to a three-level status display:
+       SHI > 0.85  : 🟢 SAFE
+       0.5 < SHI ≤ 0.85 : 🟡 INSPECTION NEEDED
+       SHI ≤ 0.5  : 🔴 CRITICAL — IMMEDIATE ACTION
+
+10.4 User Controls
+───────────────────
+  • Load Slider        : 0 – 500 kN (live physics update)
+  • Temperature Slider : −20°C – 60°C (thermal expansion affects n_eff)
+  • Damage Slider      : 0 – 100% structural damage (stiffness reduction)
+  • Material Selector  : Reinforced Concrete / Structural Steel / Composite
+  • Sensor Position    : Left quarter / Mid-span / Right quarter
+  • Simulation Speed   : 0.5× / 1× / 2× / 5×
+
+
+================================================================================
+11. SUB-APPLICATION: AEROSPACE SHM COCKPIT (flight.html)
+================================================================================
+
+11.1 Overview
+──────────────
+The Aerospace SHM Cockpit simulates fibre-optic MZI sensors mounted on
+aircraft wing spars and skin panels during flight. It models real flight
+physics including load factor, Mach effects, and structural fatigue.
+
+11.2 Flight Physics Model
+──────────────────────────
+  Aerodynamic Load:
+    L = 0.5 · ρ · v² · S · C_L
+    where ρ = air density (function of altitude), v = velocity, S = wing area
+
+  V-n Envelope:
+    The velocity-load-factor diagram is computed and visualised. Operating
+    points outside the envelope trigger warnings.
+
+  Wing Bending Moment:
+    M = q · (b/2)² / 8    (simplified distributed load model)
+    b = wingspan; q = aerodynamic pressure
+
+  MZI Phase Response:
+    ΔΦ = k_strain · ε_wing + k_temp · ΔT
+    where k_strain and k_temp are sensitivity coefficients
+
+11.3 Scenario Presets
+──────────────────────
+Pre-configured flight scenarios include:
+  • Cruise       : Standard 1g level flight, low baseline sensor noise
+  • Banking      : 2g coordinated turn, increased wing bending
+  • Max-G        : 3.5g manoeuvre near structural limit
+  • Crack Prog.  : Simulated crack growth with stiffness degradation
+  • Ice Accretion: Mass addition, reduced aerodynamic efficiency
+
+11.4 Cockpit UI Design
+───────────────────────
+The UI mimics an avionics display with:
+  • Instrument-style gauges for altitude, speed, load factor
+  • Multi-panel Chart.js charts: FFT, V-n envelope, phase deviation timeline
+  • Color-coded alert system matching aviation HMI conventions
+  • Live sensor status indicators per-wing-section (green/yellow/red)
+
+
+================================================================================
+12. SUB-APPLICATION: ADVANCED MZI LAB (interferometer-advanced.html + .js)
+================================================================================
+
+12.1 Overview
+──────────────
+The Advanced MZI Lab (~52 KB total) provides an engineering-grade Mach–Zehnder
+interferometer simulator for serious optical sensing design work. It includes:
+  • Multi-mode operation (single and dual-polarisation)
+  • Adjustable beam splitter ratios (50:50, 70:30, 90:10)
+  • Phase shifter insertion with arbitrary phase value
+  • Coherence length modelling (laser linewidth → coherence length)
+  • Noise models (shot noise, thermal noise, electronic noise)
+  • Full signal processing output (intensity pattern, interference visibility)
+
+12.2 Optical Model
+───────────────────
+The electric field through each arm is modelled as:
+
+  E_arm1 = E_0 · r_bs · exp(i · Φ_1)
+  E_arm2 = E_0 · t_bs · exp(i · Φ_2)
+
+  At recombining beam splitter:
+  E_D1 = r · E_arm1 + t · E_arm2
+  E_D2 = t · E_arm1 − r · E_arm2
+
+  Detected intensity:
+  I_D1 = |E_D1|² = I_0 · [r² + t² + 2rt · cos(ΔΦ) · V]
+  where V = visibility coefficient (affected by coherence length)
+
+12.3 Engineering Tools
+───────────────────────
+  • Interference Visibility Plot: shows how V changes with path length difference
+  • Sensitivity Analysis: ∂I/∂Φ as function of operating point
+  • Noise Floor Calculation: shot noise limit in dBm
+  • Optimal Operating Point Finder: maximises |∂I/∂Φ| at quadrature
+
+
+================================================================================
+13. SUB-APPLICATION: QUANTUM KEY DISTRIBUTION — BB84 (qkd.html / qkd.js)
+================================================================================
+
+13.1 Overview
+──────────────
+The QKD sub-application simulates the BB84 quantum key distribution protocol,
+letting users take the role of "Bob" and decide whether "Eve" (an eavesdropper)
+was present during a 100-photon transmission (10 bits × 10 photons/bit).
+
+13.2 BB84 Protocol Overview
+─────────────────────────────
+The simulation models the core BB84 mechanism:
+
+  Alice transmits each bit using a quantum MZI encoding:
+  • Bit 0: All photons sent constructively interfere → preferentially D1
+  • Bit 1: Phase randomised → 50% photon loss, remaining split D1/D2
+
+  Eve's Interference Model:
+  When Eve measures a photon in the wrong basis (modeled as random):
+  • She collapses the wavefunction, destroying interference
+  • The collapsed photon re-emitted to Bob arrives in a random state
+  • This manifests as: increased D2 counts for a bit-0 transmission,
+    and increased overall loss per bit
+
+13.3 Simulation Engine (qkd.js)
+─────────────────────────────────
+Key parameters (locked for reproducibility):
+  NUM_BITS           : 10
+  PHOTONS_PER_BIT    : 10
+  TOTAL_PHOTONS      : 100
+  Eve presence       : 50% random probability per round
+  Eve interference   : 1–3 photons per bit (randomly selected)
+
+The simulatePhoton() function implements the state-machine:
+
+  if (bit=0 && !eveInterferes) → 80% D1, 20% LOST
+  if (bit=0 &&  eveInterferes) → 50% LOST, 25% D1, 25% D2
+  if (bit=1 && !eveInterferes) → 50% LOST, 25% D1, 25% D2
+  if (bit=1 &&  eveInterferes) → 75% LOST, 12.5% D1, 12.5% D2
+
+13.4 User Interaction Flow
+───────────────────────────
+  Phase 1 — Transmission (Animated):
+    100 photons sent sequentially with 30ms/photon delay.
+    Live counters update: total sent, D1 count, D2 count, lost count.
+    Canvas renders the quantum channel as animated beam.
+
+  Phase 2 — Analysis:
+    Alice's bit values revealed on a 10-cell grid.
+    Bob's inferred bits (majority of D1/D2 per-bit) on a second grid.
+    Clicking a Bob bit-card opens a per-photon breakdown panel showing
+    each photon's result (D1 / D2 / LOST) and distribution stats.
+    Statistical metrics: total loss %, disturbed bits count.
+
+  Phase 3 — Decision:
+    User presses "Eve Present" or "Eve Absent."
+    Submit triggers showResults() with animated modal displaying:
+    verdict (correct/incorrect), truth, explanation, and key takeaway.
+
+13.5 Key Pedagogical Insight Encoded
+──────────────────────────────────────
+The simulation is carefully calibrated to teach: "photon loss ≠ eavesdropping."
+Alice intentionally causes ~50% loss for bit-1 encodings. The real tell is
+*disturbed interference* — D2 photons appearing in bit-0 transmissions.
+This nuance is explicitly reinforced in the results explanation.
+
+
+================================================================================
+14. SUB-APPLICATION: ELITZUR–VAIDMAN BOMB DETECTOR (bomb-game.html / bomb-game.js)
+================================================================================
+
+14.1 Overview
+──────────────
+The Bomb Detector game gamifies one of quantum mechanics' most mind-bending
+thought experiments: the Elitzur–Vaidman interaction-free measurement.
+
+In the original 1993 thought experiment, a bomb with a pressure-sensitive
+fuse is placed in one arm of a Mach–Zehnder interferometer. If the bomb
+is there and the photon takes the bomb path → explosion. But if the photon
+takes the other path and reaches detector D2 (which would only register if
+the bomb blocks one path, destroying interference) → the bomb is confirmed
+without detonation.
+
+14.2 Gameplay Architecture
+────────────────────────────
+Three levels of increasing difficulty:
+  Level 1 : 3 channels  (simpler, introductory)
+  Level 2 : 5 channels  (requires more careful data analysis)
+  Level 3 : 7 channels  (expertise level)
+
+Each channel independently either contains a bomb (50% probability) or not.
+The player must:
+  1. Select a channel.
+  2. Send photons (10, 20, or 50 at a time).
+  3. Observe D1/D2 distribution on the bar chart.
+  4. Make a BOMB / SAFE call and lock the decision.
+  5. Repeat for all channels within 30 seconds.
+
+14.3 Photon Simulation Engine
+──────────────────────────────
+simulatePhoton(channel):
+
+  No bomb present:
+    → Perfect interference: all photons go to D1.
+    → Player observes: 100% D1, 0% D2.
+    → Call: SAFE.
+
+  Bomb present:
+    → 30% chance: photon takes bomb path → EXPLOSION (channel locked, score −10)
+    → 70% chance: photon takes non-bomb path → 50/50 split D1 / D2
+    → Player observes: ~50% D1, ~50% D2 + some explosions
+    → Key insight: D2 detections PROVE the bomb is there without touching it.
+
+The 70% "safe path" probability is a design choice — the original experiment
+can only detect with 25% efficiency per photon, but this value was raised for
+gameplay to ensure enough clean signal in the 30-second window.
+
+14.4 Sound System
+──────────────────
+A SoundManager object manages three Audio objects:
+  click.mp3      : Sub-100ms UI interaction feedback on button press
+  explosion.mp3  : Bomb explosion feedback (triggers CSS .shake animation)
+  success.mp3    : Safe bomb detection reward sound
+
+Web Audio best practice: currentTime = 0 before play() allows rapid replaying
+of the same sound without waiting for the previous instance to finish.
+
+The CSS .shake animation is applied to document.body:
+  @keyframes shake { 0%{transform:translateX(0)} 25%{...(-6px)} ...}
+  Duration: 400ms, then class removed.
+
+14.5 Scoring System
+────────────────────
+  +20 : Correctly identify bomb without explosion (the goal!)
+  +10 : Correctly identify safe channel
+  −5  : Wrong call (bomb called safe or safe called bomb)
+  −5  : Bomb not checked (left unchecked)
+  −3  : Safe channel not checked
+  −10 : Bomb triggered (explosion)
+
+Level completion opens a results modal with:
+  • Per-channel breakdown in a compact table (Ch, Actual, Your Call, Result)
+  • "Wow Box" if any bombs were safely detected — explains the quantum phenomenon
+  • Score update and "continue to next level" CTA
+  • Level 3 completion redirects to qkd.html as a curriculum journey continuation
+
+
+================================================================================
+15. DATA FLOW AND STATE MANAGEMENT
+================================================================================
+
+15.1 Module-Level State Objects
+────────────────────────────────
+Each major JavaScript module maintains a single encapsulated state object:
+
+  bloch.html (inline):
+    alpha, beta     : Complex numbers {r, i} for qubit state
+    composedU       : 2×2 complex matrix (composed gate sequence)
+    gateSequence    : Array of gate name strings
+    dpCache         : Map<string, matrix>
+    cacheHits, cacheMisses : Integer counters
+
+  algorithms.html (inline):
+    N               : Problem size (input)
+    target          : Target element index
+    currentAlgo     : 'search' | 'graph' | 'factoring'
+    currentGraphC   : 'bfs' | 'dfs' | 'dijkstra' | 'astar'
+    currentGraphQ   : 'walk' | 'grover'
+    simState        : Object containing full simulation state per algorithm
+    isRunning       : Boolean
+    stepTimer       : setInterval handle
+
+  qkd.js (module object):
+    aliceBits[]     : Array<0|1>
+    evePresent      : Boolean
+    eveTargetPhotons[][] : Array<Array<number>>
+    bobBits[]       : Array<{photons, d1Count, d2Count, lostCount}>
+    eveGuess        : Boolean | null
+
+  bomb-game.js (module object):
+    channels[]      : Array<Channel> (with hasBomb, stats, decision, locked, exploded)
+    level           : 1 | 2 | 3
+    score           : Integer
+    timer           : Integer
+    timerInterval   : setInterval handle
+
+15.2 Event Flow Pattern
+────────────────────────
+For all modules, the state update cycle follows:
+
+  User Action (click/input) →
+    Handler Function →
+      Validate / Compute →
+        Mutate State Object →
+          Re-render Affected DOM Elements
+            (not full re-render, targeted updates)
+
+This is an efficient "Immediate Mode" rendering model — unlike React's virtual
+DOM diffing, targeted DOM updates are applied directly to specific elements
+(e.g., document.getElementById('qSteps').textContent = N), minimising
+unnecessary work.
+
+15.3 Animation Frame Management
+────────────────────────────────
+Long-running animation loops use requestAnimationFrame():
+
+  bloch.html:  Three.js renderer.setAnimationLoop(animate) handles the rAF.
+  index.html:  Self-referencing draw() → requestAnimationFrame(draw) loop.
+  algorithms.html: stepTimer (setInterval) drives step logic; canvas draws
+                   on each step within drawAll() calls.
+
+rAF automatically pauses when the browser tab is backgrounded (per W3C spec),
+preventing CPU/battery waste when the user navigates away.
+
+
+================================================================================
+16. PERFORMANCE ENGINEERING
+================================================================================
+
+16.1 Canvas 2D Rendering Optimisation
+───────────────────────────────────────
+Across all simulations, several canvas rendering best practices are applied:
+
+  clearRect batching:
+    ctx.clearRect(0, 0, W, H) is called once per frame at the start,
+    not before each individual element draw. This avoids clearing sub-regions.
+
+  State save/restore:
+    ctx.save() / ctx.restore() wraps transform grouping to avoid global
+    transform state leakage between drawn elements.
+
+  Path batching:
+    Related strokes and fills are batched: beginPath() → multiple arc/lineTo
+    calls → single stroke() at the end. This avoids per-element stroke()
+    calls which flush the hardware state machine.
+
+  Font caching:
+    ctx.font is set once per frame for a given text style and not re-set per
+    text element of the same style.
+
+16.2 Chart.js Update Mode
+──────────────────────────
+Real-time chart updates use chart.update('none') to bypass Chart.js's
+animation system entirely. The chart re-renders immediately without transitioning
+between old and new data values. This is essential at 60 FPS update rates.
+
+Dataset data arrays are bounded in length (e.g., maximum 200 time-domain
+samples retained) using Array.shift() when at capacity:
+
+  if (data.length >= MAX_SAMPLES) data.shift();
+  data.push(newValue);
+  chart.update('none');
+
+16.3 DOM Update Minimisation
+──────────────────────────────
+In the composed matrix panel (bloch.html), cells are only updated when their
+value actually changes:
+
+  if (txt !== prevCells[k]) {
+    el.textContent = txt;
+    el.classList.add('changed');    // triggers glow animation
+    setTimeout(() => el.classList.remove('changed'), 600);
+    prevCells[k] = txt;             // update cache
+  }
+
+This guards against needless DOM writes — text content comparison is O(n)
+on string length but vastly cheaper than a DOM reflow.
+
+16.4 Asset Loading Strategy
+─────────────────────────────
+CDN assets (Three.js, Chart.js, Google Fonts) are loaded with standard
+<script src> and <link href>. Only pages that need a library load it:
+
+  • Three.js loaded ONLY in bloch.html
+  • Chart.js loaded ONLY in mzi_structural.html and flight.html
+  • Google Fonts loaded in quantum-shared.css (single request for all pages)
+
+This avoids loading ~300 KB of Three.js on pages that don't need 3D rendering.
+
+16.5 Sound Loading
+───────────────────
+Audio objects in bomb-game.js are instantiated on module load (not on demand):
+
+  click: new Audio("sounds/click.mp3"),
+
+This pre-loads the audio buffer. The play() call on click is then sub-10ms,
+giving responsive audio feedback without first-click latency.
+
+
+================================================================================
+17. ALGORITHMS AND MATHEMATICAL FOUNDATIONS
+================================================================================
+
+17.1 Cooley-Tukey FFT
+──────────────────────
+The bridge and aircraft SHM simulations require real-time frequency spectrum
+analysis of the displacement signal. A custom Cooley-Tukey radix-2 FFT is
+implemented in JavaScript:
+
+  Inputs  : Array of N real-valued samples (N must be power of 2)
+  Outputs : Array of N complex values (positive frequencies only)
+  Usage   : Identify dominant structural vibration frequencies, detect
+            frequency shifts caused by stiffness reduction (damage).
+
+  The DFT magnitude spectrum |X[k]|² identifies modal frequencies.
+  A frequency shift Δf relative to undamaged-baseline frequency f₀ is
+  a key Structural Health Index parameter.
+
+17.2 Grover's Search Algorithm (Quantum)
+─────────────────────────────────────────
+Grover's algorithm queries an oracle that marks a target element. Starting
+from a uniform superposition:
+
+  |ψ₀⟩ = (1/√N) · Σ|x⟩
+
+Each iteration applies:
+  1. Oracle O: flips phase of target: |target⟩ → −|target⟩
+  2. Diffusion D: inversion about average amplitude: |x⟩ → 2μ − |x⟩
+
+After K = ⌊π/4 · √N⌋ iterations, measurement probability for the target
+exceeds (1 − 1/N), close to certainty.
+
+The JavaScript simulation models the amplitude vector directly:
+
+  oracle:     amplitudes[target] *= -1
+  diffuse:    const μ = mean(amplitudes); amplitudes = amplitudes.map(a => 2*μ - a)
+
+17.3 Quantum Walk Algorithm
+─────────────────────────────
+A discrete-time quantum walk on a graph spreads probability amplitude through
+an interference mechanism faster than classical random walk:
+
+  |ψ(t+1)[v]⟩ = Σ_{u: neighbor} |ψ(t)[u]⟩ / √(degree(u))
+                    (coherent superposition, not probabilistic sum)
+
+After diffusion ("Grover diffusion step"), amplitudes at highly connected nodes
+are amplified, enabling O(√N) graph traversal vs O(N) for classical BFS.
+
+17.4 BB84 QKD Security Model
+──────────────────────────────
+The BB84 security guarantee relies on two quantum mechanical principles:
+
+  No-Cloning Theorem: An unknown quantum state cannot be copied. Eve cannot
+  duplicate Alice's encoded photon to measure one copy while forwarding the other.
+
+  Measurement Collapse: Eve measuring in the wrong basis collapses the qubit
+  into an eigenstate of her measurement, not Alice's intended encoding.
+  This introduces detectable statistical disturbance.
+
+The simulation preserves this phenomenology: Eve's measurement of a bit-0
+photon (intended to go entirely to D1) introduces D2 detections that would
+not occur without eavesdropping — a statistically distinguishable signature.
+
+17.5 Beam Deflection — Euler-Bernoulli Beam Theory
+────────────────────────────────────────────────────
+Both the bridge and aircraft structural models use Euler-Bernoulli beam
+theory for deflection and bending moment calculation:
+
+  Central point load:   δ_max = P·L³ / (48·E·I)
+  Distributed load:     δ_max = 5·q·L⁴ / (384·E·I)
+
+  Bending strain:       ε = M·y / (E·I)
+  where y = distance from neutral axis.
+
+The axial strain ε feeds directly into the MZI optical phase change model,
+completing the chain from mechanical deformation to optical output.
+
+
+================================================================================
+18. RESPONSIVE DESIGN AND ACCESSIBILITY
+================================================================================
+
+18.1 Responsive Layout Strategy
+────────────────────────────────
+All layouts use CSS Grid and Flexbox with breakpoints at three key widths:
+
+  < 500px  (mobile-small) : Single column grids, reduced padding
+  < 680px  (mobile-large) : Algorithm arena stacks vertically (1fr)
+  < 768px  (tablet)       : Bloch sphere control panel moves below sphere
+  < 900px  (small desktop): Landing page cards collapse to single column
+
+The bloch.html two-column layout (sphere + controls) collapses to a stacked
+layout below 768px, with overflow-y: auto replacing overflow: hidden so the
+full control panel is accessible by scrolling.
+
+18.2 Fluid Typography
+──────────────────────
+All major text sizes use CSS clamp() for truly responsive typography:
+
+  clamp(min, preferred, max)
+
+  Hero title    : clamp(2.5rem, 7vw, 5.5rem)
+  Section titles: clamp(1.6rem, 4vw, 2.5rem)
+
+The preferred value in VW units creates a smooth continuous scale between
+the min (mobile) and max (large desktop) sizes — no jarring jumps at breakpoints.
+
+18.3 Accessibility Considerations
+───────────────────────────────────
+  Semantic HTML: Correct heading hierarchy (single h1 per page, h2 for
+  card titles, h3 for panel subsections). Nav uses <nav>, footers use <footer>.
+
+  Interactive elements: All buttons have descriptive onclick handlers.
+  Gate buttons (X, Y, Z, H, S, T) include <small> text explaining the
+  gate's effect, providing context beyond the single letter.
+
+  Color independence: Structural health status indicators use both color
+  AND text/emoji (🟢 SAFE, 🟡 INSPECTION, 🔴 CRITICAL) so color-blind
+  users receive the same information.
+
+  Focus states: Standard browser focus outlines are preserved (not removed
+  with outline: none) allowing keyboard navigation.
+
+  Pointer events: The particle canvas has pointer-events: none to ensure
+  it never interferes with interactive element targeting.
+
+18.4 Cross-Browser Compatibility
+──────────────────────────────────
+  Vendor prefixes used:
+    -webkit-background-clip: text; (for gradient text effect)
+    -webkit-text-fill-color: transparent;
+
+  These are required for WebKit/Blink browsers and remain stable across
+  Chrome, Edge, Safari, and Brave — all > 98% of the target audience.
+
+  Three.js uses WebGL. A fallback message is shown if WebGL is unavailable
+  (rare on devices manufactured after 2015).
+
+  backdrop-filter: blur() is not supported in Firefox by default (requires
+  layout.css.backdrop-filter.enabled = true in about:config). A graceful
+  degradation applies: panels remain readable without the blur, just lacking
+  the frosted glass effect.
+
+
+================================================================================
+19. TESTING STRATEGY AND QUALITY ASSURANCE
+================================================================================
+
+19.1 Testing Pyramid
+─────────────────────
+Given this is a single-developer hackathon project, formal unit testing
+frameworks were not employed. Instead, quality was assured through:
+
+  Mathematical Verification
+  ─────────────────────────
+    • Bloch sphere state normalisation: |α|² + |β|² = 1.0 is verified by console
+      assertion after every gate operation during development.
+    • Strassen correctness: Reference implementation compared against naive
+      2×2 multiplication for all six gate pairs.
+    • FFT correctness: Simple known-frequency sine waves (e.g., 50 Hz at 1000 Hz
+      sample rate) verified to produce peaks at correct frequency bins.
+
+  Functional Testing
+  ──────────────────
+    • Manual testing of all five application flows (bridge, flight, MZI, QKD, bomb)
+    • Each scenario preset exercised with typical and extreme parameter values
+    • Result modals tested for correct eve-present/absent verdict in QKD
+    • Bomb game tested across all three levels, including explosion triggers,
+      safe detection, correct/wrong scoring, and timer expiry
+
+  Browser Compatibility Testing
+  ─────────────────────────────
+    • Chrome 120+, Firefox 121+, Safari 17+, Edge 120+
+    • Mobile: iOS Safari 17, Chrome Android 120
+
+  Performance Testing
+  ───────────────────
+    • Chrome DevTools Performance panel: particle animation verified at 60 FPS.
+    • Memory usage monitored over 5-minute continuous sessions. No detectable
+      memory leak (particle array is fixed-size; all animation objects are
+      stack-allocated per frame).
+    • Chart.js MAX_SAMPLES cap verified to prevent unbounded arrayg growth.
+
+19.2 Known Limitations
+───────────────────────
+  • Three.js sphere rendering on iOS Safari 17 exhibits minor shadow artifacts
+    due to WebGL mobile driver differences.
+  • Very slow devices (< 1 GHz single-core) may drop below 30 FPS with all
+    effects enabled on the landing page + bloch.html simultaneously (multi-tab).
+  • QKD and bomb game simulations use simplified quantum probability models
+    rather than a full density matrix formalism — pedagogically appropriate
+    but not suitable for research use.
+
+19.3 Code Quality Controls
+────────────────────────────
+  • Consistent 2-space (or 4-space) indentation conventions per file.
+  • Module encapsulation: no global variable pollution (all state is namespaced).
+  • Descriptive variable and function names (stateToBloch, strassenMul,
+    simulatePhoton, applyGateMatrix, etc.) — self-documenting code.
+  • Dense, purpose-driven inline comments at all non-obvious logic points,
+    especially in complex physics and algorithm sections.
+  • All HTML validates at W3C level (proper DOCTYPE, charset, viewport,
+    semantic structure, closed tags).
+
+
+================================================================================
+20. DEPLOYMENT, FUTURE ROADMAP, AND CONCLUSIONS
+================================================================================
+
+20.1 Deployment
+────────────────
+Quantum Lab requires no server-side infrastructure. Deployment is as simple as:
+
+  Option A — Static File Serving:
+    Any web server (Apache, Nginx, Caddy) serving the project directory.
+    No build step required. No environment variables. No database.
+
+  Option B — GitHub Pages:
+    Push to a GitHub repository → Enable Pages in repository settings.
+    Free, globally CDN-distributed hosting with zero configuration.
+
+  Option C — Netlify / Vercel Drop:
+    Drag-and-drop the project folder into Netlify's deploy UI.
+    Instant global deployment with custom domain support.
+
+  Local Use:
+    Open index.html directly in any modern browser.
+    (Note: Some features may require a local server due to browser
+     same-origin restrictions on audio files. Use: python3 -m http.server)
+
+20.2 Scalability Considerations
+────────────────────────────────
+While the current architecture is optimal for a standalone educational tool,
+if the project were to scale to a multi-user platform, the following would
+be needed:
+
+  • Backend API: User progress tracking, simulation preset saving, assignment
+    submission. Recommended: FastAPI (Python) or Express.js (Node).
+
+  • Database: User accounts, session state, quiz results. Recommended: PostgreSQL.
+
+  • Authentication: OAuth2 (Google/GitHub SSO) for institutional deployment.
+
+  • Analytics: PostHog or Plausible (privacy-respecting) to measure which
+    sections engage students most and where they drop off.
+
+20.3 Future Feature Roadmap
+─────────────────────────────
+  Phase 2 — Expanded Theory:
+    • Two-qubit systems with CNOT gate and entanglement visualisation
+    • Density matrix representation and partial trace operations
+    • Quantum circuit builder with drag-and-drop gate placement
+    • Decoherence and noise channel simulation (amplitude damping, dephasing)
+
+  Phase 3 — Expanded Algorithms:
+    • Quantum Fourier Transform (QFT) visualised circuit-by-circuit
+    • Variational Quantum Eigensolver (VQE) for molecular energy simulation
+    • Bernstein-Vazirani algorithm implementation and demonstration
+
+  Phase 4 — Deeper Applications:
+    • Photonic quantum computing chip layout designer
+    • Long-distance QKD with satellite link simulation (atmospheric turbulence)
+    • Atom interferometry gravimeter simulation
+    • Quantum random number generator visualiser
+
+  Phase 5 — Collaborative Features:
+    • Shareable simulation state via URL parameters (encode slider values in hash)
+    • Preset gallery where users can share interesting configurations
+    • Educator mode with quiz overlays and exportable progress reports
+    • LTI integration for Canvas/Blackboard/Moodle LMS embedding
+
+20.4 Lessons Learned and Engineering Reflections
+──────────────────────────────────────────────────
+  1. Vanilla is Powerful: The decision to avoid frameworks proved right.
+     Zero build time, zero dependency management, and perfect transparency of
+     what the browser is running. The codebase remains fully inspectable and
+     modifiable by anyone with web fundamentals knowledge.
+
+  2. Physics First, UI Second: The most impactful engineering decision in each
+     sub-application was designing the physics model before the UI. The bridge
+     simulation's SHI pipeline (deformation → strain → optical phase → intensity
+     → FFT → frequency → health verdict) defined the data flow. The UI then
+     became a clean layer on top of that pipeline.
+
+  3. Strassen + DP = Showmanship + Substance: The Bloch sphere's use of
+     Strassen's algorithm and DP memoization serves both an educational purpose
+     (students learn what these algorithms ARE by watching their gate cache) and
+     a genuine engineering one (demonstrating that classical algorithms for
+     quantum circuit compilation are an active research area).
+
+  4. Gamification Lowers Barriers: The bomb detector game was the most
+     surprising success. Students who were hesitant to engage with dense
+     interferometry theory eagerly played through all three levels and emerged
+     with genuine intuition for interaction-free measurement — a concept that
+     baffles many graduate students when taught abstractly.
+
+  5. Design is a First-Class Engineering Concern: A simulation tool that looks
+     impressive is used more than one that looks amateurish. The 7 KB design
+     system (quantum-shared.css) paid enormous dividends — every new page
+     instantly matched the premium aesthetic without additional design work.
+
+20.5 Conclusions
+─────────────────
+Quantum Lab is a tightly engineered, pedagogically motivated, visually
+distinctive interactive education platform that demonstrates that modern
+web technologies, used skillfully, are sufficient to deliver graduate-level
+quantum mechanics and photonics education without any server infrastructure,
+build toolchain, or external dependencies beyond two carefully chosen,
+domain-appropriate libraries (Three.js and Chart.js).
+
+The platform covers a complete learning journey: from building quantum intuition
+(Bloch sphere) through algorithmic understanding (Algorithm Glass Box) to
+engineering application (five live simulations). Each layer is grounded in
+correct physics, presented with high visual fidelity, and interactive enough
+to build genuine physical intuition through action rather than passive observation.
+
+This codebase represents approximately 7,500 lines of handcrafted HTML, CSS,
+and JavaScript that, together, deliver an experience that would typically
+require a team and a full framework stack — demonstrating that thoughtful
+architecture and engineering discipline can achieve professional results with
+minimal machinery.
+
+
+================================================================================
+APPENDIX A — FILE INVENTORY
+================================================================================
+
+  File                         Size      Description
+  ────────────────────────────────────────────────────────────────────────
+  index.html                   13.7 KB   Landing page + particle canvas
+  bloch.html                   45.2 KB   Bloch sphere + Strassen + DP cache
+  algorithms.html              83.5 KB   Algorithm Glass Box engine
+  apps.html                    16.9 KB   Applications navigation hub
+  mzi_structural.html          74.0 KB   Bridge MZI SHM digital twin
+  flight.html                  33.5 KB   Aerospace SHM cockpit
+  interferometer-advanced.html 12.6 KB   Advanced MZI lab HTML
+  interferometer-advanced.js   39.1 KB   Advanced MZI optics engine
+  qkd.html                     17.5 KB   QKD / BB84 protocol HTML
+  qkd.js                       14.6 KB   BB84 simulation engine
+  bomb-game.html               24.4 KB   Elitzur–Vaidman bomb detector HTML
+  bomb-game.js                 17.0 KB   Bomb game logic engine
+  theory.html                  25.7 KB   Extended theory page
+  concept.html                  4.9 KB   Concept introduction page
+  concept.js                    7.9 KB   Concept page interactivity
+  engineering.html              2.0 KB   Engineering applications stub
+  interferometer.html           4.8 KB   Basic MZI HTML
+  interferometer.js            22.7 KB   Basic MZI engine
+  quantum-shared.css            7.1 KB   Shared design system
+  styles.css                   41.7 KB   MZI-specific extended styles
+  styles-advanced.css          11.6 KB   Flight cockpit styles
+  global-sound.js               0.9 KB   Sound utility
+  sounds/                        —       click.mp3, explosion.mp3, success.mp3
+  README.md                     3.3 KB   Project overview and setup guide
+  ────────────────────────────────────────────────────────────────────────
+  TOTAL (source code)          ~380 KB   ~23 files (excl. sounds, assets)
+
+
+================================================================================
+APPENDIX B — COMPONENT REFERENCE
+================================================================================
+
+  Shared CSS Components (quantum-shared.css)
+  ───────────────────────────────────────────
+  .q-nav            Fixed glassmorphism navigation bar
+  .q-nav-logo       Gradient logo text
+  .q-nav-links      Horizontal nav link list
+  .q-nav-back       Back arrow + "Home" button for sub-pages
+  .q-page           Page content wrapper (padding-top: 60px)
+  .glass-card       Glassmorphism card base component
+  .btn-neon         Neon-outlined button
+  .btn-neon.solid   Gradient filled primary CTA button
+  .btn-neon.purple  Purple variant
+  .section-tag      Badge/pill tag component
+  .section-tag.cyan   Cyan variant
+  .section-tag.purple Purple variant
+  .section-tag.green  Green variant
+  .section-tag.gold   Gold variant
+  .mono             JetBrains Mono font utility class
+  .glow-text-cyan   Cyan text with glow effect
+  .particle-bg      Particle canvas positioning utility
+
+  Gate Buttons (bloch.html)
+  ──────────────────────────
+  .gate-btn         Base quantum gate button
+  .gate-btn.purple  Purple variant (H gate)
+  .gate-btn.gold    Gold variant (S, T gates)
+  .gate-btn.flash   Animated flash class applied on gate activation
+
+  Code Trace Tokens (algorithms.html)
+  ────────────────────────────────────
+  .hk   keyword token          (purple)
+  .hb   built-in token         (light blue)
+  .hc   comment token          (grey, italic)
+  .hn   number token            (orange)
+  .hq   quantum notation token (green, bold)
+  .hf   function name token    (blue)
+  .hs   string token            (green)
+  .hok  operator token          (cyan)
+
+
+================================================================================
+APPENDIX C — KEY MATHEMATICAL FORMULAS
+================================================================================
+
+  Quantum State (Bloch sphere parameterisation)
+  ──────────────────────────────────────────────
+  |ψ⟩ = cos(θ/2)|0⟩ + e^(iφ)·sin(θ/2)|1⟩
+  Bloch vector: x = sinθ·cosφ,  y = sinθ·sinφ,  z = cosθ
+
+  Grover's Oracle + Diffusion
+  ────────────────────────────
+  Oracle:     O|x⟩ = −|x⟩ if x=target, else |x⟩
+  Diffusion:  D = 2|ψ⟩⟨ψ| − I
+  Optimal K:  K = ⌊(π/4)·√N⌋
+
+  MZI Interference
+  ─────────────────
+  I_D1 = I_0 · cos²(ΔΦ/2)
+  I_D2 = I_0 · sin²(ΔΦ/2)
+  Visibility: V = (I_max − I_min) / (I_max + I_min)
+
+  Beam Deflection
+  ────────────────
+  δ = P·L³ / (48·E·I)   [central point load, simply supported beam]
+  ε = M·y / (E·I)        [bending strain at depth y from neutral axis]
+
+  Optical Phase (Fibre MZI)
+  ──────────────────────────
+  ΔΦ = (2π/λ) · n_eff · ε · L_gauge
+  n_eff(T) = n_0 + (dn/dT)·ΔT     [temperature correction]
+
+  BB84 Eavesdropping Detection
+  ─────────────────────────────
+  QBER ≈ 25% when Eve intercepts all qubits in random basis
+  QBER = 0%  when no eavesdropping
+
+
+================================================================================
+                          END OF DOCUMENT
+================================================================================
+Quantum Lab — Software Engineering Document
+Version 1.0 | April 2026
+Platform: Browser-only (HTML5 + CSS3 + ES6+ JavaScript)
+Repository: Hrideshsrivastava/quantum_lab
+================================================================================

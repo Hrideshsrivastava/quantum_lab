@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Page Not Found | Quantum Lab</title>
+  <meta name="description" content="The page you were looking for does not exist." />
+  <link rel="stylesheet" href="quantum-shared.css" />
+  <style>
+    body { overflow: hidden; }
+
+    .orb {
+      position: fixed; border-radius: 50%;
+      filter: blur(80px); pointer-events: none; z-index: 0; opacity: 0.14;
+      animation: orb-drift 22s ease-in-out infinite alternate;
+    }
+    .orb-1 { width:500px;height:500px;top:-180px;left:-180px;background:var(--neon-cyan);animation-duration:22s; }
+    .orb-2 { width:420px;height:420px;bottom:-130px;right:-130px;background:var(--neon-purple);animation-duration:18s;animation-delay:-9s; }
+    @keyframes orb-drift {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(35px, 28px) scale(1.07); }
+    }
+
+    .error-wrap {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 2rem; gap: 1.5rem;
+    }
+
+    .error-code {
+      font-size: clamp(6rem, 20vw, 12rem);
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(160deg, var(--neon-red) 0%, var(--neon-purple) 60%, var(--neon-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.05em;
+      animation: pulse-glow 3s ease-in-out infinite alternate;
+    }
+    @keyframes pulse-glow {
+      0%   { filter: drop-shadow(0 0 20px rgba(255,45,85,0.4)); }
+      100% { filter: drop-shadow(0 0 40px rgba(176,38,255,0.5)); }
+    }
+
+    .error-icon {
+      font-size: 3rem;
+      animation: float 4s ease-in-out infinite alternate;
+    }
+    @keyframes float {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(-12px); }
+    }
+
+    .error-title {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .error-sub {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      max-width: 480px;
+      line-height: 1.7;
+    }
+
+    .error-code-block {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--neon-red);
+      background: rgba(255,45,85,0.08);
+      border: 1px solid rgba(255,45,85,0.25);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 1.2rem;
+      letter-spacing: 0.08em;
+    }
+
+    .btn-row {
+      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .nav-links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.75rem;
+      max-width: 600px;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+
+    .nav-shortcut {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      font-weight: 500;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+    }
+    .nav-shortcut:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      background: var(--bg-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,212,255,0.15);
+    }
+    .nav-shortcut .ns-icon { font-size: 1.3rem; }
+    .divider-line {
+      width: 60px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+      margin: 0.5rem auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <nav class="q-nav">
+    <a href="index.html" class="q-nav-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 5l-7 7 7 7" />
+      </svg>
+      Home
+    </a>
+    <ul class="q-nav-links">
+      <li><a href="bloch.html">Theory</a></li>
+      <li><a href="algorithms.html">Algorithms</a></li>
+      <li><a href="apps.html">Applications</a></li>
+    </ul>
+  </nav>
+
+  <div class="q-page error-wrap">
+    <div class="error-icon">🌌</div>
+    <div class="error-code">404</div>
+    <p class="error-title">Page Not Found</p>
+    <div class="error-code-block">ERROR: Quantum state collapsed — no page at this URL</div>
+    <p class="error-sub">
+      The page you're looking for doesn't exist or has been moved.
+      The URL may be incorrect, or the page may have been removed.
+    </p>
+
+    <div class="divider-line"></div>
+
+    <div class="btn-row">
+      <a href="index.html" class="btn-neon solid">← Return Home</a>
+      <a href="javascript:history.back()" class="btn-neon">Go Back</a>
+    </div>
+
+    <p style="font-size:0.78rem;color:var(--text-dim);margin-top:1rem;">Or navigate directly to a module:</p>
+    <div class="nav-links-grid">
+      <a href="bloch.html" class="nav-shortcut">
+        <span class="ns-icon">🔮</span> Quantum Theory
+      </a>
+      <a href="algorithms.html" class="nav-shortcut">
+        <span class="ns-icon">⚡</span> Algorithms
+      </a>
+      <a href="apps.html" class="nav-shortcut">
+        <span class="ns-icon">🛰️</span> Applications
+      </a>
+      <a href="qkd.html" class="nav-shortcut">
+        <span class="ns-icon">🔐</span> QKD Lab
+      </a>
+      <a href="bomb-game.html" class="nav-shortcut">
+        <span class="ns-icon">💣</span> Bomb Detector
+      </a>
+      <a href="mzi_structural.html" class="nav-shortcut">
+        <span class="ns-icon">🌉</span> MZI Monitor
+      </a>
+    </div>
+  </div>
+
+  <canvas class="particle-bg" id="particleCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    for (let i = 0; i < 60; i++) particles.push({
+      x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.4 + 0.3, sx: (Math.random()-0.5)*0.2, sy: (Math.random()-0.5)*0.2,
+      alpha: Math.random() * 0.4 + 0.1, hue: Math.random() < 0.5 ? '0,212,255' : '255,45,85'
+    });
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(${p.hue},${p.alpha})`; ctx.fill();
+        p.x += p.sx; p.y += p.sy;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
+</html>

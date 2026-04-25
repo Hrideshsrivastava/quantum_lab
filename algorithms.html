@@ -473,11 +473,56 @@
             white-space: nowrap;
             backdrop-filter: blur(8px);
         }
+
+        /* ── Toast notification (TC-6 / TC-8 / TC-10 fix) ── */
+        #algoToast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.6rem 1.5rem;
+            border-radius: 100px;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            z-index: 9999;
+            white-space: nowrap;
+            background: rgba(255,45,85,0.14);
+            border: 1px solid rgba(255,45,85,0.4);
+            color: #ff6b88;
+        }
+        #algoToast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        #algoToast.info {
+            background: rgba(0,212,255,0.12);
+            border-color: rgba(0,212,255,0.4);
+            color: var(--neon-cyan);
+        }
+
+        /* ── N input validation state (TC-10 fix) ── */
+        .size-input.invalid {
+            border-color: var(--neon-red) !important;
+            box-shadow: 0 0 8px rgba(255,45,85,0.35);
+        }
+        #nValidMsg {
+            font-size: 0.75rem;
+            color: var(--neon-red);
+            display: none;
+            margin-left: 0.25rem;
+        }
+        #nValidMsg.visible { display: inline; }
     </style>
 </head>
 
 <body>
     <div id="graphTooltip"></div>
+    <!-- Toast (TC-6 / TC-8 / TC-10 fix) -->
+    <div id="algoToast">⚠ Please check your input</div>
 
     <nav class="q-nav">
         <a href="index.html" class="q-nav-back">
@@ -620,7 +665,10 @@
                     <option value="25">Turbo</option>
                 </select>
                 <span class="input-label">N =</span>
-                <input class="size-input" type="number" id="nInput" value="16" min="8" max="32" step="4" onchange="resetSim()" />
+                <!-- TC-10/TC-12 fix: oninput fires on every keystroke; validateN shows error immediately -->
+                <input class="size-input" type="number" id="nInput" value="16" min="8" max="32" step="4"
+                    oninput="validateN(this); resetSim()" />
+                <span id="nValidMsg">⚠ Use 8–32 (step 4)</span>
             </div>
         </div>
     </div>
@@ -1685,6 +1733,31 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════════
+    //  TOAST + VALIDATION HELPERS  (TC-6 / TC-8 / TC-10)
+    // ═══════════════════════════════════════════════════════════════════════
+    let _toastTid = null;
+    function showToast(msg, type) {
+      const t = document.getElementById('algoToast');
+      if (!t) return;
+      t.textContent = msg;
+      t.className = 'show' + (type === 'info' ? ' info' : '');
+      clearTimeout(_toastTid);
+      _toastTid = setTimeout(() =>
+        t.className = t.className.replace('show', '').trim(), 3000);
+    }
+
+    // TC-10 fix: validate N input live; called from oninput on nInput
+    function validateN(input) {
+      const v = parseInt(input.value);
+      const msg = document.getElementById('nValidMsg');
+      const valid = !isNaN(v) && v >= 8 && v <= 32;
+      input.classList.toggle('invalid', !valid);
+      if (msg) msg.classList.toggle('visible', !valid);
+      if (!valid) showToast('⚠ N must be between 8 and 32');
+      return valid;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
     //  PLAYBACK ENGINE
     // ═══════════════════════════════════════════════════════════════════════
     function doStep() {
@@ -1699,8 +1772,29 @@
 
     function play() {
       if (isRunning) return;
+
+      // TC-10: refuse to run with invalid N
+      const nEl = document.getElementById('nInput');
+      if (!validateN(nEl)) {
+        showToast('⚠ Fix N input (must be 8–32) before running');
+        return;
+      }
+
+      // TC-6: sanity-check that an algorithm tab is active
+      if (!currentAlgo) {
+        showToast('⚠ Please select an algorithm tab before running');
+        return;
+      }
+
+      // TC-8: in graph mode both Q and C must be selected
+      if (currentAlgo === 'graph' && (!currentGraphQ || !currentGraphC)) {
+        showToast('⚠ Select both a Quantum and a Classical graph algorithm first');
+        return;
+      }
+
       isRunning = true;
       document.getElementById('statusMsg').textContent = 'Running…';
+      showToast('▶ Simulation started', 'info');
       if (animFrame) cancelAnimationFrame(animFrame);
       animLoop();
       stepLoop();
