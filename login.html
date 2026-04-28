@@ -3,160 +3,370 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | Quantum Lab</title>
+  <title>Quantum Playground | Authentication</title>
   <link rel="stylesheet" href="quantum-shared.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
+    :root {
+      --font-outfit: 'Outfit', sans-serif;
+      --accent-primary: #00d4ff;
+      --accent-secondary: #b026ff;
+      --bg-blur: rgba(10, 20, 40, 0.7);
+    }
+
     body {
+      font-family: var(--font-outfit);
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
+      margin: 0;
+      background: #03060f;
+      background: radial-gradient(circle at 0% 0%, #001f3f 0%, transparent 50%),
+                  radial-gradient(circle at 100% 100%, #000c18 0%, transparent 50%),
+                  radial-gradient(circle at 100% 0%, #003366 0%, transparent 50%),
+                  radial-gradient(circle at 0% 100%, #001a33 0%, transparent 50%),
+                  linear-gradient(135deg, #03060f 0%, #050a1b 100%);
+      background-attachment: fixed;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    /* Ambient Blue Glows */
+    .bg-glow {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0; left: 0;
+      z-index: -1;
       overflow: hidden;
     }
-    .orb {
-      position: fixed; border-radius: 50%; filter: blur(80px);
-      pointer-events: none; z-index: 0; opacity: .18;
-      animation: orb-drift 20s ease-in-out infinite alternate;
+    .glow-1 {
+      position: absolute; width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      animation: glow-move 25s infinite alternate;
     }
-    .orb-1 { width:600px;height:600px;top:-200px;left:-200px;background:var(--neon-cyan);animation-duration:22s; }
-    .orb-2 { width:500px;height:500px;bottom:-150px;right:-150px;background:var(--neon-purple);animation-duration:17s;animation-delay:-8s; }
-    @keyframes orb-drift {
-      0%   { transform:translate(0,0) scale(1); }
-      100% { transform:translate(40px,30px) scale(1.08); }
+    .glow-2 {
+      position: absolute; width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0, 78, 146, 0.15) 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+      animation: glow-move 20s infinite alternate-reverse;
+    }
+    @keyframes glow-move {
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(100px, 50px) scale(1.2); }
+    }
+
+    /* Particle Effect Overlay */
+    .particles {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .auth-card {
-      position: relative; z-index: 1; width: 100%; max-width: 420px;
-      margin: 0 1.5rem;
-      background: var(--bg-glass); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); backdrop-filter: blur(24px);
-      padding: 2.5rem 2.25rem 2rem;
-      animation: card-in .45s ease both;
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 440px;
+      margin: 1.5rem;
+      background: var(--bg-blur);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 28px;
+      padding: 1.75rem 2rem;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), 
+                  inset 0 0 20px rgba(255, 255, 255, 0.05);
+      animation: card-appear 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    @keyframes card-in {
-      from { opacity:0; transform:translateY(20px); }
-      to   { opacity:1; transform:translateY(0); }
+
+    @keyframes card-appear {
+      from { opacity: 0; transform: translateY(30px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
-    .auth-logo { text-align:center; margin-bottom:1.75rem; }
-    .auth-logo .icon { font-size:2.2rem; display:block; margin-bottom:.5rem; }
-    .auth-logo .wordmark {
-      font-size:1.3rem; font-weight:800;
-      background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-      background-clip:text;
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .logo-container {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(176, 38, 255, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 18px;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    .logo-container i {
+      color: var(--accent-primary);
+      filter: drop-shadow(0 0 8px var(--accent-primary));
+    }
+
+    .wordmark {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 30%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: 400;
     }
 
     .auth-tabs {
-      display:flex; border:1px solid var(--border);
-      border-radius:var(--radius-sm); overflow:hidden; margin-bottom:1.75rem;
+      display: flex;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 14px;
+      margin-bottom: 1.25rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
+
     .auth-tab {
-      flex:1; padding:.6rem; background:transparent; border:none;
-      color:var(--text-secondary); font-size:.9rem; font-weight:600;
-      cursor:pointer; transition:all .22s; font-family:var(--font-body);
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .auth-tab.active { background:rgba(0,212,255,.12); color:var(--neon-cyan); }
-    .auth-tab:hover:not(.active) { background:var(--bg-hover); color:var(--text-primary); }
 
-    .auth-form { display:flex; flex-direction:column; gap:.9rem; }
-    .field { display:flex; flex-direction:column; gap:.4rem; }
-    .field label {
-      font-size:.78rem; font-weight:600; color:var(--text-secondary);
-      letter-spacing:.04em; text-transform:uppercase;
+    .auth-tab.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
-    .field input {
-      padding:.7rem 1rem; background:rgba(0,0,0,.3);
-      border:1.5px solid var(--border); border-radius:var(--radius-sm);
-      color:var(--text-primary); font-size:.95rem; font-family:var(--font-body);
-      outline:none; transition:border-color .2s, box-shadow .2s;
-    }
-    .field input:focus {
-      border-color:var(--neon-cyan);
-      box-shadow:0 0 0 3px rgba(0,212,255,.12);
-    }
-    .field input::placeholder { color:var(--text-dim); }
 
-    .signup-only { display:none; }
-    .signup-only.on { display:flex; }
-
-    .auth-submit {
-      margin-top:.25rem; padding:.75rem;
-      background:linear-gradient(135deg,var(--neon-blue),var(--neon-cyan));
-      border:none; border-radius:var(--radius-sm); color:var(--bg-void);
-      font-size:1rem; font-weight:700; cursor:pointer;
-      font-family:var(--font-body); transition:all .25s;
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
     }
-    .auth-submit:hover { box-shadow:0 0 28px rgba(0,212,255,.5); transform:translateY(-1px); }
-    .auth-submit:active { transform:translateY(0); }
-    .auth-submit:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .input-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      margin-left: 4px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 14px;
+      color: rgba(255, 255, 255, 0.3);
+      width: 18px;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 11px 12px 11px 40px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    .input-wrapper input:focus {
+      border-color: var(--accent-primary);
+      background: rgba(0, 212, 255, 0.05);
+      box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.15);
+    }
+
+    .input-wrapper input::placeholder {
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .signup-only { display: none; }
+    .signup-only.on { display: flex; }
+
+    .btn-submit {
+      margin-top: 0.5rem;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 212, 255, 0.4);
+      filter: brightness(1.1);
+    }
+
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .auth-footer {
+      margin-top: 1rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .footer-link {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.4);
+      text-decoration: none;
+      transition: color 0.2s;
+      cursor: pointer;
+    }
+
+    .footer-link:hover {
+      color: var(--accent-primary);
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 0.5rem 0;
+    }
 
     .auth-msg {
-      font-size:.84rem; text-align:center; padding:.6rem 1rem;
-      border-radius:var(--radius-sm); display:none;
-      animation:fadeIn .25s ease;
+      font-size: 0.85rem;
+      padding: 12px;
+      border-radius: 10px;
+      display: none;
+      animation: slideDown 0.3s ease;
+      margin-top: 1rem;
     }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
-    .auth-msg.err { background:rgba(255,45,85,.1); border:1px solid rgba(255,45,85,.35); color:var(--neon-red); }
-    .auth-msg.ok  { background:rgba(0,255,157,.08); border:1px solid rgba(0,255,157,.3); color:var(--neon-green); }
 
-    .forgot-link, .guest-link {
-      display:block; text-align:center; margin-top:.6rem;
-      font-size:.82rem; color:var(--text-dim); cursor:pointer;
-      text-decoration:none; transition:color .2s;
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .forgot-link:hover { color:var(--neon-cyan); }
-    .guest-link { margin-top:.9rem; border-top:1px solid var(--border); padding-top:.9rem; }
-    .guest-link:hover { color:var(--neon-cyan); }
+
+    .auth-msg.err { background: rgba(255, 45, 85, 0.15); border: 1px solid rgba(255, 45, 85, 0.3); color: #ff5e7d; }
+    .auth-msg.ok { background: rgba(0, 255, 157, 0.15); border: 1px solid rgba(0, 255, 157, 0.3); color: #4fffb0; }
+
   </style>
 </head>
 <body>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
+  <div class="bg-glow">
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
+  </div>
 
   <div class="auth-card">
-    <div class="auth-logo">
-      <span class="icon">⚛</span>
-      <span class="wordmark">Quantum Lab</span>
+    <div class="auth-header">
+      <div class="logo-container">
+        <i data-lucide="atom" size="32"></i>
+      </div>
+      <span class="wordmark">Quantum Playground</span>
+      <span class="subtitle" id="authSubtitle">Welcome back! Please enter your details.</span>
     </div>
 
     <div class="auth-tabs">
-      <button class="auth-tab active" id="tabLogin"  onclick="switchTab('login')">Login</button>
-      <button class="auth-tab"        id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Login</button>
+      <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
     </div>
 
     <form class="auth-form" id="form" onsubmit="handleSubmit(event)">
-
-      <div class="field signup-only" id="fName">
+      
+      <div class="input-group signup-only" id="fName">
         <label for="iName">Full Name</label>
-        <input id="iName" type="text" placeholder="Enter your name" autocomplete="name" />
+        <div class="input-wrapper">
+          <i data-lucide="user"></i>
+          <input id="iName" type="text" placeholder="Enter your name" autocomplete="name" />
+        </div>
       </div>
 
-      <div class="field">
-        <label for="iEmail">Email</label>
-        <input id="iEmail" type="email" placeholder="you@example.com" autocomplete="email" required />
+      <div class="input-group">
+        <label for="iEmail">Email Address</label>
+        <div class="input-wrapper">
+          <i data-lucide="mail"></i>
+          <input id="iEmail" type="email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
       </div>
 
-      <div class="field">
+      <div class="input-group">
         <label for="iPwd">Password</label>
-        <input id="iPwd" type="password" placeholder="••••••••" autocomplete="current-password" required minlength="6" />
+        <div class="input-wrapper">
+          <i data-lucide="lock"></i>
+          <input id="iPwd" type="password" placeholder="••••••••" autocomplete="current-password" required minlength="6" />
+        </div>
       </div>
 
-      <div class="field signup-only" id="fConfirm">
+      <div class="input-group signup-only" id="fConfirm">
         <label for="iConfirm">Confirm Password</label>
-        <input id="iConfirm" type="password" placeholder="••••••••" autocomplete="new-password" />
+        <div class="input-wrapper">
+          <i data-lucide="shield-check"></i>
+          <input id="iConfirm" type="password" placeholder="••••••••" autocomplete="new-password" />
+        </div>
       </div>
 
       <div class="auth-msg" id="msg"></div>
-      <button class="auth-submit" id="submitBtn" type="submit">Login</button>
+
+      <button class="btn-submit" id="submitBtn" type="submit">
+        <span>Login</span>
+        <i data-lucide="arrow-right" size="18"></i>
+      </button>
     </form>
 
-    <a class="forgot-link" id="forgotLink" onclick="forgotPassword()">Forgot password?</a>
-    <a class="guest-link" onclick="continueGuest()">Continue without account →</a>
+    <div class="auth-footer">
+      <a class="footer-link" id="forgotLink" onclick="forgotPassword()">Forgot password?</a>
+      <div class="divider"></div>
+      <a class="footer-link" onclick="continueGuest()">Continue as Guest <i data-lucide="move-right" size="14" style="vertical-align: middle; margin-left: 4px;"></i></a>
+    </div>
   </div>
 
   <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
     let mode = 'login';
 
     // ── Auto-redirect if already logged in ───────────────────
@@ -171,9 +381,16 @@
       const isSignup = m === 'signup';
       document.getElementById('tabLogin').classList.toggle('active', !isSignup);
       document.getElementById('tabSignup').classList.toggle('active', isSignup);
+      
       document.querySelectorAll('.signup-only').forEach(el =>
         el.classList.toggle('on', isSignup));
-      document.getElementById('submitBtn').textContent = isSignup ? 'Create Account' : 'Login';
+      
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.querySelector('span').textContent = isSignup ? 'Create Account' : 'Login';
+      
+      const subtitle = document.getElementById('authSubtitle');
+      subtitle.textContent = isSignup ? 'Join the playground and explore quantum.' : 'Welcome back! Please enter your details.';
+      
       document.getElementById('forgotLink').style.display = isSignup ? 'none' : 'block';
       hideMsg();
     }
@@ -182,18 +399,18 @@
     async function handleSubmit(e) {
       e.preventDefault();
       hideMsg();
-      const btn   = document.getElementById('submitBtn');
+      const btn = document.getElementById('submitBtn');
       const email = document.getElementById('iEmail').value.trim().toLowerCase();
-      const pwd   = document.getElementById('iPwd').value;
+      const pwd = document.getElementById('iPwd').value;
       btn.disabled = true;
 
       try {
         if (mode === 'signup') {
-          const name    = document.getElementById('iName').value.trim();
+          const name = document.getElementById('iName').value.trim();
           const confirm = document.getElementById('iConfirm').value;
-          if (!name)           return showMsg('Please enter your full name.', 'err');
-          if (pwd !== confirm)  return showMsg('Passwords do not match.', 'err');
-          if (pwd.length < 6)   return showMsg('Password must be at least 6 characters.', 'err');
+          if (!name) return showMsg('Please enter your full name.', 'err');
+          if (pwd !== confirm) return showMsg('Passwords do not match.', 'err');
+          if (pwd.length < 6) return showMsg('Password must be at least 6 characters.', 'err');
 
           const { data, error } = await qlSupabase.auth.signUp({
             email, password: pwd,
@@ -201,7 +418,6 @@
           });
           if (error) return showMsg(error.message, 'err');
 
-          // If email confirmation is required (Supabase default)
           if (data.user && !data.session) {
             showMsg('✅ Check your email to confirm your account!', 'ok');
           } else {
@@ -212,8 +428,8 @@
         } else {
           const { data, error } = await qlSupabase.auth.signInWithPassword({ email, password: pwd });
           if (error) return showMsg(error.message, 'err');
-          const name = data.user?.user_metadata?.name || '!';
-          showMsg(`Welcome back${name !== '!' ? ', ' + name : ''}! Redirecting…`, 'ok');
+          const name = data.user?.user_metadata?.name || '';
+          showMsg(`Welcome back${name ? ', ' + name : ''}! Redirecting…`, 'ok');
           setTimeout(() => window.location.replace('index.html'), 800);
         }
       } finally {
@@ -224,7 +440,7 @@
     // ── Forgot Password ──────────────────────────────────────
     async function forgotPassword() {
       const email = document.getElementById('iEmail').value.trim();
-      if (!email) return showMsg('Enter your email above first.', 'err');
+      if (!email) return showMsg('Enter your email address first.', 'err');
       const { error } = await qlSupabase.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + '/login.html'
       });
@@ -233,14 +449,10 @@
     }
 
     // ── Guest (no login) ─────────────────────────────────────
-    // Uses a temporary anonymous Supabase session
     async function continueGuest() {
       const { data, error } = await qlSupabase.auth.signInAnonymously();
       if (error) {
-        // Fallback: just let them in with a flag
         sessionStorage.setItem('ql_guest', '1');
-        window.location.replace('index.html');
-        return;
       }
       window.location.replace('index.html');
     }
@@ -258,3 +470,4 @@
   </script>
 </body>
 </html>
+
