@@ -141,7 +141,23 @@ const bombGame = {
     },
     
     async sendPhotons(count) {
-        if (!this.selectedChannel || this.selectedChannel.locked || !this.roundActive) return;
+        // TC-18: guard invalid state before sending
+        if (!this.selectedChannel) {
+            alert('⚠ Select a channel first before sending photons.');
+            return;
+        }
+        if (!this.roundActive) {
+            alert('⚠ The round is not active. Start a new level to continue.');
+            return;
+        }
+        if (this.selectedChannel.locked) {
+            alert('⚠ This channel is already locked. Select another channel.');
+            return;
+        }
+        if (this.selectedChannel.exploded) {
+            alert('⚠ This channel has already exploded! Select a different channel.');
+            return;
+        }
         
         const ch = this.selectedChannel;
         
@@ -213,7 +229,24 @@ const bombGame = {
     },
     
     lockDecision(isBomb) {
-        if (!this.selectedChannel || this.selectedChannel.locked || !this.roundActive) return;
+        // TC-18: no channel selected
+        if (!this.selectedChannel) {
+            alert('⚠ Please select a channel first before locking a decision.');
+            return;
+        }
+        // TC-18: already locked or exploded
+        if (this.selectedChannel.locked) {
+            alert('⚠ This channel is already locked.');
+            return;
+        }
+        // TC-18: must probe with at least 1 photon before deciding
+        if (this.selectedChannel.stats.sent === 0) {
+            alert('⚠ Send at least one batch of photons to this channel before locking a decision.
+
+You need data to make a valid determination!');
+            return;
+        }
+        if (!this.roundActive) return;
         
         this.selectedChannel.decision = isBomb;
         this.selectedChannel.locked = true;
