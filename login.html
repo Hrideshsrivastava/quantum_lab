@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -48,6 +49,7 @@
       z-index: -1;
       overflow: hidden;
     }
+<<<<<<< HEAD
     .glow-1 {
       position: absolute; width: 600px; height: 600px;
       background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
@@ -71,10 +73,51 @@
       top: 0; left: 0; width: 100%; height: 100%;
       pointer-events: none;
       z-index: 0;
+=======
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: .18;
+      animation: orb-drift 20s ease-in-out infinite alternate;
+    }
+
+    .orb-1 {
+      width: 600px;
+      height: 600px;
+      top: -200px;
+      left: -200px;
+      background: var(--neon-cyan);
+      animation-duration: 22s;
+    }
+
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      bottom: -150px;
+      right: -150px;
+      background: var(--neon-purple);
+      animation-duration: 17s;
+      animation-delay: -8s;
+    }
+
+    @keyframes orb-drift {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      100% {
+        transform: translate(40px, 30px) scale(1.08);
+      }
+>>>>>>> 8847e76 (removing the login)
     }
 
     .auth-card {
       position: relative;
+<<<<<<< HEAD
       z-index: 10;
       width: 100%;
       max-width: 440px;
@@ -133,19 +176,71 @@
       font-size: 0.9rem;
       color: rgba(255, 255, 255, 0.5);
       font-weight: 400;
+=======
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      margin: 0 1.5rem;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(24px);
+      padding: 2.5rem 2.25rem 2rem;
+      animation: card-in .45s ease both;
+    }
+
+    @keyframes card-in {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .auth-logo .icon {
+      font-size: 2.2rem;
+      display: block;
+      margin-bottom: .5rem;
+    }
+
+    .auth-logo .wordmark {
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+>>>>>>> 8847e76 (removing the login)
     }
 
     .auth-tabs {
       display: flex;
+<<<<<<< HEAD
       background: rgba(255, 255, 255, 0.05);
       padding: 4px;
       border-radius: 14px;
       margin-bottom: 1.25rem;
       border: 1px solid rgba(255, 255, 255, 0.08);
+=======
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-bottom: 1.75rem;
+>>>>>>> 8847e76 (removing the login)
     }
 
     .auth-tab {
       flex: 1;
+<<<<<<< HEAD
       padding: 10px;
       border: none;
       background: transparent;
@@ -292,8 +387,168 @@
     .auth-msg.err { background: rgba(255, 45, 85, 0.15); border: 1px solid rgba(255, 45, 85, 0.3); color: #ff5e7d; }
     .auth-msg.ok { background: rgba(0, 255, 157, 0.15); border: 1px solid rgba(0, 255, 157, 0.3); color: #4fffb0; }
 
+=======
+      padding: .6rem;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .22s;
+      font-family: var(--font-body);
+    }
+
+    .auth-tab.active {
+      background: rgba(0, 212, 255, .12);
+      color: var(--neon-cyan);
+    }
+
+    .auth-tab:hover:not(.active) {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: .9rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+    }
+
+    .field label {
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .field input {
+      padding: .7rem 1rem;
+      background: rgba(0, 0, 0, .3);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: .95rem;
+      font-family: var(--font-body);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .field input:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, .12);
+    }
+
+    .field input::placeholder {
+      color: var(--text-dim);
+    }
+
+    .signup-only {
+      display: none;
+    }
+
+    .signup-only.on {
+      display: flex;
+    }
+
+    .auth-submit {
+      margin-top: .25rem;
+      padding: .75rem;
+      background: linear-gradient(135deg, var(--neon-blue), var(--neon-cyan));
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--bg-void);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all .25s;
+    }
+
+    .auth-submit:hover {
+      box-shadow: 0 0 28px rgba(0, 212, 255, .5);
+      transform: translateY(-1px);
+    }
+
+    .auth-submit:active {
+      transform: translateY(0);
+    }
+
+    .auth-submit:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .auth-msg {
+      font-size: .84rem;
+      text-align: center;
+      padding: .6rem 1rem;
+      border-radius: var(--radius-sm);
+      display: none;
+      animation: fadeIn .25s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-4px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .auth-msg.err {
+      background: rgba(255, 45, 85, .1);
+      border: 1px solid rgba(255, 45, 85, .35);
+      color: var(--neon-red);
+    }
+
+    .auth-msg.ok {
+      background: rgba(0, 255, 157, .08);
+      border: 1px solid rgba(0, 255, 157, .3);
+      color: var(--neon-green);
+    }
+
+    .forgot-link,
+    .guest-link {
+      display: block;
+      text-align: center;
+      margin-top: .6rem;
+      font-size: .82rem;
+      color: var(--text-dim);
+      cursor: pointer;
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    .forgot-link:hover {
+      color: var(--neon-cyan);
+    }
+
+    .guest-link {
+      margin-top: .9rem;
+      border-top: 1px solid var(--border);
+      padding-top: .9rem;
+    }
+
+    .guest-link:hover {
+      color: var(--neon-cyan);
+    }
+>>>>>>> 8847e76 (removing the login)
   </style>
 </head>
+
 <body>
   <div class="bg-glow">
     <div class="glow-1"></div>
@@ -334,10 +589,15 @@
 
       <div class="input-group">
         <label for="iPwd">Password</label>
+<<<<<<< HEAD
         <div class="input-wrapper">
           <i data-lucide="lock"></i>
           <input id="iPwd" type="password" placeholder="••••••••" autocomplete="current-password" required minlength="6" />
         </div>
+=======
+        <input id="iPwd" type="password" placeholder="••••••••" autocomplete="current-password" required
+          minlength="6" />
+>>>>>>> 8847e76 (removing the login)
       </div>
 
       <div class="input-group signup-only" id="fConfirm">
@@ -426,10 +686,14 @@
           }
 
         } else {
+<<<<<<< HEAD
           const { data, error } = await qlSupabase.auth.signInWithPassword({ email, password: pwd });
           if (error) return showMsg(error.message, 'err');
           const name = data.user?.user_metadata?.name || '';
           showMsg(`Welcome back${name ? ', ' + name : ''}! Redirecting…`, 'ok');
+=======
+
+>>>>>>> 8847e76 (removing the login)
           setTimeout(() => window.location.replace('index.html'), 800);
         }
       } finally {
@@ -469,5 +733,10 @@
     }
   </script>
 </body>
+<<<<<<< HEAD
 </html>
 
+=======
+
+</html>
+>>>>>>> 8847e76 (removing the login)

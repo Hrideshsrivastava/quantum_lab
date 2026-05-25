@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+<<<<<<< HEAD
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Algorithm Glass Box | Quantum Playground</title>
@@ -10,684 +11,918 @@
     <script src="supabase-config.js"></script>
     <style>
         body { overflow-y: auto; }
+=======
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Algorithm Glass Box | Quantum Lab</title>
+  <link rel="stylesheet" href="quantum-shared.css" />
+>>>>>>> 8847e76 (removing the login)
 
-        .algo-page {
-            padding: 0 1.5rem 4rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+  <style>
+    body {
+      overflow-y: auto;
+    }
 
-        .page-header {
-            padding: 2.5rem 0 1.5rem;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 2rem;
-        }
+    .algo-page {
+      padding: 0 1.5rem 4rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
 
-        .page-header h1 {
-            font-size: clamp(1.6rem, 4vw, 2.5rem);
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 0.5rem 0 0.75rem;
-        }
+    .page-header {
+      padding: 2.5rem 0 1.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
 
-        /* ── Algo tabs ── */
-        .algo-tabs {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.75rem;
-        }
+    .page-header h1 {
+      font-size: clamp(1.6rem, 4vw, 2.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0.5rem 0 0.75rem;
+    }
 
-        .algo-tab {
-            padding: 0.55rem 1.25rem;
-            background: var(--bg-card);
-            border: 1.5px solid var(--border);
-            border-radius: 100px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+    /* ── Algo tabs ── */
+    .algo-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.75rem;
+    }
 
-        .algo-tab:hover { border-color: var(--neon-purple); color: var(--neon-purple); }
+    .algo-tab {
+      padding: 0.55rem 1.25rem;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-        .algo-tab.active {
-            background: rgba(176, 38, 255, 0.12);
-            border-color: var(--neon-purple);
-            color: var(--neon-purple);
-            box-shadow: 0 0 16px rgba(176, 38, 255, 0.2);
-        }
+    .algo-tab:hover {
+      border-color: var(--neon-purple);
+      color: var(--neon-purple);
+    }
 
-        /* ── Graph algo sub-selector ── */
-        .graph-algo-bar {
-            display: none;
-            align-items: center;
-            gap: 0.6rem;
-            flex-wrap: wrap;
-            background: rgba(0, 212, 255, 0.04);
-            border: 1px solid rgba(0, 212, 255, 0.15);
-            border-radius: var(--radius-md);
-            padding: 0.75rem 1.25rem;
-            margin-bottom: 1.25rem;
-        }
+    .algo-tab.active {
+      background: rgba(176, 38, 255, 0.12);
+      border-color: var(--neon-purple);
+      color: var(--neon-purple);
+      box-shadow: 0 0 16px rgba(176, 38, 255, 0.2);
+    }
 
-        .graph-algo-bar.visible { display: flex; }
+    /* ── Graph algo sub-selector ── */
+    .graph-algo-bar {
+      display: none;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      background: rgba(0, 212, 255, 0.04);
+      border: 1px solid rgba(0, 212, 255, 0.15);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
 
-        .graph-algo-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--neon-cyan);
-            white-space: nowrap;
-        }
+    .graph-algo-bar.visible {
+      display: flex;
+    }
 
-        .graph-algo-pill {
-            padding: 0.35rem 0.9rem;
-            border-radius: 100px;
-            border: 1.5px solid rgba(0, 212, 255, 0.3);
-            background: transparent;
-            color: var(--text-secondary);
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+    .graph-algo-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--neon-cyan);
+      white-space: nowrap;
+    }
 
-        .graph-algo-pill:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+    .graph-algo-pill {
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      border: 1.5px solid rgba(0, 212, 255, 0.3);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-        .graph-algo-pill.active {
-            background: rgba(0, 212, 255, 0.12);
-            border-color: var(--neon-cyan);
-            color: var(--neon-cyan);
-            box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
-        }
+    .graph-algo-pill:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
 
-        /* ── Description strip ── */
-        .algo-desc {
-            background: var(--bg-glass);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 1.25rem 1.5rem;
-            margin-bottom: 1.5rem;
-            backdrop-filter: blur(12px);
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 1.5rem;
-            align-items: center;
-        }
+    .graph-algo-pill.active {
+      background: rgba(0, 212, 255, 0.12);
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+    }
 
-        @media (max-width: 700px) { .algo-desc { grid-template-columns: 1fr; } }
+    /* ── Description strip ── */
+    .algo-desc {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(12px);
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 1.5rem;
+      align-items: center;
+    }
 
-        .desc-block h3 {
-            font-size: 0.72rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            font-weight: 600;
-            margin-bottom: 0.35rem;
-        }
+    @media (max-width: 700px) {
+      .algo-desc {
+        grid-template-columns: 1fr;
+      }
+    }
 
-        .desc-block p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin: 0;
-        }
+    .desc-block h3 {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
 
-        .complexity-badge { display: flex; flex-direction: column; gap: 0.4rem; align-items: center; }
+    .desc-block p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 0;
+    }
 
-        .cb-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            padding: 0.3rem 0.8rem;
-            border-radius: 6px;
-            white-space: nowrap;
-        }
+    .complexity-badge {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      align-items: center;
+    }
 
-        .cb-quantum { background: rgba(176,38,255,0.12); color: var(--neon-purple); border: 1px solid rgba(176,38,255,0.3); }
-        .cb-classic { background: rgba(0,212,255,0.08); color: var(--neon-cyan); border: 1px solid rgba(0,212,255,0.2); }
-        .cb-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .cb-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
 
-        /* ── Goal banner ── */
-        .goal-banner {
-            background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.2));
-            border: 1px solid rgba(255,214,10,0.25);
-            border-radius: var(--radius-md);
-            padding: 0.75rem 1.25rem;
-            margin-bottom: 1.25rem;
-            font-size: 0.88rem;
-            color: var(--neon-gold);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
+    .cb-quantum {
+      background: rgba(176, 38, 255, 0.12);
+      color: var(--neon-purple);
+      border: 1px solid rgba(176, 38, 255, 0.3);
+    }
 
-        .goal-banner strong { color: #fff; }
+    .cb-classic {
+      background: rgba(0, 212, 255, 0.08);
+      color: var(--neon-cyan);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+    }
 
-        /* ── Arena ── */
-        .arena {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.25rem;
-            margin-bottom: 1.25rem;
-        }
+    .cb-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
 
-        @media (max-width: 680px) { .arena { grid-template-columns: 1fr; } }
+    /* ── Goal banner ── */
+    .goal-banner {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+      border: 1px solid rgba(255, 214, 10, 0.25);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.25rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.88rem;
+      color: var(--neon-gold);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
 
-        .arena-panel {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+    .goal-banner strong {
+      color: #fff;
+    }
 
-        .arena-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.9rem 1.25rem;
-            border-bottom: 1px solid var(--border);
-        }
+    /* ── Arena ── */
+    .arena {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
 
-        .arena-title { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
-        .quantum-panel .arena-title { color: var(--neon-purple); }
-        .classical-panel .arena-title { color: var(--neon-cyan); }
+    @media (max-width: 680px) {
+      .arena {
+        grid-template-columns: 1fr;
+      }
+    }
 
-        .step-counter { font-family: var(--font-mono); font-size: 0.85rem; }
-        .quantum-panel .step-counter { color: var(--neon-purple); }
-        .classical-panel .step-counter { color: var(--neon-cyan); }
+    .arena-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
 
-        canvas.algo-canvas {
-            display: block;
-            width: 100%;
-            flex: 1;
-            min-height: 280px;
-            background: linear-gradient(160deg, #040c1e 0%, #06101e 60%, #030812 100%);
-        }
+    .arena-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
 
-        /* ── Legend overlay ── */
-        .graph-legend {
-            display: none;
-            position: absolute;
-            bottom: 10px;
-            left: 12px;
-            right: 12px;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
+    .arena-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
 
-        .graph-legend.visible { display: flex; }
+    .quantum-panel .arena-title {
+      color: var(--neon-purple);
+    }
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.72rem;
-            color: rgba(255,255,255,0.55);
-        }
+    .classical-panel .arena-title {
+      color: var(--neon-cyan);
+    }
 
-        .legend-dot {
-            width: 9px; height: 9px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
+    .step-counter {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
 
-        /* ══════════════════════════════════════════════════════════════
+    .quantum-panel .step-counter {
+      color: var(--neon-purple);
+    }
+
+    .classical-panel .step-counter {
+      color: var(--neon-cyan);
+    }
+
+    canvas.algo-canvas {
+      display: block;
+      width: 100%;
+      flex: 1;
+      min-height: 280px;
+      background: linear-gradient(160deg, #040c1e 0%, #06101e 60%, #030812 100%);
+    }
+
+    /* ── Legend overlay ── */
+    .graph-legend {
+      display: none;
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      right: 12px;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .graph-legend.visible {
+      display: flex;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
            ── CODE TRACE PANELS ──
         ══════════════════════════════════════════════════════════════ */
-        .code-arena {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.25rem;
-            margin-bottom: 1.25rem;
-        }
+    .code-arena {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
 
-        @media (max-width: 680px) { .code-arena { grid-template-columns: 1fr; } }
+    @media (max-width: 680px) {
+      .code-arena {
+        grid-template-columns: 1fr;
+      }
+    }
 
-        .code-panel {
-            background: #050b1c;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+    .code-panel {
+      background: #050b1c;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
 
-        .code-panel-hdr {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.6rem 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            background: rgba(255,255,255,0.015);
-            flex-shrink: 0;
-        }
+    .code-panel-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.015);
+      flex-shrink: 0;
+    }
 
-        .cp-title {
-            font-size: 0.73rem;
-            font-weight: 700;
-            letter-spacing: 0.09em;
-            text-transform: uppercase;
-        }
+    .cp-title {
+      font-size: 0.73rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
 
-        .cp-lang {
-            font-size: 0.63rem;
-            font-weight: 700;
-            letter-spacing: 0.07em;
-            text-transform: uppercase;
-            padding: 0.18rem 0.6rem;
-            border-radius: 4px;
-        }
+    .cp-lang {
+      font-size: 0.63rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.6rem;
+      border-radius: 4px;
+    }
 
-        .quantum-cp .cp-title { color: var(--neon-purple); }
-        .quantum-cp .cp-lang {
-            color: var(--neon-purple);
-            background: rgba(176,38,255,0.1);
-            border: 1px solid rgba(176,38,255,0.22);
-        }
+    .quantum-cp .cp-title {
+      color: var(--neon-purple);
+    }
 
-        .classical-cp .cp-title { color: var(--neon-cyan); }
-        .classical-cp .cp-lang {
-            color: var(--neon-cyan);
-            background: rgba(0,212,255,0.08);
-            border: 1px solid rgba(0,212,255,0.18);
-        }
+    .quantum-cp .cp-lang {
+      color: var(--neon-purple);
+      background: rgba(176, 38, 255, 0.1);
+      border: 1px solid rgba(176, 38, 255, 0.22);
+    }
 
-        .code-body {
-            height: 220px;
-            overflow-y: auto;
-            padding: 0.35rem 0;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255,255,255,0.07) transparent;
-            font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
-        }
+    .classical-cp .cp-title {
+      color: var(--neon-cyan);
+    }
 
-        .code-body::-webkit-scrollbar { width: 3px; }
-        .code-body::-webkit-scrollbar-track { background: transparent; }
-        .code-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
+    .classical-cp .cp-lang {
+      color: var(--neon-cyan);
+      background: rgba(0, 212, 255, 0.08);
+      border: 1px solid rgba(0, 212, 255, 0.18);
+    }
 
-        /* Code line */
-        .cl {
-            display: flex;
-            align-items: center;
-            min-height: 1.6rem;
-            border-left: 2.5px solid transparent;
-            transition: background 0.18s ease, border-color 0.18s ease;
-            position: relative;
-        }
+    .code-body {
+      height: 220px;
+      overflow-y: auto;
+      padding: 0.35rem 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.07) transparent;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    }
 
-        .quantum-cp .cl.active {
-            background: linear-gradient(90deg, rgba(176,38,255,0.2) 0%, rgba(176,38,255,0.06) 65%, transparent 100%);
-            border-left-color: #b026ff;
-        }
+    .code-body::-webkit-scrollbar {
+      width: 3px;
+    }
 
-        .classical-cp .cl.active {
-            background: linear-gradient(90deg, rgba(0,212,255,0.16) 0%, rgba(0,212,255,0.04) 65%, transparent 100%);
-            border-left-color: #00d4ff;
-        }
+    .code-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
 
-        /* Execution arrow on active line */
-        .quantum-cp .cl.active::before {
-            content: '▶';
-            position: absolute;
-            left: 0.35rem;
-            font-size: 0.55rem;
-            color: #b026ff;
-            line-height: 1.6rem;
-        }
+    .code-body::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 2px;
+    }
 
-        .classical-cp .cl.active::before {
-            content: '▶';
-            position: absolute;
-            left: 0.35rem;
-            font-size: 0.55rem;
-            color: #00d4ff;
-            line-height: 1.6rem;
-        }
+    /* Code line */
+    .cl {
+      display: flex;
+      align-items: center;
+      min-height: 1.6rem;
+      border-left: 2.5px solid transparent;
+      transition: background 0.18s ease, border-color 0.18s ease;
+      position: relative;
+    }
 
-        /* Line number */
-        .ln {
-            display: inline-block;
-            width: 3rem;
-            text-align: right;
-            padding-right: 0.85rem;
-            font-size: 0.67rem;
-            line-height: 1.6rem;
-            color: rgba(255,255,255,0.16);
-            flex-shrink: 0;
-            user-select: none;
-            transition: color 0.18s ease;
-        }
+    .quantum-cp .cl.active {
+      background: linear-gradient(90deg, rgba(176, 38, 255, 0.2) 0%, rgba(176, 38, 255, 0.06) 65%, transparent 100%);
+      border-left-color: #b026ff;
+    }
 
-        .cl.active .ln { color: rgba(255,255,255,0.42); }
+    .classical-cp .cl.active {
+      background: linear-gradient(90deg, rgba(0, 212, 255, 0.16) 0%, rgba(0, 212, 255, 0.04) 65%, transparent 100%);
+      border-left-color: #00d4ff;
+    }
 
-        /* Code text */
-        .ct {
-            font-size: 0.75rem;
-            line-height: 1.6rem;
-            color: rgba(195,215,248,0.68);
-            white-space: pre;
-            padding-right: 1.2rem;
-        }
+    /* Execution arrow on active line */
+    .quantum-cp .cl.active::before {
+      content: '▶';
+      position: absolute;
+      left: 0.35rem;
+      font-size: 0.55rem;
+      color: #b026ff;
+      line-height: 1.6rem;
+    }
 
-        .cl.active .ct { color: rgba(235,248,255,0.96); }
+    .classical-cp .cl.active::before {
+      content: '▶';
+      position: absolute;
+      left: 0.35rem;
+      font-size: 0.55rem;
+      color: #00d4ff;
+      line-height: 1.6rem;
+    }
 
-        /* ── Syntax highlight tokens ── */
-        .hk  { color: #c792ea; }                             /* keyword */
-        .hb  { color: #89ddff; }                             /* built-in */
-        .hc  { color: rgba(255,255,255,0.26); font-style: italic; }  /* comment */
-        .hn  { color: #f78c6c; }                             /* number */
-        .hq  { color: #c3e88d; font-weight: 600; }          /* quantum: ψ ⟩ ⊗ … */
-        .hf  { color: #82aaff; }                             /* function name */
-        .hs  { color: #c3e88d; }                             /* string */
-        .hok { color: #89ddff; }                             /* operator */
+    /* Line number */
+    .ln {
+      display: inline-block;
+      width: 3rem;
+      text-align: right;
+      padding-right: 0.85rem;
+      font-size: 0.67rem;
+      line-height: 1.6rem;
+      color: rgba(255, 255, 255, 0.16);
+      flex-shrink: 0;
+      user-select: none;
+      transition: color 0.18s ease;
+    }
 
-        /* Active line glows on syntax */
-        .cl.active .hk  { text-shadow: 0 0 10px rgba(199,146,234,0.5); }
-        .cl.active .hb  { text-shadow: 0 0 8px rgba(137,221,255,0.4); }
-        .cl.active .hq  { text-shadow: 0 0 10px rgba(195,232,141,0.5); }
+    .cl.active .ln {
+      color: rgba(255, 255, 255, 0.42);
+    }
 
-        /* ── Advantage bar ── */
-        .advantage-bar {
-            background: var(--bg-glass);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.25rem;
-            backdrop-filter: blur(12px);
-            min-height: 60px;
-        }
+    /* Code text */
+    .ct {
+      font-size: 0.75rem;
+      line-height: 1.6rem;
+      color: rgba(195, 215, 248, 0.68);
+      white-space: pre;
+      padding-right: 1.2rem;
+    }
 
-        .advantage-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
-        .advantage-value { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--neon-green); text-shadow: 0 0 15px rgba(0,255,157,0.5); }
+    .cl.active .ct {
+      color: rgba(235, 248, 255, 0.96);
+    }
 
-        .winner-banner { padding: 0.4rem 1.2rem; border-radius: 100px; font-size: 0.82rem; font-weight: 700; display: none; }
-        .winner-banner.show { display: inline-flex; align-items: center; gap: 0.5rem; }
-        .winner-quantum { background: rgba(176,38,255,0.15); color: var(--neon-purple); border: 1px solid var(--neon-purple); }
-        .winner-classical { background: rgba(0,212,255,0.1); color: var(--neon-cyan); border: 1px solid var(--neon-cyan); }
+    /* ── Syntax highlight tokens ── */
+    .hk {
+      color: #c792ea;
+    }
 
-        /* ── Controls ── */
-        .playbar { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    /* keyword */
+    .hb {
+      color: #89ddff;
+    }
 
-        .playbar-btn {
-            padding: 0.6rem 1.4rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1.5px solid;
-            transition: all 0.2s ease;
-        }
+    /* built-in */
+    .hc {
+      color: rgba(255, 255, 255, 0.26);
+      font-style: italic;
+    }
 
-        #btnPlay  { border-color: var(--neon-green); color: var(--neon-green);  background: transparent; }
-        #btnPlay:hover  { background: rgba(0,255,157,0.1); }
-        #btnPause { border-color: var(--neon-gold);  color: var(--neon-gold);   background: transparent; }
-        #btnPause:hover { background: rgba(255,214,10,0.1); }
-        #btnStep  { border-color: var(--neon-cyan);  color: var(--neon-cyan);   background: transparent; }
-        #btnStep:hover  { background: rgba(0,212,255,0.08); }
-        #btnReset { border-color: var(--neon-red);   color: var(--neon-red);    background: transparent; }
-        #btnReset:hover { background: rgba(255,45,85,0.08); }
+    /* comment */
+    .hn {
+      color: #f78c6c;
+    }
 
-        .speed-label, .input-label { font-size: 0.85rem; color: var(--text-secondary); }
+    /* number */
+    .hq {
+      color: #c3e88d;
+      font-weight: 600;
+    }
 
-        .speed-select, .size-input {
-            padding: 0.45rem 0.75rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
+    /* quantum: ψ ⟩ ⊗ … */
+    .hf {
+      color: #82aaff;
+    }
 
-        .size-input { width: 70px; font-family: var(--font-mono); }
+    /* function name */
+    .hs {
+      color: #c3e88d;
+    }
 
-        /* ── Overlay tooltip ── */
-        #graphTooltip {
-            position: fixed;
-            background: rgba(10,15,30,0.95);
-            border: 1px solid rgba(0,212,255,0.3);
-            border-radius: 8px;
-            padding: 0.4rem 0.75rem;
-            font-size: 0.78rem;
-            color: #e8f0f8;
-            pointer-events: none;
-            display: none;
-            z-index: 1000;
-            white-space: nowrap;
-            backdrop-filter: blur(8px);
-        }
+    /* string */
+    .hok {
+      color: #89ddff;
+    }
 
-        /* ── Toast notification (TC-6 / TC-8 / TC-10 fix) ── */
-        #algoToast {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 0.6rem 1.5rem;
-            border-radius: 100px;
-            backdrop-filter: blur(10px);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease, transform 0.25s ease;
-            z-index: 9999;
-            white-space: nowrap;
-            background: rgba(255,45,85,0.14);
-            border: 1px solid rgba(255,45,85,0.4);
-            color: #ff6b88;
-        }
-        #algoToast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        #algoToast.info {
-            background: rgba(0,212,255,0.12);
-            border-color: rgba(0,212,255,0.4);
-            color: var(--neon-cyan);
-        }
+    /* operator */
 
-        /* ── N input validation state (TC-10 fix) ── */
-        .size-input.invalid {
-            border-color: var(--neon-red) !important;
-            box-shadow: 0 0 8px rgba(255,45,85,0.35);
-        }
-        #nValidMsg {
-            font-size: 0.75rem;
-            color: var(--neon-red);
-            display: none;
-            margin-left: 0.25rem;
-        }
-        #nValidMsg.visible { display: inline; }
-    </style>
+    /* Active line glows on syntax */
+    .cl.active .hk {
+      text-shadow: 0 0 10px rgba(199, 146, 234, 0.5);
+    }
+
+    .cl.active .hb {
+      text-shadow: 0 0 8px rgba(137, 221, 255, 0.4);
+    }
+
+    .cl.active .hq {
+      text-shadow: 0 0 10px rgba(195, 232, 141, 0.5);
+    }
+
+    /* ── Advantage bar ── */
+    .advantage-bar {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+      backdrop-filter: blur(12px);
+      min-height: 60px;
+    }
+
+    .advantage-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .advantage-value {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--neon-green);
+      text-shadow: 0 0 15px rgba(0, 255, 157, 0.5);
+    }
+
+    .winner-banner {
+      padding: 0.4rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: none;
+    }
+
+    .winner-banner.show {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .winner-quantum {
+      background: rgba(176, 38, 255, 0.15);
+      color: var(--neon-purple);
+      border: 1px solid var(--neon-purple);
+    }
+
+    .winner-classical {
+      background: rgba(0, 212, 255, 0.1);
+      color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan);
+    }
+
+    /* ── Controls ── */
+    .playbar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .playbar-btn {
+      padding: 0.6rem 1.4rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid;
+      transition: all 0.2s ease;
+    }
+
+    #btnPlay {
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+      background: transparent;
+    }
+
+    #btnPlay:hover {
+      background: rgba(0, 255, 157, 0.1);
+    }
+
+    #btnPause {
+      border-color: var(--neon-gold);
+      color: var(--neon-gold);
+      background: transparent;
+    }
+
+    #btnPause:hover {
+      background: rgba(255, 214, 10, 0.1);
+    }
+
+    #btnStep {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      background: transparent;
+    }
+
+    #btnStep:hover {
+      background: rgba(0, 212, 255, 0.08);
+    }
+
+    #btnReset {
+      border-color: var(--neon-red);
+      color: var(--neon-red);
+      background: transparent;
+    }
+
+    #btnReset:hover {
+      background: rgba(255, 45, 85, 0.08);
+    }
+
+    .speed-label,
+    .input-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .speed-select,
+    .size-input {
+      padding: 0.45rem 0.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .size-input {
+      width: 70px;
+      font-family: var(--font-mono);
+    }
+
+    /* ── Overlay tooltip ── */
+    #graphTooltip {
+      position: fixed;
+      background: rgba(10, 15, 30, 0.95);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.78rem;
+      color: #e8f0f8;
+      pointer-events: none;
+      display: none;
+      z-index: 1000;
+      white-space: nowrap;
+      backdrop-filter: blur(8px);
+    }
+
+    /* ── Toast notification (TC-6 / TC-8 / TC-10 fix) ── */
+    #algoToast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.6rem 1.5rem;
+      border-radius: 100px;
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 9999;
+      white-space: nowrap;
+      background: rgba(255, 45, 85, 0.14);
+      border: 1px solid rgba(255, 45, 85, 0.4);
+      color: #ff6b88;
+    }
+
+    #algoToast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #algoToast.info {
+      background: rgba(0, 212, 255, 0.12);
+      border-color: rgba(0, 212, 255, 0.4);
+      color: var(--neon-cyan);
+    }
+
+    /* ── N input validation state (TC-10 fix) ── */
+    .size-input.invalid {
+      border-color: var(--neon-red) !important;
+      box-shadow: 0 0 8px rgba(255, 45, 85, 0.35);
+    }
+
+    #nValidMsg {
+      font-size: 0.75rem;
+      color: var(--neon-red);
+      display: none;
+      margin-left: 0.25rem;
+    }
+
+    #nValidMsg.visible {
+      display: inline;
+    }
+  </style>
 </head>
 
 <body>
-    <div id="graphTooltip"></div>
-    <!-- Toast (TC-6 / TC-8 / TC-10 fix) -->
-    <div id="algoToast">⚠ Please check your input</div>
+  <div id="graphTooltip"></div>
+  <!-- Toast (TC-6 / TC-8 / TC-10 fix) -->
+  <div id="algoToast">⚠ Please check your input</div>
 
-    <nav class="q-nav">
-        <a href="index.html" class="q-nav-back">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 12H5M12 5l-7 7 7 7" />
-            </svg>
-            Home
-        </a>
-        <ul class="q-nav-links">
-            <li><a href="bloch.html">Section 1 · Theory</a></li>
-            <li><a href="algorithms.html" class="active">Section 2 · Algorithms</a></li>
-            <li><a href="apps.html">Section 3 · Applications</a></li>
-        </ul>
-    </nav>
+  <nav class="q-nav">
+    <a href="index.html" class="q-nav-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 5l-7 7 7 7" />
+      </svg>
+      Home
+    </a>
+    <ul class="q-nav-links">
+      <li><a href="bloch.html">Section 1 · Theory</a></li>
+      <li><a href="algorithms.html" class="active">Section 2 · Algorithms</a></li>
+      <li><a href="apps.html">Section 3 · Applications</a></li>
+    </ul>
+  </nav>
 
-    <div class="q-page">
-        <div class="algo-page">
-            <div class="page-header">
-                <span class="section-tag purple">02 · Algorithm Glass Box</span>
-                <h1>Quantum vs Classical Algorithms</h1>
-                <p style="color:var(--text-secondary);font-size:0.95rem;max-width:680px;margin:0;">
-                    Both algorithms run simultaneously on identical data. Every step is drawn and every line of code is traced — no black boxes.
-                </p>
-            </div>
+  <div class="q-page">
+    <div class="algo-page">
+      <div class="page-header">
+        <span class="section-tag purple">02 · Algorithm Glass Box</span>
+        <h1>Quantum vs Classical Algorithms</h1>
+        <p style="color:var(--text-secondary);font-size:0.95rem;max-width:680px;margin:0;">
+          Both algorithms run simultaneously on identical data. Every step is drawn and every line of code is traced —
+          no black boxes.
+        </p>
+      </div>
 
-            <!-- Main algo tabs -->
-            <div class="algo-tabs">
-                <button class="algo-tab active" onclick="selectAlgo('search', this)">🔍 Unstructured Search</button>
-                <button class="algo-tab" onclick="selectAlgo('graph', this)">🌐 Graph Traversal</button>
-                <button class="algo-tab" onclick="selectAlgo('factoring', this)">🔢 Period Finding</button>
-            </div>
+      <!-- Main algo tabs -->
+      <div class="algo-tabs">
+        <button class="algo-tab active" onclick="selectAlgo('search', this)">🔍 Unstructured Search</button>
+        <button class="algo-tab" onclick="selectAlgo('graph', this)">🌐 Graph Traversal</button>
+        <button class="algo-tab" onclick="selectAlgo('factoring', this)">🔢 Period Finding</button>
+      </div>
 
-            <!-- Graph algorithm sub-selector -->
-            <div class="graph-algo-bar" id="graphAlgoBar">
-                <span class="graph-algo-label">🖥 Classical:</span>
-                <button class="graph-algo-pill active" data-graph-algo="bfs"      onclick="setGraphAlgo('bfs',      this)">BFS</button>
-                <button class="graph-algo-pill"        data-graph-algo="dfs"      onclick="setGraphAlgo('dfs',      this)">DFS</button>
-                <button class="graph-algo-pill"        data-graph-algo="dijkstra" onclick="setGraphAlgo('dijkstra', this)">Dijkstra</button>
-                <button class="graph-algo-pill"        data-graph-algo="astar"    onclick="setGraphAlgo('astar',    this)">A*</button>
-                <span style="margin-left:0.5rem;color:var(--text-dim);font-size:0.75rem;">|</span>
-                <span class="graph-algo-label" style="color:var(--neon-purple);">⚡ Quantum:</span>
-                <button class="graph-algo-pill active" data-quantum-algo="walk"   onclick="setQuantumAlgo('walk',   this)" style="border-color:rgba(176,38,255,0.3);color:var(--text-secondary);">Quantum Walk</button>
-                <button class="graph-algo-pill"        data-quantum-algo="grover" onclick="setQuantumAlgo('grover', this)" style="border-color:rgba(176,38,255,0.3);color:var(--text-secondary);">Grover Search</button>
-            </div>
+      <!-- Graph algorithm sub-selector -->
+      <div class="graph-algo-bar" id="graphAlgoBar">
+        <span class="graph-algo-label">🖥 Classical:</span>
+        <button class="graph-algo-pill active" data-graph-algo="bfs"
+          onclick="setGraphAlgo('bfs',      this)">BFS</button>
+        <button class="graph-algo-pill" data-graph-algo="dfs" onclick="setGraphAlgo('dfs',      this)">DFS</button>
+        <button class="graph-algo-pill" data-graph-algo="dijkstra"
+          onclick="setGraphAlgo('dijkstra', this)">Dijkstra</button>
+        <button class="graph-algo-pill" data-graph-algo="astar" onclick="setGraphAlgo('astar',    this)">A*</button>
+        <span style="margin-left:0.5rem;color:var(--text-dim);font-size:0.75rem;">|</span>
+        <span class="graph-algo-label" style="color:var(--neon-purple);">⚡ Quantum:</span>
+        <button class="graph-algo-pill active" data-quantum-algo="walk" onclick="setQuantumAlgo('walk',   this)"
+          style="border-color:rgba(176,38,255,0.3);color:var(--text-secondary);">Quantum Walk</button>
+        <button class="graph-algo-pill" data-quantum-algo="grover" onclick="setQuantumAlgo('grover', this)"
+          style="border-color:rgba(176,38,255,0.3);color:var(--text-secondary);">Grover Search</button>
+      </div>
 
-            <!-- Description strip -->
-            <div class="algo-desc">
-                <div class="desc-block">
-                    <h3>⚡ Quantum</h3>
-                    <p id="descQuantum">Grover's algorithm uses an Oracle + Diffusion operator. Each iteration amplifies the marked element's amplitude. After O(√N) iterations, measurement collapses to the target with high probability.</p>
-                </div>
-                <div class="desc-block">
-                    <h3>🖥 Classical</h3>
-                    <p id="descClassical">Linear search scans each element one at a time, comparing it to the target. Expected cost is N/2 comparisons, worst case N. No amount of clever ordering helps on an unsorted list.</p>
-                </div>
-                <div class="complexity-badge">
-                    <div class="cb-item cb-quantum"><span class="cb-dot" style="background:var(--neon-purple)"></span><span id="complexQ">O(√N)</span></div>
-                    <div class="cb-item cb-classic"><span class="cb-dot" style="background:var(--neon-cyan)"></span><span id="complexC">O(N)</span></div>
-                </div>
-            </div>
-
-            <!-- Goal banner -->
-            <div class="goal-banner" id="goalBanner">
-                🎯 <strong>Goal:</strong> <span id="goalText">Find the starred (★) element in an unsorted array of N items.</span>
-            </div>
-
-            <!-- Visual arena -->
-            <div class="arena">
-                <div class="arena-panel quantum-panel">
-                    <div class="arena-header">
-                        <span class="arena-title" id="quantumTitle">⚡ Quantum — Grover's Algorithm</span>
-                        <span class="step-counter">Steps: <strong id="qSteps">0</strong></span>
-                    </div>
-                    <canvas class="algo-canvas" id="quantumCanvas"></canvas>
-                    <div class="graph-legend" id="qLegend">
-                        <span class="legend-item"><span class="legend-dot" style="background:#ffd60a"></span>Start</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:#b026ff"></span>High amplitude</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:rgba(176,38,255,0.3)"></span>Visited</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:rgba(255,255,255,0.1)"></span>Unvisited</span>
-                    </div>
-                </div>
-                <div class="arena-panel classical-panel">
-                    <div class="arena-header">
-                        <span class="arena-title" id="classicTitle">🖥 Classical — BFS</span>
-                        <span class="step-counter">Steps: <strong id="cSteps">0</strong></span>
-                    </div>
-                    <canvas class="algo-canvas" id="classicCanvas"></canvas>
-                    <div class="graph-legend" id="cLegend">
-                        <span class="legend-item"><span class="legend-dot" style="background:#ffd60a"></span>Start</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:#00d4ff"></span>Frontier</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:rgba(0,212,255,0.4)"></span>Visited</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:rgba(255,255,255,0.1)"></span>Unvisited</span>
-                        <span class="legend-item"><span class="legend-dot" style="background:#ff6b35"></span>Current (Dijkstra/A*)</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ══ CODE TRACE PANELS ══ -->
-            <div class="code-arena">
-                <div class="code-panel quantum-cp">
-                    <div class="code-panel-hdr">
-                        <span class="cp-title" id="qCpTitle">⚡ Quantum Algorithm</span>
-                        <span class="cp-lang">pseudocode</span>
-                    </div>
-                    <div class="code-body" id="qCodeBody"></div>
-                </div>
-                <div class="code-panel classical-cp">
-                    <div class="code-panel-hdr">
-                        <span class="cp-title" id="cCpTitle">🖥 Classical Algorithm</span>
-                        <span class="cp-lang">javascript</span>
-                    </div>
-                    <div class="code-body" id="cCodeBody"></div>
-                </div>
-            </div>
-
-            <!-- Advantage bar -->
-            <div class="advantage-bar">
-                <div>
-                    <div class="advantage-label">Quantum Speedup</div>
-                    <div class="advantage-value" id="speedupVal">—</div>
-                </div>
-                <div>
-                    <div class="advantage-label">Status</div>
-                    <div style="font-size:0.9rem;color:var(--text-secondary);" id="statusMsg">Press Play to start</div>
-                </div>
-                <div id="winnerBanner" class="winner-banner"></div>
-            </div>
-
-            <!-- Playbar -->
-            <div class="playbar">
-                <button class="playbar-btn" id="btnPlay"  onclick="play()">▶ Play</button>
-                <button class="playbar-btn" id="btnPause" onclick="pause()">⏸ Pause</button>
-                <button class="playbar-btn" id="btnStep"  onclick="stepOnce()">⏭ Step</button>
-                <button class="playbar-btn" id="btnReset" onclick="resetSim()">↺ Reset</button>
-                <span class="speed-label">Speed:</span>
-                <select class="speed-select" id="speedSel">
-                    <option value="800">Slow</option>
-                    <option value="300" selected>Normal</option>
-                    <option value="100">Fast</option>
-                    <option value="25">Turbo</option>
-                </select>
-                <span class="input-label">N =</span>
-                <!-- TC-10/TC-12 fix: oninput fires on every keystroke; validateN shows error immediately -->
-                <input class="size-input" type="number" id="nInput" value="16" min="8" max="32" step="4"
-                    oninput="validateN(this); resetSim()" />
-                <span id="nValidMsg">⚠ Use 8–32 (step 4)</span>
-            </div>
+      <!-- Description strip -->
+      <div class="algo-desc">
+        <div class="desc-block">
+          <h3>⚡ Quantum</h3>
+          <p id="descQuantum">Grover's algorithm uses an Oracle + Diffusion operator. Each iteration amplifies the
+            marked element's amplitude. After O(√N) iterations, measurement collapses to the target with high
+            probability.</p>
         </div>
+        <div class="desc-block">
+          <h3>🖥 Classical</h3>
+          <p id="descClassical">Linear search scans each element one at a time, comparing it to the target. Expected
+            cost is N/2 comparisons, worst case N. No amount of clever ordering helps on an unsorted list.</p>
+        </div>
+        <div class="complexity-badge">
+          <div class="cb-item cb-quantum"><span class="cb-dot" style="background:var(--neon-purple)"></span><span
+              id="complexQ">O(√N)</span></div>
+          <div class="cb-item cb-classic"><span class="cb-dot" style="background:var(--neon-cyan)"></span><span
+              id="complexC">O(N)</span></div>
+        </div>
+      </div>
+
+      <!-- Goal banner -->
+      <div class="goal-banner" id="goalBanner">
+        🎯 <strong>Goal:</strong> <span id="goalText">Find the starred (★) element in an unsorted array of N
+          items.</span>
+      </div>
+
+      <!-- Visual arena -->
+      <div class="arena">
+        <div class="arena-panel quantum-panel">
+          <div class="arena-header">
+            <span class="arena-title" id="quantumTitle">⚡ Quantum — Grover's Algorithm</span>
+            <span class="step-counter">Steps: <strong id="qSteps">0</strong></span>
+          </div>
+          <canvas class="algo-canvas" id="quantumCanvas"></canvas>
+          <div class="graph-legend" id="qLegend">
+            <span class="legend-item"><span class="legend-dot" style="background:#ffd60a"></span>Start</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#b026ff"></span>High amplitude</span>
+            <span class="legend-item"><span class="legend-dot"
+                style="background:rgba(176,38,255,0.3)"></span>Visited</span>
+            <span class="legend-item"><span class="legend-dot"
+                style="background:rgba(255,255,255,0.1)"></span>Unvisited</span>
+          </div>
+        </div>
+        <div class="arena-panel classical-panel">
+          <div class="arena-header">
+            <span class="arena-title" id="classicTitle">🖥 Classical — BFS</span>
+            <span class="step-counter">Steps: <strong id="cSteps">0</strong></span>
+          </div>
+          <canvas class="algo-canvas" id="classicCanvas"></canvas>
+          <div class="graph-legend" id="cLegend">
+            <span class="legend-item"><span class="legend-dot" style="background:#ffd60a"></span>Start</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#00d4ff"></span>Frontier</span>
+            <span class="legend-item"><span class="legend-dot"
+                style="background:rgba(0,212,255,0.4)"></span>Visited</span>
+            <span class="legend-item"><span class="legend-dot"
+                style="background:rgba(255,255,255,0.1)"></span>Unvisited</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#ff6b35"></span>Current
+              (Dijkstra/A*)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ CODE TRACE PANELS ══ -->
+      <div class="code-arena">
+        <div class="code-panel quantum-cp">
+          <div class="code-panel-hdr">
+            <span class="cp-title" id="qCpTitle">⚡ Quantum Algorithm</span>
+            <span class="cp-lang">pseudocode</span>
+          </div>
+          <div class="code-body" id="qCodeBody"></div>
+        </div>
+        <div class="code-panel classical-cp">
+          <div class="code-panel-hdr">
+            <span class="cp-title" id="cCpTitle">🖥 Classical Algorithm</span>
+            <span class="cp-lang">javascript</span>
+          </div>
+          <div class="code-body" id="cCodeBody"></div>
+        </div>
+      </div>
+
+      <!-- Advantage bar -->
+      <div class="advantage-bar">
+        <div>
+          <div class="advantage-label">Quantum Speedup</div>
+          <div class="advantage-value" id="speedupVal">—</div>
+        </div>
+        <div>
+          <div class="advantage-label">Status</div>
+          <div style="font-size:0.9rem;color:var(--text-secondary);" id="statusMsg">Press Play to start</div>
+        </div>
+        <div id="winnerBanner" class="winner-banner"></div>
+      </div>
+
+      <!-- Playbar -->
+      <div class="playbar">
+        <button class="playbar-btn" id="btnPlay" onclick="play()">▶ Play</button>
+        <button class="playbar-btn" id="btnPause" onclick="pause()">⏸ Pause</button>
+        <button class="playbar-btn" id="btnStep" onclick="stepOnce()">⏭ Step</button>
+        <button class="playbar-btn" id="btnReset" onclick="resetSim()">↺ Reset</button>
+        <span class="speed-label">Speed:</span>
+        <select class="speed-select" id="speedSel">
+          <option value="800">Slow</option>
+          <option value="300" selected>Normal</option>
+          <option value="100">Fast</option>
+          <option value="25">Turbo</option>
+        </select>
+        <span class="input-label">N =</span>
+        <!-- TC-10/TC-12 fix: oninput fires on every keystroke; validateN shows error immediately -->
+        <input class="size-input" type="number" id="nInput" value="16" min="8" max="32" step="4"
+          oninput="validateN(this); resetSim()" />
+        <span id="nValidMsg">⚠ Use 8–32 (step 4)</span>
+      </div>
     </div>
+  </div>
 
-    <script>
-    qlAuthGuard();
-
+  <script>
     // ═══════════════════════════════════════════════════════════════════════
     //  ALGORITHM GLASS BOX — Visual + Code-Trace Engine
     // ═══════════════════════════════════════════════════════════════════════
 
-    let currentAlgo   = 'search';
+    let currentAlgo = 'search';
     let currentGraphC = 'bfs';
     let currentGraphQ = 'walk';
     let N = 16, target = 0;
     let isRunning = false, stepTimer = null;
-    let simState  = {};
+    let simState = {};
     let animFrame = null;
-    let animTick  = 0;
+    let animTick = 0;
 
     const qC = document.getElementById('quantumCanvas');
     const cC = document.getElementById('classicCanvas');
@@ -906,7 +1141,7 @@
       const comments = [];
       s = s.replace(/(\/\/[^\n]*)/, (m) => {
         comments.push(m);
-        return `\x00COMMENT${comments.length-1}\x00`;
+        return `\x00COMMENT${comments.length - 1}\x00`;
       });
 
       // 3. Keywords
@@ -946,8 +1181,8 @@
       if (!el) return;
       el.innerHTML = lines.map((text, i) => {
         const isActive = (i === activeLine);
-        const lineNum  = String(i + 1).padStart(2, ' ');
-        const cls      = isActive ? ' class="cl active"' : ' class="cl"';
+        const lineNum = String(i + 1).padStart(2, ' ');
+        const cls = isActive ? ' class="cl active"' : ' class="cl"';
         return `<div${cls}><span class="ln">${lineNum}</span><span class="ct">${hl(text)}</span></div>`;
       }).join('');
 
@@ -990,12 +1225,12 @@
         qcp: "⚡ Grover's Search", ccp: '🖥 Linear Search',
       },
       graph: {
-        bfs:      { descC: "BFS explores layer-by-layer with a queue. Guarantees shortest paths in unweighted graphs.", complexC: 'O(V+E)', classicTitle: '🖥 Classical — BFS', ccp: '🖥 BFS' },
-        dfs:      { descC: "DFS dives deep via a stack before backtracking. Explores the deepest paths first.", complexC: 'O(V+E)', classicTitle: '🖥 Classical — DFS', ccp: '🖥 DFS' },
+        bfs: { descC: "BFS explores layer-by-layer with a queue. Guarantees shortest paths in unweighted graphs.", complexC: 'O(V+E)', classicTitle: '🖥 Classical — BFS', ccp: '🖥 BFS' },
+        dfs: { descC: "DFS dives deep via a stack before backtracking. Explores the deepest paths first.", complexC: 'O(V+E)', classicTitle: '🖥 Classical — DFS', ccp: '🖥 DFS' },
         dijkstra: { descC: "Dijkstra expands the lowest-cost unvisited node each step — guaranteeing optimal weighted paths.", complexC: 'O((V+E) log V)', classicTitle: "🖥 Classical — Dijkstra's", ccp: "🖥 Dijkstra's" },
-        astar:    { descC: "A* uses f(n)=g(n)+h(n). The heuristic guides search toward the goal, often much faster than Dijkstra.", complexC: 'O(E log V)', classicTitle: '🖥 Classical — A* Search', ccp: '🖥 A* Search' },
-        walk:     { descQ: "Quantum Walk spreads amplitude like a wave via superposition of all edges simultaneously. Probability peaks spread much faster than any classical random walk.", complexQ: 'O(√N)', quantumTitle: '⚡ Quantum — Quantum Walk', qcp: '⚡ Quantum Walk' },
-        grover:   { descQ: "Grover Graph Search applies amplitude amplification on the graph state — oracle flips target's phase, diffusion amplifies it, collapsing measurement to the target.", complexQ: 'O(√N)', quantumTitle: '⚡ Quantum — Grover Graph Search', qcp: '⚡ Grover Graph Search' },
+        astar: { descC: "A* uses f(n)=g(n)+h(n). The heuristic guides search toward the goal, often much faster than Dijkstra.", complexC: 'O(E log V)', classicTitle: '🖥 Classical — A* Search', ccp: '🖥 A* Search' },
+        walk: { descQ: "Quantum Walk spreads amplitude like a wave via superposition of all edges simultaneously. Probability peaks spread much faster than any classical random walk.", complexQ: 'O(√N)', quantumTitle: '⚡ Quantum — Quantum Walk', qcp: '⚡ Quantum Walk' },
+        grover: { descQ: "Grover Graph Search applies amplitude amplification on the graph state — oracle flips target's phase, diffusion amplifies it, collapsing measurement to the target.", complexQ: 'O(√N)', quantumTitle: '⚡ Quantum — Grover Graph Search', qcp: '⚡ Grover Graph Search' },
         shared: { goal: 'Explore all nodes from the start node (★). Quantum wave spreads vs. classical deterministic traversal.' }
       },
       factoring: {
@@ -1015,11 +1250,11 @@
       if (btn) btn.classList.add('active');
 
       const bar = document.getElementById('graphAlgoBar');
-      const qL  = document.getElementById('qLegend');
-      const cL  = document.getElementById('cLegend');
+      const qL = document.getElementById('qLegend');
+      const cL = document.getElementById('cLegend');
       bar.classList.toggle('visible', name === 'graph');
-      qL.classList.toggle('visible',  name === 'graph');
-      cL.classList.toggle('visible',  name === 'graph');
+      qL.classList.toggle('visible', name === 'graph');
+      cL.classList.toggle('visible', name === 'graph');
       updateMeta();
       resetSim();
     }
@@ -1036,14 +1271,14 @@
       currentGraphQ = algo;
       document.querySelectorAll('[data-quantum-algo]').forEach(b => {
         b.classList.remove('active');
-        b.style.background    = 'transparent';
-        b.style.borderColor   = 'rgba(176,38,255,0.3)';
-        b.style.color         = 'var(--text-secondary)';
+        b.style.background = 'transparent';
+        b.style.borderColor = 'rgba(176,38,255,0.3)';
+        b.style.color = 'var(--text-secondary)';
       });
       btn.classList.add('active');
-      btn.style.background  = 'rgba(176,38,255,0.12)';
+      btn.style.background = 'rgba(176,38,255,0.12)';
       btn.style.borderColor = 'var(--neon-purple)';
-      btn.style.color       = 'var(--neon-purple)';
+      btn.style.color = 'var(--neon-purple)';
       updateMeta();
       resetSim();
     }
@@ -1064,15 +1299,15 @@
         ({ descQ, descC, complexQ, complexC, quantumTitle, classicTitle, qcp, ccp, goal } = m);
       }
 
-      document.getElementById('descQuantum').textContent   = descQ;
+      document.getElementById('descQuantum').textContent = descQ;
       document.getElementById('descClassical').textContent = descC;
-      document.getElementById('complexQ').textContent      = complexQ;
-      document.getElementById('complexC').textContent      = complexC;
-      document.getElementById('classicTitle').textContent  = classicTitle;
-      document.getElementById('quantumTitle').textContent  = quantumTitle;
-      document.getElementById('goalText').textContent      = goal;
-      document.getElementById('qCpTitle').textContent      = qcp  || quantumTitle;
-      document.getElementById('cCpTitle').textContent      = ccp  || classicTitle;
+      document.getElementById('complexQ').textContent = complexQ;
+      document.getElementById('complexC').textContent = complexC;
+      document.getElementById('classicTitle').textContent = classicTitle;
+      document.getElementById('quantumTitle').textContent = quantumTitle;
+      document.getElementById('goalText').textContent = goal;
+      document.getElementById('qCpTitle').textContent = qcp || quantumTitle;
+      document.getElementById('cCpTitle').textContent = ccp || classicTitle;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -1080,7 +1315,7 @@
     // ═══════════════════════════════════════════════════════════════════════
     function resizeCanvases() {
       [qC, cC].forEach(c => {
-        c.width  = c.offsetWidth  * devicePixelRatio;
+        c.width = c.offsetWidth * devicePixelRatio;
         c.height = c.offsetHeight * devicePixelRatio;
       });
     }
@@ -1104,10 +1339,10 @@
       }
       const edgeSet = new Set();
       const connected = new Set([0]);
-      const pending   = Array.from({ length: numNodes - 1 }, (_, i) => i + 1);
+      const pending = Array.from({ length: numNodes - 1 }, (_, i) => i + 1);
       while (pending.length) {
         const from = [...connected][Math.floor(Math.random() * connected.size)];
-        const to   = pending.splice(Math.floor(Math.random() * pending.length), 1)[0];
+        const to = pending.splice(Math.floor(Math.random() * pending.length), 1)[0];
         edgeSet.add(Math.min(from, to) + ',' + Math.max(from, to));
         connected.add(to);
       }
@@ -1119,7 +1354,7 @@
       const edgeList = [...edgeSet].map(e => {
         const [a, b] = e.split(',').map(Number);
         const dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
-        return [a, b, Math.round(Math.sqrt(dx*dx + dy*dy) * 20 + 1)];
+        return [a, b, Math.round(Math.sqrt(dx * dx + dy * dy) * 20 + 1)];
       });
       const adj = Array.from({ length: numNodes }, () => []);
       edgeList.forEach(([a, b]) => { adj[a].push(b); adj[b].push(a); });
@@ -1142,9 +1377,9 @@
         };
 
       } else if (currentAlgo === 'graph') {
-        const GN    = Math.min(N, 12);
+        const GN = Math.min(N, 12);
         const graph = makeGraph(GN);
-        const qTgt  = Math.floor(Math.random() * GN);
+        const qTgt = Math.floor(Math.random() * GN);
         simState = {
           graph, GN, qTarget: qTgt,
           // Quantum
@@ -1157,26 +1392,26 @@
           // DFS
           dfsStack: [0], dfsCurrent: 0, dfsPath: [0],
           // Dijkstra
-          dijkDist:    (() => { const d = new Array(GN).fill(Infinity); d[0]=0; return d; })(),
-          dijkPrev:    new Array(GN).fill(-1),
-          dijkOpen:    [[0, 0]],
+          dijkDist: (() => { const d = new Array(GN).fill(Infinity); d[0] = 0; return d; })(),
+          dijkPrev: new Array(GN).fill(-1),
+          dijkOpen: [[0, 0]],
           dijkCurrent: -1,
           // A*
-          astarDist:    (() => { const d = new Array(GN).fill(Infinity); d[0]=0; return d; })(),
-          astarF:       (() => { const f = new Array(GN).fill(Infinity); f[0]=0; return f; })(),
-          astarPrev:    new Array(GN).fill(-1),
-          astarOpen:    [[0, 0]],
+          astarDist: (() => { const d = new Array(GN).fill(Infinity); d[0] = 0; return d; })(),
+          astarF: (() => { const f = new Array(GN).fill(Infinity); f[0] = 0; return f; })(),
+          astarPrev: new Array(GN).fill(-1),
+          astarOpen: [[0, 0]],
           astarCurrent: -1,
-          astarGoal:    qTgt,
+          astarGoal: qTgt,
         };
         simState.qAmps[0] = 1.0;
 
       } else { // factoring
         const M = 15, a = 7;
-        const period = (() => { let x = a%M, p=1; while (x!==1&&p<100){x=(x*a)%M;p++;} return p; })();
+        const period = (() => { let x = a % M, p = 1; while (x !== 1 && p < 100) { x = (x * a) % M; p++; } return p; })();
         simState = {
           M, a, period,
-          cX: 1, cFx: a%M, cPrev: [], cDone: false, cSteps: 0, cPeriod: null, cCodeLine: 1,
+          cX: 1, cFx: a % M, cPrev: [], cDone: false, cSteps: 0, cPeriod: null, cCodeLine: 1,
           qX: 1, qPhase: 0, qDone: false, qSteps: 0, qPeriod: null, qMaxSteps: 12, qCodeLine: 1,
         };
       }
@@ -1195,14 +1430,14 @@
         } else {
           s.cIdx = Math.min(s.cIdx + 1, N - 1);
           if (s.cIdx === target) { s.cDone = true; s.cCodeLine = 4; }
-          else                   { s.cCodeLine = 3; /* if check */ }
+          else { s.cCodeLine = 3; /* if check */ }
         }
         s.cSteps++;
       }
       if (!s.qDone) {
         s.qAmps[target] *= -1;
-        const avg = s.qAmps.reduce((a,b) => a+b, 0) / N;
-        for (let i = 0; i < N; i++) s.qAmps[i] = 2*avg - s.qAmps[i];
+        const avg = s.qAmps.reduce((a, b) => a + b, 0) / N;
+        for (let i = 0; i < N; i++) s.qAmps[i] = 2 * avg - s.qAmps[i];
         s.qCodeLine = (s.qIter % 2 === 0) ? 5 : 7; // alt oracle / diffuse
         s.qIter++; s.qSteps++;
         if (s.qIter >= s.qMaxIter) { s.qDone = true; s.qCodeLine = 9; }
@@ -1255,7 +1490,7 @@
 
       } else if (currentGraphC === 'dijkstra') {
         if (s.dijkOpen.length > 0) {
-          s.dijkOpen.sort((a,b) => a[0]-b[0]);
+          s.dijkOpen.sort((a, b) => a[0] - b[0]);
           const [dist, u] = s.dijkOpen.shift();
           s.cCodeLine = 9; // pop min
           if (!s.cVisited.has(u)) {
@@ -1263,8 +1498,8 @@
             s.dijkCurrent = u;
             s.cCodeLine = 11; // visit
             // Only relax edges to UNVISITED neighbours → avoids duplicate queue entries
-            s.graph.edges.forEach(([a,b,w]) => {
-              const nb = (a===u)?b:(b===u?a:-1);
+            s.graph.edges.forEach(([a, b, w]) => {
+              const nb = (a === u) ? b : (b === u ? a : -1);
               if (nb === -1 || s.cVisited.has(nb)) return;
               const nd = dist + w;
               s.cCodeLine = 14; // relax
@@ -1287,7 +1522,7 @@
         // A* finds the SHORTEST PATH to the goal — not a full traversal.
         // Completion = goal node is visited. Heuristic focuses search toward target.
         if (s.astarOpen.length > 0) {
-          s.astarOpen.sort((a,b) => a[0]-b[0]);
+          s.astarOpen.sort((a, b) => a[0] - b[0]);
           const [, u] = s.astarOpen.shift();
           s.cCodeLine = 10; // pop min-f
           if (!s.cVisited.has(u)) {
@@ -1299,8 +1534,8 @@
               s.cDone = true; s.cCodeLine = 23;
               s.cSteps++;
             } else {
-              s.graph.edges.forEach(([a,b,w]) => {
-                const nb = (a===u)?b:(b===u?a:-1);
+              s.graph.edges.forEach(([a, b, w]) => {
+                const nb = (a === u) ? b : (b === u ? a : -1);
                 if (nb === -1 || s.cVisited.has(nb)) return;
                 const nd = s.astarDist[u] + w;
                 s.cCodeLine = 15; // g-score
@@ -1308,7 +1543,7 @@
                   s.astarDist[nb] = nd;
                   s.astarPrev[nb] = u;
                   const gn = s.graph.nodes[nb], gg = s.graph.nodes[s.astarGoal];
-                  const h  = Math.hypot(gn.x-gg.x, gn.y-gg.y) * 20;
+                  const h = Math.hypot(gn.x - gg.x, gn.y - gg.y) * 20;
                   s.astarF[nb] = nd + h;
                   s.cCodeLine = 18; // f = g + h
                   s.astarOpen.push([s.astarF[nb], nb]);
@@ -1343,20 +1578,20 @@
           nbs.forEach(v => { newAmps[v] += amp; });
         }
         s.qCodeLine = 10; // spread
-        const avg = newAmps.reduce((a,b) => a+b, 0) / GN;
-        for (let u = 0; u < GN; u++) s.qAmps[u] = 2*avg - newAmps[u];
+        const avg = newAmps.reduce((a, b) => a + b, 0) / GN;
+        for (let u = 0; u < GN; u++) s.qAmps[u] = 2 * avg - newAmps[u];
         s.qCodeLine = 14; // diffuse
       } else { // grover
         s.qAmps[s.qTarget] *= -1;
         s.qCodeLine = 7; // oracle
-        const avg = s.qAmps.reduce((a,b) => a+b, 0) / GN;
-        for (let u = 0; u < GN; u++) s.qAmps[u] = 2*avg - s.qAmps[u];
+        const avg = s.qAmps.reduce((a, b) => a + b, 0) / GN;
+        for (let u = 0; u < GN; u++) s.qAmps[u] = 2 * avg - s.qAmps[u];
         s.qCodeLine = 10; // diffuse
       }
 
       for (let u = 0; u < GN; u++) if (Math.abs(s.qAmps[u]) > 0.04) s.qVisited.add(u);
       s.qSteps++;
-      if (s.qVisited.size >= GN) { s.qDone = true; s.qCodeLine = currentGraphQ==='walk' ? 16 : 12; }
+      if (s.qVisited.size >= GN) { s.qDone = true; s.qCodeLine = currentGraphQ === 'walk' ? 16 : 12; }
     }
 
     function stepGraph() { stepGraphClassical(); stepGraphQuantum(); }
@@ -1381,10 +1616,10 @@
 
       if (!s.qDone) {
         const prog = s.qX / s.qMaxSteps;
-        if      (prog < 0.25) s.qCodeLine = 3; // superposition
-        else if (prog < 0.5)  s.qCodeLine = 5; // oracle
+        if (prog < 0.25) s.qCodeLine = 3; // superposition
+        else if (prog < 0.5) s.qCodeLine = 5; // oracle
         else if (prog < 0.85) s.qCodeLine = 7; // QFT
-        else                  s.qCodeLine = 9; // measure
+        else s.qCodeLine = 9; // measure
         s.qPhase += 2 * Math.PI / period;
         s.qX++; s.qSteps++;
         if (s.qX >= s.qMaxSteps) { s.qPeriod = period; s.qDone = true; s.qCodeLine = 10; }
@@ -1397,13 +1632,13 @@
 
     function nodePos(node, W, H) {
       const pad = Math.min(W, H) * 0.1;
-      return { x: pad + node.x * (W-pad*2), y: pad + node.y * (H-pad*2) };
+      return { x: pad + node.x * (W - pad * 2), y: pad + node.y * (H - pad * 2) };
     }
 
     function drawGlowCircle(ctx, x, y, r, fillColor, glowColor, glowBlur, strokeColor, strokeW) {
       ctx.save();
       if (glowBlur > 0) { ctx.shadowColor = glowColor; ctx.shadowBlur = glowBlur; }
-      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.fillStyle = fillColor; ctx.fill();
       if (strokeColor) { ctx.strokeStyle = strokeColor; ctx.lineWidth = strokeW || 1.5; ctx.stroke(); }
       ctx.restore();
@@ -1415,9 +1650,9 @@
       ctx.clearRect(0, 0, W, H);
       const s = simState;
       const pad = W * 0.04;
-      const cellW = (W - pad*2) / N;
+      const cellW = (W - pad * 2) / N;
       const maxH = H * 0.68, baseY = H * 0.86;
-      const amps   = isQuantum ? s.qAmps : null;
+      const amps = isQuantum ? s.qAmps : null;
       const maxAmp = amps ? Math.max(...amps.map(Math.abs), 0.001) : 1;
 
       for (let i = 0; i < N; i++) {
@@ -1425,41 +1660,41 @@
         const isTarget = (i === target);
         let barH, fillColor;
         if (isQuantum) {
-          const a   = amps[i];
+          const a = amps[i];
           const pct = Math.abs(a) / maxAmp;
           barH = Math.max(4, pct * maxH);
-          if (isTarget) fillColor = `rgba(0,255,157,${0.45+pct*0.55})`;
-          else { const is = s.qDone?0.1:pct; fillColor = `rgba(176,38,${Math.round(255*pct)},${0.35+is*0.5})`; }
-          if (!s.qDone && pct > 0.25) { ctx.shadowColor = isTarget?'#00ff9d':'#b026ff'; ctx.shadowBlur = 7*pct; }
+          if (isTarget) fillColor = `rgba(0,255,157,${0.45 + pct * 0.55})`;
+          else { const is = s.qDone ? 0.1 : pct; fillColor = `rgba(176,38,${Math.round(255 * pct)},${0.35 + is * 0.5})`; }
+          if (!s.qDone && pct > 0.25) { ctx.shadowColor = isTarget ? '#00ff9d' : '#b026ff'; ctx.shadowBlur = 7 * pct; }
         } else {
-          barH = maxH*0.38 + (Math.sin(i*1.9+0.7)*0.5+0.5)*maxH*0.54;
+          barH = maxH * 0.38 + (Math.sin(i * 1.9 + 0.7) * 0.5 + 0.5) * maxH * 0.54;
           if (s.cDone && isTarget) fillColor = '#00ff9d';
           else if (i < s.cIdx) fillColor = 'rgba(0,212,255,0.22)';
-          else if (i === s.cIdx) { fillColor = 'rgba(0,212,255,0.9)'; ctx.shadowColor='#00d4ff'; ctx.shadowBlur=12; }
+          else if (i === s.cIdx) { fillColor = 'rgba(0,212,255,0.9)'; ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 12; }
           else fillColor = 'rgba(0,212,255,0.08)';
         }
-        const grd = ctx.createLinearGradient(0, baseY-barH, 0, baseY);
+        const grd = ctx.createLinearGradient(0, baseY - barH, 0, baseY);
         grd.addColorStop(0, fillColor); grd.addColorStop(1, 'rgba(0,0,0,0.05)');
         ctx.fillStyle = grd;
-        ctx.fillRect(x+1, baseY-barH, cellW-2, barH);
+        ctx.fillRect(x + 1, baseY - barH, cellW - 2, barH);
         ctx.shadowBlur = 0;
         if (isTarget) {
           ctx.fillStyle = '#00ff9d';
-          ctx.font = `bold ${Math.max(9,cellW*0.5)}px sans-serif`;
+          ctx.font = `bold ${Math.max(9, cellW * 0.5)}px sans-serif`;
           ctx.textAlign = 'center';
-          ctx.fillText('★', x+cellW/2, baseY+H*0.08);
+          ctx.fillText('★', x + cellW / 2, baseY + H * 0.08);
         }
       }
-      const done  = isQuantum ? s.qDone : s.cDone;
+      const done = isQuantum ? s.qDone : s.cDone;
       const steps = isQuantum ? s.qSteps : s.cSteps;
       ctx.fillStyle = done ? '#00ff9d' : (isQuantum ? '#b026ff' : '#00d4ff');
       ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 8;
-      ctx.font = `bold ${H*0.055}px monospace`; ctx.textAlign = 'left';
-      ctx.fillText(done ? '✓ Found!' : (isQuantum ? `Iteration ${steps}/${s.qMaxIter}` : `Checking [${s.cIdx}]`), pad, H*0.09);
+      ctx.font = `bold ${H * 0.055}px monospace`; ctx.textAlign = 'left';
+      ctx.fillText(done ? '✓ Found!' : (isQuantum ? `Iteration ${steps}/${s.qMaxIter}` : `Checking [${s.cIdx}]`), pad, H * 0.09);
       ctx.shadowBlur = 0;
-      ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.font=`${H*0.04}px sans-serif`;
-      if (isQuantum) ctx.fillText('Bar height = |amplitude|². Quantum probes ALL at once.', pad, H*0.97);
-      else ctx.fillText('Scanning left→right. One comparison per step.', pad, H*0.97);
+      ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = `${H * 0.04}px sans-serif`;
+      if (isQuantum) ctx.fillText('Bar height = |amplitude|². Quantum probes ALL at once.', pad, H * 0.97);
+      else ctx.fillText('Scanning left→right. One comparison per step.', pad, H * 0.97);
     }
 
     // ── Draw Graph ─────────────────────────────────────────────────────────
@@ -1471,12 +1706,12 @@
       const dpr = devicePixelRatio;
 
       // Background glow
-      const bgGrad = ctx.createRadialGradient(W*0.5,H*0.5, 0, W*0.5,H*0.5, W*0.6);
+      const bgGrad = ctx.createRadialGradient(W * 0.5, H * 0.5, 0, W * 0.5, H * 0.5, W * 0.6);
       bgGrad.addColorStop(0, isQuantum ? 'rgba(80,20,120,0.08)' : 'rgba(0,80,120,0.08)');
       bgGrad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, W, H);
 
-      const nodeR = Math.max(14*dpr, Math.min(22*dpr, W*0.035));
+      const nodeR = Math.max(14 * dpr, Math.min(22 * dpr, W * 0.035));
 
       // ── Edges ──
       graph.edges.forEach(([a, b, w]) => {
@@ -1486,55 +1721,55 @@
         if (isQuantum) {
           const combined = (Math.abs(s.qAmps[a]) + Math.abs(s.qAmps[b])) * 0.5;
           ctx.save();
-          ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y);
-          ctx.strokeStyle = `rgba(176,38,255,${0.1 + combined*0.4})`;
+          ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y);
+          ctx.strokeStyle = `rgba(176,38,255,${0.1 + combined * 0.4})`;
           ctx.lineWidth = 1.5; ctx.stroke();
           if (combined > 0.08 && !s.qDone) {
             ctx.shadowColor = '#b026ff'; ctx.shadowBlur = 8;
-            ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y);
-            ctx.strokeStyle = `rgba(176,38,255,${combined*0.7})`;
+            ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y);
+            ctx.strokeStyle = `rgba(176,38,255,${combined * 0.7})`;
             ctx.lineWidth = 2.5;
-            ctx.setLineDash([10,8]); ctx.lineDashOffset = -(animTick*0.15)%18;
+            ctx.setLineDash([10, 8]); ctx.lineDashOffset = -(animTick * 0.15) % 18;
             ctx.stroke(); ctx.setLineDash([]);
           }
           ctx.restore();
         } else {
           const bothVis = s.cVisited.has(a) && s.cVisited.has(b);
           ctx.save();
-          ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y);
+          ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y);
           ctx.strokeStyle = bothVis ? 'rgba(0,212,255,0.28)' : 'rgba(100,130,160,0.14)';
-          ctx.lineWidth   = bothVis ? 2 : 1.2; ctx.stroke();
-          if (bothVis && (currentGraphC==='dijkstra'||currentGraphC==='astar')) {
-            ctx.shadowColor='#00d4ff'; ctx.shadowBlur=5;
-            ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y);
-            ctx.strokeStyle='rgba(0,212,255,0.4)'; ctx.lineWidth=2.5; ctx.stroke();
+          ctx.lineWidth = bothVis ? 2 : 1.2; ctx.stroke();
+          if (bothVis && (currentGraphC === 'dijkstra' || currentGraphC === 'astar')) {
+            ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 5;
+            ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y);
+            ctx.strokeStyle = 'rgba(0,212,255,0.4)'; ctx.lineWidth = 2.5; ctx.stroke();
           }
           // BFS traversal order glow
-          if (currentGraphC==='bfs' && s.bfsOrder.length > 1) {
-            for (let k=1; k<s.bfsOrder.length; k++) {
-              const prev=s.bfsOrder[k-1], cur=s.bfsOrder[k];
-              if (!((prev===a&&cur===b)||(prev===b&&cur===a))) continue;
-              const alpha=Math.max(0.2, 1-(s.bfsOrder.length-k)*0.15);
-              ctx.shadowColor='#00d4ff'; ctx.shadowBlur=8;
-              ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y);
-              ctx.strokeStyle=`rgba(0,212,255,${alpha})`; ctx.lineWidth=3; ctx.stroke();
+          if (currentGraphC === 'bfs' && s.bfsOrder.length > 1) {
+            for (let k = 1; k < s.bfsOrder.length; k++) {
+              const prev = s.bfsOrder[k - 1], cur = s.bfsOrder[k];
+              if (!((prev === a && cur === b) || (prev === b && cur === a))) continue;
+              const alpha = Math.max(0.2, 1 - (s.bfsOrder.length - k) * 0.15);
+              ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 8;
+              ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y);
+              ctx.strokeStyle = `rgba(0,212,255,${alpha})`; ctx.lineWidth = 3; ctx.stroke();
             }
           }
           // DFS path glow
-          if (currentGraphC==='dfs') {
-            const idx = s.dfsPath.findIndex((v,i)=>i>0&&((s.dfsPath[i-1]===a&&v===b)||(s.dfsPath[i-1]===b&&v===a)));
-            if (idx>-1) {
-              const fade=Math.max(0.15, 1-(s.dfsPath.length-idx)*0.12);
-              ctx.shadowColor='#00d4ff'; ctx.shadowBlur=5;
-              ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y);
-              ctx.strokeStyle=`rgba(0,212,255,${fade*0.8})`; ctx.lineWidth=2.5; ctx.stroke();
+          if (currentGraphC === 'dfs') {
+            const idx = s.dfsPath.findIndex((v, i) => i > 0 && ((s.dfsPath[i - 1] === a && v === b) || (s.dfsPath[i - 1] === b && v === a)));
+            if (idx > -1) {
+              const fade = Math.max(0.15, 1 - (s.dfsPath.length - idx) * 0.12);
+              ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 5;
+              ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y);
+              ctx.strokeStyle = `rgba(0,212,255,${fade * 0.8})`; ctx.lineWidth = 2.5; ctx.stroke();
             }
           }
           // Edge weight labels for Dijkstra / A*
-          if (currentGraphC==='dijkstra'||currentGraphC==='astar') {
-            const mx=(pa.x+pb.x)/2, my=(pa.y+pb.y)/2;
-            ctx.font=`${Math.max(9,nodeR*0.45)}px monospace`; ctx.textAlign='center'; ctx.textBaseline='middle';
-            ctx.fillStyle='rgba(255,255,255,0.28)'; ctx.fillText(w, mx, my);
+          if (currentGraphC === 'dijkstra' || currentGraphC === 'astar') {
+            const mx = (pa.x + pb.x) / 2, my = (pa.y + pb.y) / 2;
+            ctx.font = `${Math.max(9, nodeR * 0.45)}px monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'rgba(255,255,255,0.28)'; ctx.fillText(w, mx, my);
           }
           ctx.restore();
         }
@@ -1543,9 +1778,9 @@
       // ── Nodes ──
       const maxAmp = isQuantum ? Math.max(...s.qAmps.map(Math.abs), 0.001) : 1;
       graph.nodes.forEach((node, i) => {
-        const p       = nodePos(node, W, H);
+        const p = nodePos(node, W, H);
         const isStart = (i === 0);
-        const isQTgt  = (i === s.qTarget);
+        const isQTgt = (i === s.qTarget);
 
         if (isQuantum) {
           const amp = Math.abs(s.qAmps[i]);
@@ -1554,98 +1789,98 @@
           // Outer glow halo
           if (pct > 0.2) {
             ctx.save();
-            const grad = ctx.createRadialGradient(p.x,p.y,nodeR, p.x,p.y, nodeR*(1.6+pct));
-            grad.addColorStop(0, `rgba(176,38,255,${pct*0.4})`); grad.addColorStop(1,'rgba(176,38,255,0)');
-            ctx.beginPath(); ctx.arc(p.x,p.y,nodeR*(1.6+pct*0.8),0,Math.PI*2);
-            ctx.fillStyle=grad; ctx.fill(); ctx.restore();
+            const grad = ctx.createRadialGradient(p.x, p.y, nodeR, p.x, p.y, nodeR * (1.6 + pct));
+            grad.addColorStop(0, `rgba(176,38,255,${pct * 0.4})`); grad.addColorStop(1, 'rgba(176,38,255,0)');
+            ctx.beginPath(); ctx.arc(p.x, p.y, nodeR * (1.6 + pct * 0.8), 0, Math.PI * 2);
+            ctx.fillStyle = grad; ctx.fill(); ctx.restore();
           }
-          let fill, stroke, glow='', gb=0, sw=1.5;
-          if (isStart)           { fill='rgba(255,214,10,0.25)'; stroke='#ffd60a'; glow='#ffd60a'; gb=12; }
-          else if (currentGraphQ==='grover' && isQTgt) { fill=`rgba(0,255,157,${0.15+pct*0.6})`; stroke='#00ff9d'; glow='#00ff9d'; gb=16*pct; }
-          else if (vis)          { fill=`rgba(176,${38+Math.round(pct*80)},255,${0.15+pct*0.6})`; stroke=`rgba(176,38,255,${0.4+pct*0.6})`; glow='#b026ff'; gb=10*pct; sw=2.5; }
-          else                   { fill='rgba(20,30,55,0.85)'; stroke='rgba(100,120,160,0.28)'; }
-          drawGlowCircle(ctx, p.x,p.y, nodeR, fill, glow, gb, stroke, sw);
+          let fill, stroke, glow = '', gb = 0, sw = 1.5;
+          if (isStart) { fill = 'rgba(255,214,10,0.25)'; stroke = '#ffd60a'; glow = '#ffd60a'; gb = 12; }
+          else if (currentGraphQ === 'grover' && isQTgt) { fill = `rgba(0,255,157,${0.15 + pct * 0.6})`; stroke = '#00ff9d'; glow = '#00ff9d'; gb = 16 * pct; }
+          else if (vis) { fill = `rgba(176,${38 + Math.round(pct * 80)},255,${0.15 + pct * 0.6})`; stroke = `rgba(176,38,255,${0.4 + pct * 0.6})`; glow = '#b026ff'; gb = 10 * pct; sw = 2.5; }
+          else { fill = 'rgba(20,30,55,0.85)'; stroke = 'rgba(100,120,160,0.28)'; }
+          drawGlowCircle(ctx, p.x, p.y, nodeR, fill, glow, gb, stroke, sw);
           if (pct > 0.05) {
-            ctx.save(); ctx.beginPath(); ctx.arc(p.x,p.y,nodeR*0.65*pct,0,Math.PI*2);
-            ctx.fillStyle=`rgba(176,38,255,${pct*0.5})`; ctx.fill(); ctx.restore();
+            ctx.save(); ctx.beginPath(); ctx.arc(p.x, p.y, nodeR * 0.65 * pct, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(176,38,255,${pct * 0.5})`; ctx.fill(); ctx.restore();
           }
         } else {
-          const vis      = s.cVisited.has(i);
-          const frontier = currentGraphC==='bfs'      ? s.bfsFrontier.has(i) : false;
-          const isCur    = currentGraphC==='dfs'      ? (i===s.dfsCurrent)   :
-                           currentGraphC==='dijkstra' ? (i===s.dijkCurrent)  :
-                           currentGraphC==='astar'    ? (i===s.astarCurrent) : false;
+          const vis = s.cVisited.has(i);
+          const frontier = currentGraphC === 'bfs' ? s.bfsFrontier.has(i) : false;
+          const isCur = currentGraphC === 'dfs' ? (i === s.dfsCurrent) :
+            currentGraphC === 'dijkstra' ? (i === s.dijkCurrent) :
+              currentGraphC === 'astar' ? (i === s.astarCurrent) : false;
           // Pulse ring for frontier / current
-          if ((frontier||isCur) && !s.cDone) {
-            const pulse = 0.6 + 0.4*Math.sin(animTick*0.08);
+          if ((frontier || isCur) && !s.cDone) {
+            const pulse = 0.6 + 0.4 * Math.sin(animTick * 0.08);
             ctx.save();
-            const grad = ctx.createRadialGradient(p.x,p.y,nodeR,p.x,p.y,nodeR*1.8);
-            grad.addColorStop(0,'rgba(0,212,255,0.25)'); grad.addColorStop(1,'rgba(0,212,255,0)');
-            ctx.beginPath(); ctx.arc(p.x,p.y,nodeR*1.6*pulse,0,Math.PI*2);
-            ctx.fillStyle=grad; ctx.fill(); ctx.restore();
+            const grad = ctx.createRadialGradient(p.x, p.y, nodeR, p.x, p.y, nodeR * 1.8);
+            grad.addColorStop(0, 'rgba(0,212,255,0.25)'); grad.addColorStop(1, 'rgba(0,212,255,0)');
+            ctx.beginPath(); ctx.arc(p.x, p.y, nodeR * 1.6 * pulse, 0, Math.PI * 2);
+            ctx.fillStyle = grad; ctx.fill(); ctx.restore();
           }
-          let fill, stroke, glow='', gb=0, sw=1.5;
-          if       (isStart)   { fill='rgba(255,214,10,0.25)'; stroke='#ffd60a';  glow='#ffd60a';  gb=12; }
-          else if (isCur)      { fill='rgba(255,107,53,0.25)'; stroke='#ff6b35';  glow='#ff6b35';  gb=14; sw=2.5; }
-          else if (frontier)   { fill='rgba(0,212,255,0.2)';   stroke='#00d4ff';  glow='#00d4ff';  gb=10; sw=2.5; }
+          let fill, stroke, glow = '', gb = 0, sw = 1.5;
+          if (isStart) { fill = 'rgba(255,214,10,0.25)'; stroke = '#ffd60a'; glow = '#ffd60a'; gb = 12; }
+          else if (isCur) { fill = 'rgba(255,107,53,0.25)'; stroke = '#ff6b35'; glow = '#ff6b35'; gb = 14; sw = 2.5; }
+          else if (frontier) { fill = 'rgba(0,212,255,0.2)'; stroke = '#00d4ff'; glow = '#00d4ff'; gb = 10; sw = 2.5; }
           else if (vis) {
-            if (currentGraphC==='dijkstra') {
-              const d=s.dijkDist[i], maxD=Math.max(...s.dijkDist.filter(x=>x<Infinity),1), pct2=d/maxD;
-              fill   = `rgba(${Math.round(pct2*100)},${Math.round(212-pct2*100)},${Math.round(255-pct2*100)},0.2)`;
-              stroke = `rgba(${Math.round(pct2*100)},${Math.round(212-pct2*100)},${Math.round(255-pct2*100)},0.6)`;
-            } else { fill='rgba(0,212,255,0.1)'; stroke='rgba(0,212,255,0.45)'; sw=2; }
-          } else { fill='rgba(15,22,40,0.9)'; stroke='rgba(100,130,160,0.22)'; }
-          drawGlowCircle(ctx, p.x,p.y, nodeR, fill, glow, gb, stroke, sw);
+            if (currentGraphC === 'dijkstra') {
+              const d = s.dijkDist[i], maxD = Math.max(...s.dijkDist.filter(x => x < Infinity), 1), pct2 = d / maxD;
+              fill = `rgba(${Math.round(pct2 * 100)},${Math.round(212 - pct2 * 100)},${Math.round(255 - pct2 * 100)},0.2)`;
+              stroke = `rgba(${Math.round(pct2 * 100)},${Math.round(212 - pct2 * 100)},${Math.round(255 - pct2 * 100)},0.6)`;
+            } else { fill = 'rgba(0,212,255,0.1)'; stroke = 'rgba(0,212,255,0.45)'; sw = 2; }
+          } else { fill = 'rgba(15,22,40,0.9)'; stroke = 'rgba(100,130,160,0.22)'; }
+          drawGlowCircle(ctx, p.x, p.y, nodeR, fill, glow, gb, stroke, sw);
           // Dijkstra / A* distance labels
-          if ((currentGraphC==='dijkstra'||currentGraphC==='astar') && s.dijkDist[i]<Infinity) {
-            const d = currentGraphC==='dijkstra' ? s.dijkDist[i] : s.astarDist[i];
+          if ((currentGraphC === 'dijkstra' || currentGraphC === 'astar') && s.dijkDist[i] < Infinity) {
+            const d = currentGraphC === 'dijkstra' ? s.dijkDist[i] : s.astarDist[i];
             ctx.save();
-            ctx.font=`${nodeR*0.55}px monospace`; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
-            ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.fillText(d, p.x, p.y+nodeR*1.65); ctx.restore();
+            ctx.font = `${nodeR * 0.55}px monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+            ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.fillText(d, p.x, p.y + nodeR * 1.65); ctx.restore();
           }
         }
         // Node label
         ctx.save();
-        ctx.font=`bold ${Math.round(nodeR*0.72)}px 'JetBrains Mono', monospace`;
-        ctx.textAlign='center'; ctx.textBaseline='middle';
-        ctx.fillStyle = isStart ? '#ffd60a' : (isQuantum&&currentGraphQ==='grover'&&i===s.qTarget?'#00ff9d':'#e8f0f8');
-        ctx.shadowColor = isStart?'#ffd60a':(isQuantum?'rgba(176,38,255,0.5)':'rgba(0,212,255,0.4)');
+        ctx.font = `bold ${Math.round(nodeR * 0.72)}px 'JetBrains Mono', monospace`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = isStart ? '#ffd60a' : (isQuantum && currentGraphQ === 'grover' && i === s.qTarget ? '#00ff9d' : '#e8f0f8');
+        ctx.shadowColor = isStart ? '#ffd60a' : (isQuantum ? 'rgba(176,38,255,0.5)' : 'rgba(0,212,255,0.4)');
         ctx.shadowBlur = 4;
         ctx.fillText(node.label, p.x, p.y);
         ctx.restore();
       });
 
       // Target star (A* goal / Grover target)
-      const showStar = (!isQuantum && (currentGraphC==='astar') && s.astarGoal>=0) ||
-                       (isQuantum  && currentGraphQ==='grover');
+      const showStar = (!isQuantum && (currentGraphC === 'astar') && s.astarGoal >= 0) ||
+        (isQuantum && currentGraphQ === 'grover');
       if (showStar) {
         const tIdx = isQuantum ? s.qTarget : s.astarGoal;
-        const gp   = nodePos(graph.nodes[tIdx], W, H);
+        const gp = nodePos(graph.nodes[tIdx], W, H);
         ctx.save();
-        ctx.font=`${nodeR*0.8}px sans-serif`; ctx.textAlign='center'; ctx.textBaseline='bottom';
-        ctx.fillStyle='#00ff9d'; ctx.shadowColor='#00ff9d'; ctx.shadowBlur=10;
-        ctx.fillText('★', gp.x, gp.y-nodeR); ctx.restore();
+        ctx.font = `${nodeR * 0.8}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        ctx.fillStyle = '#00ff9d'; ctx.shadowColor = '#00ff9d'; ctx.shadowBlur = 10;
+        ctx.fillText('★', gp.x, gp.y - nodeR); ctx.restore();
       }
 
       // Status text
-      const done    = isQuantum ? s.qDone : s.cDone;
+      const done = isQuantum ? s.qDone : s.cDone;
       const visited = isQuantum ? s.qVisited.size : s.cVisited.size;
-      const steps   = isQuantum ? s.qSteps : s.cSteps;
+      const steps = isQuantum ? s.qSteps : s.cSteps;
       ctx.save();
-      ctx.font=`bold ${Math.round(H*0.046)}px monospace`; ctx.textAlign='left';
+      ctx.font = `bold ${Math.round(H * 0.046)}px monospace`; ctx.textAlign = 'left';
       const sc = done ? '#00ff9d' : (isQuantum ? '#b026ff' : '#00d4ff');
-      ctx.shadowColor=sc; ctx.shadowBlur=10; ctx.fillStyle=sc;
+      ctx.shadowColor = sc; ctx.shadowBlur = 10; ctx.fillStyle = sc;
       // A* finds path to goal only; all others traverse entire graph
       const isAstar = !isQuantum && currentGraphC === 'astar';
       let doneMsg, runMsg;
       if (isAstar) {
         doneMsg = `✓ Goal ★ reached in ${steps} steps`;
-        runMsg  = `Searching for ★ — step ${steps}`;
+        runMsg = `Searching for ★ — step ${steps}`;
       } else {
         doneMsg = `✓ All ${GN} nodes in ${steps} steps`;
-        runMsg  = `Visited ${visited} / ${GN} — step ${steps}`;
+        runMsg = `Visited ${visited} / ${GN} — step ${steps}`;
       }
-      ctx.fillText(done ? doneMsg : runMsg, W*0.04, H*0.07);
+      ctx.fillText(done ? doneMsg : runMsg, W * 0.04, H * 0.07);
       ctx.restore();
     }
 
@@ -1657,49 +1892,49 @@
       const { M, a, period } = s;
 
       if (isQuantum) {
-        const steps=s.qMaxSteps, prog=s.qSteps/steps;
-        ctx.fillStyle='rgba(176,38,255,0.08)'; ctx.fillRect(0,0,W,H);
-        const barW=W/(steps+1);
-        for (let x=1;x<=steps;x++) {
-          const fx=Math.pow(a,x)%M, barH=H*0.55*(fx/M), xPos=x*barW, rev=x<=s.qX;
-          ctx.fillStyle=`rgba(176,38,${Math.round(200*(fx/M))},${rev?0.7:0.12})`;
-          ctx.shadowColor='#b026ff'; ctx.shadowBlur=rev?6:0;
-          ctx.fillRect(xPos,H*0.82-barH,barW-2,barH); ctx.shadowBlur=0;
-          if(rev){ctx.fillStyle='rgba(176,38,255,0.9)';ctx.font=`${barW*0.5}px monospace`;ctx.textAlign='center';ctx.fillText(fx,xPos+barW/2,H*0.82-barH-5);}
-          if(x%period===0&&rev){
-            ctx.strokeStyle='rgba(255,214,10,0.7)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
-            ctx.beginPath();ctx.moveTo(xPos,H*0.1);ctx.lineTo(xPos,H*0.85);ctx.stroke();ctx.setLineDash([]);
-            ctx.fillStyle='#ffd60a';ctx.font=`bold ${barW*0.6}px monospace`;ctx.fillText('r',xPos+barW/2,H*0.1);
+        const steps = s.qMaxSteps, prog = s.qSteps / steps;
+        ctx.fillStyle = 'rgba(176,38,255,0.08)'; ctx.fillRect(0, 0, W, H);
+        const barW = W / (steps + 1);
+        for (let x = 1; x <= steps; x++) {
+          const fx = Math.pow(a, x) % M, barH = H * 0.55 * (fx / M), xPos = x * barW, rev = x <= s.qX;
+          ctx.fillStyle = `rgba(176,38,${Math.round(200 * (fx / M))},${rev ? 0.7 : 0.12})`;
+          ctx.shadowColor = '#b026ff'; ctx.shadowBlur = rev ? 6 : 0;
+          ctx.fillRect(xPos, H * 0.82 - barH, barW - 2, barH); ctx.shadowBlur = 0;
+          if (rev) { ctx.fillStyle = 'rgba(176,38,255,0.9)'; ctx.font = `${barW * 0.5}px monospace`; ctx.textAlign = 'center'; ctx.fillText(fx, xPos + barW / 2, H * 0.82 - barH - 5); }
+          if (x % period === 0 && rev) {
+            ctx.strokeStyle = 'rgba(255,214,10,0.7)'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
+            ctx.beginPath(); ctx.moveTo(xPos, H * 0.1); ctx.lineTo(xPos, H * 0.85); ctx.stroke(); ctx.setLineDash([]);
+            ctx.fillStyle = '#ffd60a'; ctx.font = `bold ${barW * 0.6}px monospace`; ctx.fillText('r', xPos + barW / 2, H * 0.1);
           }
         }
-        if(s.qSteps>=3){
+        if (s.qSteps >= 3) {
           ctx.beginPath();
-          for(let px=0;px<=W;px++){const f=px/W*steps;let amp=0;for(let k=1;k<=s.qSteps;k++)amp+=Math.cos(2*Math.PI*f/period*k)/s.qSteps;const y=H*0.4-amp*H*0.18;px===0?ctx.moveTo(px,y):ctx.lineTo(px,y);}
-          ctx.strokeStyle=`rgba(176,38,255,${0.3+prog*0.5})`;ctx.lineWidth=2;ctx.shadowColor='#b026ff';ctx.shadowBlur=8;ctx.stroke();ctx.shadowBlur=0;
+          for (let px = 0; px <= W; px++) { const f = px / W * steps; let amp = 0; for (let k = 1; k <= s.qSteps; k++)amp += Math.cos(2 * Math.PI * f / period * k) / s.qSteps; const y = H * 0.4 - amp * H * 0.18; px === 0 ? ctx.moveTo(px, y) : ctx.lineTo(px, y); }
+          ctx.strokeStyle = `rgba(176,38,255,${0.3 + prog * 0.5})`; ctx.lineWidth = 2; ctx.shadowColor = '#b026ff'; ctx.shadowBlur = 8; ctx.stroke(); ctx.shadowBlur = 0;
         }
-        ctx.fillStyle=s.qDone?'#00ff9d':'#b026ff';ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=8;
-        ctx.font=`bold ${H*0.052}px monospace`;ctx.textAlign='left';
-        ctx.fillText(s.qDone?`✓ Period r=${period} found via QFT in ${s.qSteps} steps!`:`QFT probing... step ${s.qSteps}/${steps}`,W*0.03,H*0.07);
-        ctx.shadowBlur=0;
+        ctx.fillStyle = s.qDone ? '#00ff9d' : '#b026ff'; ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 8;
+        ctx.font = `bold ${H * 0.052}px monospace`; ctx.textAlign = 'left';
+        ctx.fillText(s.qDone ? `✓ Period r=${period} found via QFT in ${s.qSteps} steps!` : `QFT probing... step ${s.qSteps}/${steps}`, W * 0.03, H * 0.07);
+        ctx.shadowBlur = 0;
       } else {
-        ctx.fillStyle='rgba(0,212,255,0.04)'; ctx.fillRect(0,0,W,H);
-        const barW=W/(s.cX+2);
-        for(let x=1;x<=s.cX;x++){
-          const fx=Math.pow(a,x)%M,barH=H*0.55*(fx/M),xPos=x*barW,isFirst=(fx===a%M&&x>1);
-          ctx.fillStyle=isFirst?'rgba(255,214,10,0.7)':'rgba(0,212,255,0.5)';
-          ctx.shadowColor=isFirst?'#ffd60a':'#00d4ff';ctx.shadowBlur=isFirst?10:3;
-          ctx.fillRect(xPos,H*0.82-barH,barW-2,barH);ctx.shadowBlur=0;
-          ctx.fillStyle='rgba(0,212,255,0.85)';ctx.font=`${barW*0.55}px monospace`;ctx.textAlign='center';
-          ctx.fillText(fx,xPos+barW/2,H*0.82-barH-5);
-          ctx.fillStyle='rgba(0,212,255,0.5)';ctx.font=`${barW*0.45}px monospace`;
-          ctx.fillText(x,xPos+barW/2,H*0.88);
+        ctx.fillStyle = 'rgba(0,212,255,0.04)'; ctx.fillRect(0, 0, W, H);
+        const barW = W / (s.cX + 2);
+        for (let x = 1; x <= s.cX; x++) {
+          const fx = Math.pow(a, x) % M, barH = H * 0.55 * (fx / M), xPos = x * barW, isFirst = (fx === a % M && x > 1);
+          ctx.fillStyle = isFirst ? 'rgba(255,214,10,0.7)' : 'rgba(0,212,255,0.5)';
+          ctx.shadowColor = isFirst ? '#ffd60a' : '#00d4ff'; ctx.shadowBlur = isFirst ? 10 : 3;
+          ctx.fillRect(xPos, H * 0.82 - barH, barW - 2, barH); ctx.shadowBlur = 0;
+          ctx.fillStyle = 'rgba(0,212,255,0.85)'; ctx.font = `${barW * 0.55}px monospace`; ctx.textAlign = 'center';
+          ctx.fillText(fx, xPos + barW / 2, H * 0.82 - barH - 5);
+          ctx.fillStyle = 'rgba(0,212,255,0.5)'; ctx.font = `${barW * 0.45}px monospace`;
+          ctx.fillText(x, xPos + barW / 2, H * 0.88);
         }
-        ctx.fillStyle=s.cDone?'#00ff9d':'#00d4ff';ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=8;
-        ctx.font=`bold ${H*0.052}px monospace`;ctx.textAlign='left';
-        ctx.fillText(s.cDone?`✓ Period r=${s.cPeriod} found at step ${s.cSteps}`:`Testing a^${s.cX} mod ${M} = ${s.cFx}`,W*0.03,H*0.07);
-        ctx.shadowBlur=0;
-        ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font=`${H*0.038}px sans-serif`;
-        ctx.fillText(`f(x) = ${a}^x mod ${M}.  Bar = f(x).  x below.  Gold = period repeat`,W*0.03,H*0.96);
+        ctx.fillStyle = s.cDone ? '#00ff9d' : '#00d4ff'; ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 8;
+        ctx.font = `bold ${H * 0.052}px monospace`; ctx.textAlign = 'left';
+        ctx.fillText(s.cDone ? `✓ Period r=${s.cPeriod} found at step ${s.cSteps}` : `Testing a^${s.cX} mod ${M} = ${s.cFx}`, W * 0.03, H * 0.07);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = `${H * 0.038}px sans-serif`;
+        ctx.fillText(`f(x) = ${a}^x mod ${M}.  Bar = f(x).  x below.  Gold = period repeat`, W * 0.03, H * 0.96);
       }
     }
 
@@ -1721,15 +1956,15 @@
       document.getElementById('qSteps').textContent = simState.qSteps || 0;
       document.getElementById('cSteps').textContent = simState.cSteps || 0;
 
-      const qs = simState.qSteps||0, cs = simState.cSteps||simState.cX||0;
-      if (qs>0 && cs>0) document.getElementById('speedupVal').textContent = (cs/qs).toFixed(2)+'×';
+      const qs = simState.qSteps || 0, cs = simState.cSteps || simState.cX || 0;
+      if (qs > 0 && cs > 0) document.getElementById('speedupVal').textContent = (cs / qs).toFixed(2) + '×';
 
-      const qd=simState.qDone, cd=simState.cDone;
-      const banner=document.getElementById('winnerBanner');
-      const status=document.getElementById('statusMsg');
-      if      (qd&&!cd) { banner.textContent='⚡ Quantum finishes first!'; banner.className='winner-banner show winner-quantum'; status.textContent='Quantum algorithm completed first!'; }
-      else if (cd&&!qd) { banner.textContent='🖥 Classical finishes first!'; banner.className='winner-banner show winner-classical'; status.textContent='Classical algorithm completed first!'; }
-      else if (qd&&cd)  { banner.className='winner-banner'; status.textContent='Both finished'; }
+      const qd = simState.qDone, cd = simState.cDone;
+      const banner = document.getElementById('winnerBanner');
+      const status = document.getElementById('statusMsg');
+      if (qd && !cd) { banner.textContent = '⚡ Quantum finishes first!'; banner.className = 'winner-banner show winner-quantum'; status.textContent = 'Quantum algorithm completed first!'; }
+      else if (cd && !qd) { banner.textContent = '🖥 Classical finishes first!'; banner.className = 'winner-banner show winner-classical'; status.textContent = 'Classical algorithm completed first!'; }
+      else if (qd && cd) { banner.className = 'winner-banner'; status.textContent = 'Both finished'; }
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -1761,9 +1996,9 @@
     //  PLAYBACK ENGINE
     // ═══════════════════════════════════════════════════════════════════════
     function doStep() {
-      if (currentAlgo === 'search')       stepSearch();
-      else if (currentAlgo === 'graph')   stepGraph();
-      else                                stepFactoring();
+      if (currentAlgo === 'search') stepSearch();
+      else if (currentAlgo === 'graph') stepGraph();
+      else stepFactoring();
       drawAll();
       if (simState.qDone && simState.cDone) pause();
     }
@@ -1819,9 +2054,9 @@
       pause(); initSim(); animTick = 0;
       drawAll();  // also calls renderCodePanels
       document.getElementById('speedupVal').textContent = '—';
-      document.getElementById('statusMsg').textContent  = 'Press Play to start';
-      document.getElementById('qSteps').textContent     = '0';
-      document.getElementById('cSteps').textContent     = '0';
+      document.getElementById('statusMsg').textContent = 'Press Play to start';
+      document.getElementById('qSteps').textContent = '0';
+      document.getElementById('cSteps').textContent = '0';
       const b = document.getElementById('winnerBanner');
       b.className = 'winner-banner'; b.textContent = '';
     }
@@ -1831,29 +2066,29 @@
     // ═══════════════════════════════════════════════════════════════════════
     function registerGraphHover(canvas, isQuantum) {
       canvas.addEventListener('mousemove', e => {
-        if (currentAlgo !== 'graph' || !simState.graph) { tooltip.style.display='none'; return; }
+        if (currentAlgo !== 'graph' || !simState.graph) { tooltip.style.display = 'none'; return; }
         const rect = canvas.getBoundingClientRect();
-        const mx=(e.clientX-rect.left)*devicePixelRatio, my=(e.clientY-rect.top)*devicePixelRatio;
-        const W=canvas.width, H=canvas.height;
-        const nodeR=Math.max(14*devicePixelRatio, Math.min(22*devicePixelRatio, W*0.035));
-        let hovered=null;
-        simState.graph.nodes.forEach((node,i) => {
-          const p=nodePos(node,W,H);
-          if (Math.hypot(mx-p.x,my-p.y)<nodeR*1.3) hovered=i;
+        const mx = (e.clientX - rect.left) * devicePixelRatio, my = (e.clientY - rect.top) * devicePixelRatio;
+        const W = canvas.width, H = canvas.height;
+        const nodeR = Math.max(14 * devicePixelRatio, Math.min(22 * devicePixelRatio, W * 0.035));
+        let hovered = null;
+        simState.graph.nodes.forEach((node, i) => {
+          const p = nodePos(node, W, H);
+          if (Math.hypot(mx - p.x, my - p.y) < nodeR * 1.3) hovered = i;
         });
-        if (hovered!==null) {
-          const nd=simState.graph.nodes[hovered];
-          const info=isQuantum
-            ? `Node ${nd.label}  |  amp: ${simState.qAmps[hovered].toFixed(3)}  |  ${simState.qVisited.has(hovered)?'visited':'unvisited'}`
+        if (hovered !== null) {
+          const nd = simState.graph.nodes[hovered];
+          const info = isQuantum
+            ? `Node ${nd.label}  |  amp: ${simState.qAmps[hovered].toFixed(3)}  |  ${simState.qVisited.has(hovered) ? 'visited' : 'unvisited'}`
             : (() => {
-                const d=currentGraphC==='dijkstra'?simState.dijkDist[hovered]:(currentGraphC==='astar'?simState.astarDist[hovered]:null);
-                return `Node ${nd.label}  |  ${simState.cVisited.has(hovered)?'visited':'unvisited'}${d!=null&&d<Infinity?`  |  dist: ${d}`:''}`;
-              })();
-          tooltip.textContent=info; tooltip.style.display='block';
-          tooltip.style.left=(e.clientX+14)+'px'; tooltip.style.top=(e.clientY+14)+'px';
-        } else tooltip.style.display='none';
+              const d = currentGraphC === 'dijkstra' ? simState.dijkDist[hovered] : (currentGraphC === 'astar' ? simState.astarDist[hovered] : null);
+              return `Node ${nd.label}  |  ${simState.cVisited.has(hovered) ? 'visited' : 'unvisited'}${d != null && d < Infinity ? `  |  dist: ${d}` : ''}`;
+            })();
+          tooltip.textContent = info; tooltip.style.display = 'block';
+          tooltip.style.left = (e.clientX + 14) + 'px'; tooltip.style.top = (e.clientY + 14) + 'px';
+        } else tooltip.style.display = 'none';
       });
-      canvas.addEventListener('mouseleave', () => { tooltip.style.display='none'; });
+      canvas.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
     }
     registerGraphHover(qC, true);
     registerGraphHover(cC, false);
@@ -1863,7 +2098,7 @@
     // ═══════════════════════════════════════════════════════════════════════
     updateMeta();
     resetSim();
-    </script>
+  </script>
 </body>
 
 </html>
