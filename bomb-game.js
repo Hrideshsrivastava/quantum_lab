@@ -241,9 +241,7 @@ const bombGame = {
         }
         // TC-18: must probe with at least 1 photon before deciding
         if (this.selectedChannel.stats.sent === 0) {
-            alert('⚠ Send at least one batch of photons to this channel before locking a decision.
-
-You need data to make a valid determination!');
+            alert('⚠ Send at least one batch of photons to this channel before locking a decision.\n\nYou need data to make a valid determination!');
             return;
         }
         if (!this.roundActive) return;
